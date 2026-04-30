@@ -1,128 +1,20 @@
-import { dbConnect } from '@/app/lib/dbConnect';
-import Portfolio from '@/app/models/Portfolio';
+// app/api/portfolio/[id]/route.ts
+export const dynamic = 'force-dynamic';
+
 import { NextRequest, NextResponse } from 'next/server';
+import Portfolio from '@/app/models/Portfolio';
+import { dbConnect } from '@/lib/dbConnect';
 
-// ✅ PUT: আপডেট (Next.js 15 compatible)
-export async function PUT(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
-  try {
-    await dbConnect();
-    const { id } = await params;  // 👈 await করতে হবে
-    const body = await request.json();
-    
-    console.log('🔍 Updating ID:', id);
-    console.log('📦 Update Data:', body);
-    
-    // ইমেজ URL ট্রিম করুন
-    const trimmedImage = body.image?.trim() || '';
-    
-    const portfolioData = {
-      title: body.title,
-      category: body.category,
-      description: body.description,
-      tech: body.tech || [],
-      colorKey: body.colorKey,
-      stats: body.stats,
-      image: trimmedImage,
-      imageAlt: body.imageAlt,
-      github: body.github || '',
-      liveUrl: body.liveUrl || '',
-      updatedAt: new Date(),
-    };
-    
-    // প্রথমে id দিয়ে খুঁজুন, না পেলে _id দিয়ে খুঁজুন
-    let portfolio = await Portfolio.findOne({ id: id });
-    
-    // যদি id না পাওয়া যায়, তাহলে _id দিয়ে চেক করুন
-    if (!portfolio) {
-      portfolio = await Portfolio.findById(id);
-    }
-    
-    if (!portfolio) {
-      console.log('❌ Portfolio not found with id:', id);
-      return NextResponse.json(
-        { error: `Portfolio with id "${id}" not found` },
-        { status: 404 }
-      );
-    }
-    
-    // আপডেট করুন
-    const updatedPortfolio = await Portfolio.findOneAndUpdate(
-      { _id: portfolio._id },
-      portfolioData,
-      { new: true, runValidators: true }
-    );
-    
-    console.log('✅ Update successful:', updatedPortfolio?.id);
-    return NextResponse.json(updatedPortfolio, { status: 200 });
-    
-  } catch (error: any) {
-    console.error('❌ PUT Error:', error);
-    return NextResponse.json(
-      { error: 'Failed to update portfolio', details: error.message },
-      { status: 500 }
-    );
-  }
-}
-
-// ✅ DELETE: ডিলিট (Next.js 15 compatible)
-export async function DELETE(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
-  try {
-    await dbConnect();
-    const { id } = await params;  // 👈 await করতে হবে
-    
-    console.log('🔍 Deleting ID:', id);
-    
-    // প্রথমে id দিয়ে খুঁজুন, না পেলে _id দিয়ে খুঁজুন
-    let portfolio = await Portfolio.findOne({ id: id });
-    
-    if (!portfolio) {
-      portfolio = await Portfolio.findById(id);
-    }
-    
-    if (!portfolio) {
-      console.log('❌ Portfolio not found with id:', id);
-      return NextResponse.json(
-        { error: `Portfolio with id "${id}" not found` },
-        { status: 404 }
-      );
-    }
-    
-    await Portfolio.deleteOne({ _id: portfolio._id });
-    
-    console.log('✅ Delete successful:', id);
-    return NextResponse.json(
-      { message: 'Portfolio deleted successfully', id: id },
-      { status: 200 }
-    );
-    
-  } catch (error: any) {
-    console.error('❌ DELETE Error:', error);
-    return NextResponse.json(
-      { error: 'Failed to delete portfolio', details: error.message },
-      { status: 500 }
-    );
-  }
-}
-
-// ✅ GET: একক পোর্টফোলিও পাওয়া (optional)
+// GET single portfolio
 export async function GET(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  context: { params: Promise<{ id: string }> }
 ) {
   try {
     await dbConnect();
-    const { id } = await params;
+    const { id } = await context.params;
     
-    let portfolio = await Portfolio.findOne({ id: id });
-    if (!portfolio) {
-      portfolio = await Portfolio.findById(id);
-    }
+    const portfolio = await Portfolio.findOne({ id: id });
     
     if (!portfolio) {
       return NextResponse.json(
@@ -132,11 +24,74 @@ export async function GET(
     }
     
     return NextResponse.json(portfolio, { status: 200 });
-    
-  } catch (error: any) {
+  } catch (error) {
     console.error('GET Error:', error);
     return NextResponse.json(
       { error: 'Failed to fetch portfolio' },
+      { status: 500 }
+    );
+  }
+}
+
+// PUT update portfolio
+export async function PUT(
+  request: NextRequest,
+  context: { params: Promise<{ id: string }> }
+) {
+  try {
+    await dbConnect();
+    const { id } = await context.params;
+    const body = await request.json();
+    
+    const updatedPortfolio = await Portfolio.findOneAndUpdate(
+      { id: id },
+      { 
+        ...body,
+        updatedAt: new Date()
+      },
+      { new: true }
+    );
+    
+    if (!updatedPortfolio) {
+      return NextResponse.json(
+        { error: 'Portfolio not found' },
+        { status: 404 }
+      );
+    }
+    
+    return NextResponse.json(updatedPortfolio, { status: 200 });
+  } catch (error) {
+    console.error('PUT Error:', error);
+    return NextResponse.json(
+      { error: 'Failed to update portfolio' },
+      { status: 500 }
+    );
+  }
+}
+
+// DELETE portfolio
+export async function DELETE(
+  request: NextRequest,
+  context: { params: Promise<{ id: string }> }
+) {
+  try {
+    await dbConnect();
+    const { id } = await context.params;
+    
+    const deletedPortfolio = await Portfolio.findOneAndDelete({ id: id });
+    
+    if (!deletedPortfolio) {
+      return NextResponse.json(
+        { error: 'Portfolio not found' },
+        { status: 404 }
+      );
+    }
+    
+    return NextResponse.json({ success: true }, { status: 200 });
+  } catch (error) {
+    console.error('DELETE Error:', error);
+    return NextResponse.json(
+      { error: 'Failed to delete portfolio' },
       { status: 500 }
     );
   }

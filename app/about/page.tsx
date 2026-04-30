@@ -3,180 +3,113 @@
 import React, { useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import gsap from "gsap";
+import Link from 'next/link';
+
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import {
   Code2, Atom, Terminal, Database, Server, FileJson, Globe, ShieldCheck,
-  Rocket, Layers, Search, Cpu, Award, Users, TrendingUp, Zap
+  Rocket, Layers, Search, Cpu, Award, Users, TrendingUp, Zap,
+  GitBranch, Layout, Sparkles, Braces, Cloud,
+  Lock, Workflow, Eye, BarChart3, CheckCircle, Briefcase, Building2,
+  HardDrive, Network, Boxes, Cable
 } from "lucide-react";
+import { FaAws, FaFigma, FaDocker } from "react-icons/fa";
+import { SiTailwindcss, SiGraphql, SiExpress } from "react-icons/si";
+import ParticleNetwork from "@/components/ParticleNetwork";
 
 if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger);
 }
 
+// --- EXPANDED TECH STACK WITH MIXED ICONS ---
 const technologies = [
-  { name: "Next.js", color: "#ffffff", orbit: 210, speed: 45, icon: Code2 },
-  { name: "React", color: "#61dafb", orbit: 140, speed: 30, icon: Atom },
-  { name: "Node.js", color: "#68a063", orbit: 250, speed: 55, icon: Server },
-  { name: "MongoDB", color: "#47a248", orbit: 180, speed: 40, icon: Database },
-  { name: "TypeScript", color: "#3178c6", orbit: 160, speed: 35, icon: FileJson },
+  { name: "Next.js", color: "#ffffff", orbit: 210, speed: 45, icon: Code2, isReactIcon: false },
+  { name: "React", color: "#61dafb", orbit: 140, speed: 30, icon: Atom, isReactIcon: false },
+  { name: "Node.js", color: "#68a063", orbit: 250, speed: 55, icon: Server, isReactIcon: false },
+  { name: "MongoDB", color: "#47a248", orbit: 180, speed: 40, icon: Database, isReactIcon: false },
+  { name: "TypeScript", color: "#3178c6", orbit: 160, speed: 35, icon: FileJson, isReactIcon: false },
+  { name: "Express", color: "#ffffff", orbit: 200, speed: 48, icon: SiExpress, isReactIcon: true },
+  { name: "Tailwind", color: "#38bdf8", orbit: 230, speed: 52, icon: SiTailwindcss, isReactIcon: true },
+  { name: "GraphQL", color: "#e535ab", orbit: 150, speed: 32, icon: SiGraphql, isReactIcon: true },
+  { name: "Docker", color: "#2496ed", orbit: 270, speed: 58, icon: FaDocker, isReactIcon: true },
+  { name: "AWS", color: "#ff9900", orbit: 190, speed: 42, icon: FaAws, isReactIcon: true },
+  { name: "Git", color: "#f05032", orbit: 220, speed: 46, icon: GitBranch, isReactIcon: false },
+  { name: "Figma", color: "#f24e1e", orbit: 170, speed: 38, icon: FaFigma, isReactIcon: true },
 ];
 
-// Enhanced Journey Steps with more details (like Services Page Timeline)
+// --- JOURNEY STEPS ---
 const journeySteps = [
   {
     id: "01",
-    year: "2022",
-    title: "The Genesis Protocol",
-    desc: "Grow Business Solutions founded as a boutique research firm focused on software architecture and digital transformation.",
-    icon: Rocket,
+    year: "2022 – 2024",
+    title: "The Foundation",
+    desc: "Started as developers on key government projects, proving technical excellence and professionalism. These collaborative roots inspired us to build our own platform.",
+    icon: Building2,
     color: "#6c5ce7",
     align: "left",
-    deliverables: ["Research", "Architecture", "MVP"],
-    duration: "Foundation Year"
+    deliverables: ["Govt. Project Experience", "Core Team Synergy", "Technical Excellence"],
+    duration: "Collaborative Roots"
   },
   {
     id: "02",
-    year: "2023",
-    title: "The Expansion Era",
-    desc: "Expanded team and client base, delivering enterprise-grade solutions across fintech, edtech, and healthcare sectors.",
-    icon: TrendingUp,
+    year: "2025",
+    title: "The Transition",
+    desc: "Conceptualized Grow Business Solutions. Extensive research on solving business problems with custom web apps and modern technology.",
+    icon: Search,
     color: "#a29bfe",
     align: "right",
-    deliverables: ["20+ Projects", "10+ Clients", "Team Growth"],
-    duration: "Scaling Phase"
+    deliverables: ["Market Research", "Service Roadmap", "Strategic Planning"],
+    duration: "Concept Phase"
   },
   {
     id: "03",
-    year: "2024",
-    title: "The Obsidian Shift",
-    desc: "Pivot to enterprise-grade AI integration and high-end MERN stack solutions with global clientele.",
-    icon: Cpu,
+    year: "2026",
+    title: "The Official Launch",
+    desc: "Grow Business Solutions BD officially launches. Ready to deliver global-standard custom web solutions using cutting-edge MERN Stack technology.",
+    icon: Rocket,
     color: "#00cec9",
     align: "left",
-    deliverables: ["AI Integration", "Global Reach", "Innovation Lab"],
-    duration: "Tech Evolution"
+    deliverables: ["Official Agency Launch", "Custom Web Solutions", "Client-First Approach"],
+    duration: "New Era Begins"
   },
   {
     id: "04",
-    year: "2026",
-    title: "Global Consensus",
-    desc: "Scaling digital infrastructure for the next generation of businesses worldwide with cutting-edge technology.",
+    year: "Future",
+    title: "Global Impact",
+    desc: "Aiming to serve global clients with high-performance digital ecosystems, innovation, and uncompromised quality.",
     icon: Globe,
     color: "#6c5ce7",
     align: "right",
-    deliverables: ["Global Scale", "Next-Gen Tech", "Future Ready"],
-    duration: "Worldwide Impact"
+    deliverables: ["Global Reach", "Innovation Lab", "Enterprise Solutions"],
+    duration: "Worldwide Vision"
   },
 ];
 
 // Stats Data
 const stats = [
-  { value: 50, label: "Projects Delivered", suffix: "+", icon: Award },
-  { value: 30, label: "Happy Clients", suffix: "+", icon: Users },
-  { value: 99.9, label: "Uptime SLA", suffix: "%", icon: Zap },
-  { value: 24, label: "Support", suffix: "/7", icon: ShieldCheck },
+  { value: 3, label: "Govt. Projects", suffix: "+", icon: Award, note: "Team Experience" },
+  { value: 100, label: "Code Quality", suffix: "%", icon: Zap, note: "Standards" },
+  { value: 24, label: "Support", suffix: "/7", icon: ShieldCheck, note: "Dedicated" },
+  { value: 10, label: "Tech Stack", suffix: "+", icon: Layers, note: "Modern Tools" },
 ];
+
+// Helper component to render both Lucide and React Icons
+const IconRenderer = ({ icon, isReactIcon, size = 18, color }: { icon: any; isReactIcon: boolean; size?: number; color?: string }) => {
+  if (isReactIcon) {
+    const IconComponent = icon;
+    return <IconComponent size={size} color={color} />;
+  }
+  const LucideIcon = icon;
+  return <LucideIcon size={size} style={{ color }} />;
+};
 
 export default function AboutPage() {
   const orbitRefs = useRef<HTMLDivElement[]>([]);
-  const canvasRef = useRef<HTMLCanvasElement>(null);
   const journeyLineRef = useRef<HTMLDivElement>(null);
   const journeyScrollRef = useRef<HTMLDivElement>(null);
 
-  // Full Page Particle Network Canvas
+  // Orbital Animation
   useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext("2d");
-    if (!ctx) return;
-
-    let animId: number;
-    let nodes: Array<{
-      x: number;
-      y: number;
-      vx: number;
-      vy: number;
-      r: number;
-      color: string;
-    }> = [];
-
-    const resize = () => {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
-
-      nodes = Array.from({ length: 80 }, () => ({
-        x: Math.random() * canvas.width,
-        y: Math.random() * canvas.height,
-        vx: (Math.random() - 0.5) * 0.35,
-        vy: (Math.random() - 0.5) * 0.35,
-        r: Math.random() * 2.5 + 0.8,
-        color:
-          Math.random() > 0.6
-            ? "rgba(108, 92, 231, 0.45)"
-            : "rgba(162, 155, 254, 0.35)",
-      }));
-    };
-
-    resize();
-    window.addEventListener("resize", resize);
-
-    const draw = () => {
-      if (!ctx || !canvas) return;
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-      for (let i = 0; i < nodes.length; i++) {
-        for (let j = i + 1; j < nodes.length; j++) {
-          const d = Math.hypot(nodes[i].x - nodes[j].x, nodes[i].y - nodes[j].y);
-          if (d < 170) {
-            ctx.beginPath();
-            ctx.moveTo(nodes[i].x, nodes[i].y);
-            ctx.lineTo(nodes[j].x, nodes[j].y);
-            const opacity = 0.12 * (1 - d / 170);
-
-            const gradient = ctx.createLinearGradient(
-              nodes[i].x,
-              nodes[i].y,
-              nodes[j].x,
-              nodes[j].y
-            );
-            gradient.addColorStop(0, "rgba(108, 92, 231, " + opacity + ")");
-            gradient.addColorStop(1, "rgba(162, 155, 254, " + opacity + ")");
-
-            ctx.strokeStyle = gradient;
-            ctx.lineWidth = 0.6;
-            ctx.stroke();
-          }
-        }
-      }
-
-      nodes.forEach((n) => {
-        ctx.beginPath();
-        ctx.arc(n.x, n.y, n.r, 0, Math.PI * 2);
-        ctx.fillStyle = n.color;
-        ctx.fill();
-
-        if (n.r > 1.8) {
-          ctx.beginPath();
-          ctx.arc(n.x, n.y, n.r + 1.5, 0, Math.PI * 2);
-          ctx.fillStyle = `rgba(108, 92, 231, 0.08)`;
-          ctx.fill();
-        }
-
-        n.x += n.vx;
-        n.y += n.vy;
-
-        if (n.x < 0) { n.x = 0; n.vx *= -1; }
-        if (n.x > canvas.width) { n.x = canvas.width; n.vx *= -1; }
-        if (n.y < 0) { n.y = 0; n.vy *= -1; }
-        if (n.y > canvas.height) { n.y = canvas.height; n.vy *= -1; }
-      });
-
-      animId = requestAnimationFrame(draw);
-    };
-
-    draw();
-
-    // Orbital Animation
     orbitRefs.current.forEach((node, i) => {
       if (!node) return;
       const tech = technologies[i];
@@ -184,14 +117,9 @@ export default function AboutPage() {
       const inner = node.querySelector(".tech-node-inner");
       if (inner) gsap.to(inner, { rotation: -360, duration: tech.speed, repeat: -1, ease: "none" });
     });
-
-    return () => {
-      cancelAnimationFrame(animId);
-      window.removeEventListener("resize", resize);
-    };
   }, []);
 
-  // GSAP Journey Timeline Animation (Same as Services Page)
+  // GSAP Journey Timeline Animation
   useEffect(() => {
     if (journeyLineRef.current && journeyScrollRef.current) {
       gsap.fromTo(
@@ -237,21 +165,22 @@ export default function AboutPage() {
   return (
     <main className="relative min-h-screen bg-[#05070a] text-white font-sans overflow-x-hidden">
       
-      {/* Full Page Particle Network Canvas */}
-      <canvas 
-        ref={canvasRef} 
-        className="fixed inset-0 w-full h-full pointer-events-none opacity-35 z-0" 
+      {/* Particle Network BG - পুরনো সব BG এর জায়গায় */}
+      <ParticleNetwork 
+        opacity={0.35}
+        particleCount={80}
+        connectionDistance={170}
+        particleSize={{ min: 0.8, max: 2.5 }}
+        particleColor="rgba(108, 92, 231, 0.45)"
+        lineColor="rgba(108, 92, 231"
+        lineOpacity={0.12}
+        speed={0.35}
+        glowEffect={true}
       />
-
-      {/* Gradient Glow Effects */}
-      <div className="fixed top-[-10%] left-[-10%] w-[60%] h-[60%] bg-[#6c5ce7]/10 blur-[140px] rounded-full pointer-events-none z-0" />
-      <div className="fixed bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-[#00cec9]/8 blur-[120px] rounded-full pointer-events-none z-0" />
-      <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full bg-[radial-gradient(circle_at_50%_50%,rgba(108,92,231,0.03),transparent_70%)] pointer-events-none z-0" />
 
       {/* --- HERO SECTION --- */}
       <section className="relative min-h-screen w-full flex items-center justify-center overflow-hidden z-10">
         <div className="relative z-20 w-full max-w-7xl mx-auto px-6 md:px-16 lg:px-24 text-center lg:text-left">
-          
           <motion.div 
             initial={{ opacity: 0, y: 20 }} 
             animate={{ opacity: 1, y: 0 }} 
@@ -273,12 +202,17 @@ export default function AboutPage() {
           </p>
 
           <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4">
-            <button className="w-full sm:w-auto bg-gradient-to-r from-[#6c5ce7] to-[#a29bfe] hover:shadow-[0_0_30px_rgba(108,92,231,0.5)] transition-all px-8 py-4 rounded-xl text-xs md:text-sm font-black tracking-widest uppercase">
-              Explore Our Vision
-            </button>
-            <button className="w-full sm:w-auto border border-white/10 hover:bg-white/5 transition-all px-8 py-4 rounded-xl text-xs md:text-sm font-black tracking-widest uppercase">
-              Contact Us
-            </button>
+            <Link href="/vision">
+              <button className="w-full sm:w-auto bg-gradient-to-r from-[#6c5ce7] to-[#a29bfe] hover:shadow-[0_0_30px_rgba(108,92,231,0.5)] transition-all px-8 py-4 rounded-xl text-xs md:text-sm font-black tracking-widest uppercase">
+                Explore Our Vision
+              </button>
+            </Link>
+
+            <Link href="/ContactUs">
+              <button className="px-10 py-5 bg-gradient-to-r from-[#6c5ce7] to-[#a29bfe] rounded-2xl font-black text-xs tracking-widest uppercase shadow-[0_0_30px_rgba(108,92,231,0.4)] hover:scale-105 transition-all cursor-pointer">
+                Start Your Journey →
+              </button>
+            </Link>
           </div>
         </div>
       </section>
@@ -286,37 +220,43 @@ export default function AboutPage() {
       {/* --- Stats Section --- */}
       <section className="relative z-10 max-w-7xl mx-auto px-6 py-20">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-          {stats.map((stat, idx) => (
-            <motion.div
-              key={idx}
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ delay: idx * 0.1 }}
-              viewport={{ once: true }}
-              className="text-center p-6 rounded-2xl bg-white/[0.02] border border-white/5"
-            >
-              <stat.icon className="w-8 h-8 mx-auto mb-3 text-[#6c5ce7]" />
-              <div className="text-3xl md:text-4xl font-black text-white">{stat.value}{stat.suffix}</div>
-              <div className="text-white/40 text-xs uppercase tracking-wider mt-2">{stat.label}</div>
-            </motion.div>
-          ))}
+          {stats.map((stat, idx) => {
+            const StatIcon = stat.icon;
+            return (
+              <motion.div
+                key={idx}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ delay: idx * 0.1 }}
+                viewport={{ once: true }}
+                className="text-center p-6 rounded-2xl bg-white/[0.02] border border-white/5"
+              >
+                <StatIcon className="w-8 h-8 mx-auto mb-3 text-[#6c5ce7]" />
+                <div className="text-3xl md:text-4xl font-black text-white">{stat.value}{stat.suffix}</div>
+                <div className="text-white/40 text-xs uppercase tracking-wider mt-2">{stat.label}</div>
+                {stat.note && <div className="text-[10px] text-white/20 mt-1">{stat.note}</div>}
+              </motion.div>
+            );
+          })}
         </div>
       </section>
 
-      {/* --- THE ATOMIC STACK --- */}
+      {/* --- THE FULL STACK SECTION --- */}
       <section className="relative max-w-7xl mx-auto px-6 py-24 md:py-32 z-10">
         <div className="mb-16 md:mb-20 text-center lg:text-left">
-          <h2 className="text-3xl md:text-6xl font-black tracking-tighter uppercase mb-4">The Atomic Stack</h2>
-          <p className="text-white/40 font-mono text-xs md:text-sm tracking-widest uppercase">Neural Infrastructure Protocol</p>
+          <h2 className="text-3xl md:text-6xl font-black tracking-tighter uppercase mb-4">The Full Stack</h2>
+          <p className="text-white/40 font-mono text-xs md:text-sm tracking-widest uppercase">12+ Modern Technologies • MERN • DevOps • Cloud</p>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 items-center">
           <div className="lg:col-span-6 order-2 lg:order-1 grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6">
             {[
-              { icon: Terminal, title: "Optimized Core", desc: "Engineered for peak dominance.", color: "#00cec9" },
-              { icon: Atom, title: "Reactive UI", desc: "Fluid, responsive interfaces.", color: "#a29bfe" },
-              { icon: Globe, title: "Distributed Edge", desc: "Global scale infrastructure.", color: "#6c5ce7" },
-              { icon: ShieldCheck, title: "Ironclad Security", desc: "Enterprise-grade protection.", color: "#00b894" },
+              { icon: Terminal, title: "Optimized Core", desc: "Engineered for peak dominance.", color: "#00cec9", isReactIcon: false },
+              { icon: Atom, title: "Reactive UI", desc: "Fluid, responsive interfaces.", color: "#a29bfe", isReactIcon: false },
+              { icon: Globe, title: "Distributed Edge", desc: "Global scale infrastructure.", color: "#6c5ce7", isReactIcon: false },
+              { icon: ShieldCheck, title: "Ironclad Security", desc: "Enterprise-grade protection.", color: "#00b894", isReactIcon: false },
+              { icon: FaDocker, title: "Containerized", desc: "Consistent deployment everywhere.", color: "#2496ed", isReactIcon: true },
+              { icon: Cloud, title: "Cloud Native", desc: "AWS ready infrastructure.", color: "#ff9900", isReactIcon: false },
             ].map((item, i) => (
               <motion.div
                 key={i}
@@ -326,26 +266,25 @@ export default function AboutPage() {
                 viewport={{ once: true }}
                 className="p-6 md:p-8 rounded-[24px] bg-white/[0.02] border border-white/5 hover:border-[#6c5ce7]/30 transition-all group backdrop-blur-sm"
               >
-                <item.icon className="w-6 h-6 mb-4 opacity-50 group-hover:opacity-100 transition-opacity" style={{ color: item.color }} />
-                <h4 className="font-bold text-lg md:text-xl text-white mb-2">{item.title}</h4>
+                <IconRenderer icon={item.icon} isReactIcon={item.isReactIcon} size={24} color={item.color} />
+                <h4 className="font-bold text-lg md:text-xl text-white mb-2 mt-4">{item.title}</h4>
                 <p className="text-xs md:text-sm text-white/30 italic">{item.desc}</p>
               </motion.div>
             ))}
           </div>
 
-          {/* Orbital Section */}
-          <div className="lg:col-span-6 order-1 lg:order-2 relative h-[350px] md:h-[500px] flex items-center justify-center">
-            <div className="absolute w-[250px] md:w-[400px] h-[250px] md:h-[400px] bg-[#6c5ce7]/5 blur-[80px] rounded-full animate-pulse" />
+          {/* Orbital Section - With 12 technologies */}
+          <div className="lg:col-span-6 order-1 lg:order-2 relative h-[450px] md:h-[600px] flex items-center justify-center">
+            <div className="absolute w-[300px] md:w-[500px] h-[300px] md:h-[500px] bg-[#6c5ce7]/5 blur-[80px] rounded-full animate-pulse" />
             
-            <div className="relative z-30 w-24 h-24 md:w-32 md:h-32 rounded-full bg-[#05070a]/80 backdrop-blur-sm border border-white/10 flex items-center justify-center">
+            <div className="relative z-30 w-28 h-28 md:w-36 md:h-36 rounded-full bg-[#05070a]/80 backdrop-blur-sm border border-white/10 flex items-center justify-center">
                <div className="text-center">
-                  <div className="text-[7px] font-bold tracking-widest text-[#6c5ce7] uppercase">Core</div>
+                  <div className="text-[8px] font-bold tracking-widest text-[#6c5ce7] uppercase">Core</div>
                   <div className="text-lg md:text-xl font-black text-white">MERN+</div>
                </div>
             </div>
 
             {technologies.map((tech, i) => {
-              const Icon = tech.icon;
               const responsiveOrbit = typeof window !== 'undefined' && window.innerWidth < 768 ? tech.orbit * 0.6 : tech.orbit;
               
               return (
@@ -354,7 +293,7 @@ export default function AboutPage() {
                      style={{ width: responsiveOrbit * 2, height: responsiveOrbit * 2 }}>
                   <div className="tech-node-inner absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2">
                     <div className="w-10 h-10 md:w-12 md:h-12 rounded-xl bg-[#0d0e14]/80 backdrop-blur-sm border border-white/10 flex items-center justify-center shadow-xl">
-                      <Icon size={18} style={{ color: tech.color }} />
+                      <IconRenderer icon={tech.icon} isReactIcon={tech.isReactIcon} size={18} color={tech.color} />
                     </div>
                   </div>
                 </div>
@@ -364,27 +303,24 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* --- JOURNEY SECTION (Redesigned like Services Page Timeline) --- */}
+      {/* --- JOURNEY SECTION --- */}
       <section 
         ref={journeyScrollRef} 
         className="relative z-10 py-32 px-6 overflow-hidden"
       >
-        {/* Side glows */}
         <div className="absolute top-0 left-0 w-[500px] h-[500px] bg-[#6c5ce7]/5 blur-[120px] rounded-full -translate-x-1/2 -translate-y-1/2 pointer-events-none" />
         <div className="absolute bottom-0 right-0 w-[500px] h-[500px] bg-[#00cec9]/5 blur-[120px] rounded-full translate-x-1/2 translate-y-1/2 pointer-events-none" />
 
         <div className="max-w-4xl mx-auto relative z-10">
           <div className="text-center mb-24">
             <h2 className="text-3xl font-black tracking-[0.3em] uppercase opacity-40 mb-2">Our Journey</h2>
-            <h3 className="text-5xl font-black tracking-tighter">THE EVOLUTION <span className="text-white/20 italic">OF EXCELLENCE</span></h3>
+            <h3 className="text-5xl font-black tracking-tighter">THE PATH <span className="text-white/20 italic">TO INNOVATION</span></h3>
           </div>
 
           {/* Central Vertical Timeline */}
           <div className="relative">
-            {/* Static background line */}
             <div className="absolute left-[24px] md:left-1/2 top-0 bottom-0 w-px bg-gradient-to-b from-transparent via-white/10 to-transparent" />
             
-            {/* Animated gradient line with GSAP */}
             <div 
               ref={journeyLineRef} 
               className="absolute left-[24px] md:left-1/2 w-[2px] bg-gradient-to-b from-[#6c5ce7] via-[#a29bfe] to-[#00cec9] top-0 shadow-[0_0_15px_#00cec9]"
@@ -392,53 +328,52 @@ export default function AboutPage() {
             />
 
             <div className="space-y-24">
-              {journeySteps.map((step, idx) => (
-                <div
-                  key={idx}
-                  className={`journey-step-${idx} relative flex items-center w-full ${
-                    step.align === "left" ? 'md:flex-row-reverse' : ''
-                  }`}
-                >
-                  <div className="hidden md:block w-1/2" />
-                  
-                  {/* Center Dot with Icon */}
-                  <div className="absolute left-[24px] md:left-1/2 -translate-x-1/2 z-10">
-                    <div
-                      className="w-14 h-14 rounded-full bg-[#05070a] border-2 border-white/10 flex items-center justify-center transition-all duration-300 hover:scale-150 cursor-pointer shadow-[0_0_20px_rgba(108,92,231,0.25)]"
-                      style={{
-                        boxShadow: `0 0 20px ${step.color}`,
-                      }}
-                    >
-                      <step.icon size={20} style={{ color: step.color }} />
+              {journeySteps.map((step, idx) => {
+                const StepIcon = step.icon;
+                return (
+                  <div
+                    key={idx}
+                    className={`journey-step-${idx} relative flex items-center w-full ${
+                      step.align === "left" ? 'md:flex-row-reverse' : ''
+                    }`}
+                  >
+                    <div className="hidden md:block w-1/2" />
+                    
+                    <div className="absolute left-[24px] md:left-1/2 -translate-x-1/2 z-10">
+                      <div
+                        className="w-14 h-14 rounded-full bg-[#05070a] border-2 border-white/10 flex items-center justify-center transition-all duration-300 hover:scale-150 cursor-pointer shadow-[0_0_20px_rgba(108,92,231,0.25)]"
+                        style={{ boxShadow: `0 0 20px ${step.color}` }}
+                      >
+                        <StepIcon size={20} style={{ color: step.color }} />
+                      </div>
                     </div>
-                  </div>
 
-                  {/* Content */}
-                  <div className={`w-full md:w-1/2 pl-20 md:pl-0 ${
-                    step.align === "left" ? 'md:pr-20 text-left md:text-right' : 'md:pl-20 text-left'
-                  }`}>
-                    <span className="text-[10px] font-mono text-[#6c5ce7] font-black mb-2 block uppercase tracking-[0.3em]">
-                      {step.id} • {step.year}
-                    </span>
-                    <h3 className="text-2xl md:text-3xl font-black mb-3 tracking-tight" style={{ color: step.color }}>
-                      {step.title}
-                    </h3>
-                    <p className="text-white/40 text-base font-medium leading-relaxed max-w-sm ml-0 md:ml-auto mr-0 md:mr-0">
-                      {step.desc}
-                    </p>
-                    <div className="flex flex-wrap gap-2 mt-4 justify-start md:justify-end">
-                      {step.deliverables.map((d, i) => (
-                        <span key={i} className="text-[9px] font-mono bg-white/5 px-2 py-1 rounded-full text-white/30">
-                          {d}
-                        </span>
-                      ))}
-                    </div>
-                    <div className="flex items-center gap-2 mt-3 justify-start">
-                      <span className="text-[10px] text-white/30 font-mono">{step.duration}</span>
+                    <div className={`w-full md:w-1/2 pl-20 md:pl-0 ${
+                      step.align === "left" ? 'md:pr-20 text-left md:text-right' : 'md:pl-20 text-left'
+                    }`}>
+                      <span className="text-[10px] font-mono text-[#6c5ce7] font-black mb-2 block uppercase tracking-[0.3em]">
+                        {step.id} • {step.year}
+                      </span>
+                      <h3 className="text-2xl md:text-3xl font-black mb-3 tracking-tight" style={{ color: step.color }}>
+                        {step.title}
+                      </h3>
+                      <p className="text-white/40 text-base font-medium leading-relaxed max-w-sm ml-0 md:ml-auto">
+                        {step.desc}
+                      </p>
+                      <div className="flex flex-wrap gap-2 mt-4 justify-start md:justify-end">
+                        {step.deliverables.map((d, i) => (
+                          <span key={i} className="text-[9px] font-mono bg-white/5 px-2 py-1 rounded-full text-white/30">
+                            {d}
+                          </span>
+                        ))}
+                      </div>
+                      <div className="flex items-center gap-2 mt-3 justify-start">
+                        <span className="text-[10px] text-white/30 font-mono">{step.duration}</span>
+                      </div>
                     </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </div>
         </div>
@@ -464,9 +399,11 @@ export default function AboutPage() {
             <p className="text-white/40 text-lg mb-10 max-w-2xl mx-auto">
               Let's build something extraordinary together. Join the ranks of our global clients.
             </p>
-            <button className="px-10 py-5 bg-gradient-to-r from-[#6c5ce7] to-[#a29bfe] rounded-2xl font-black text-xs tracking-widest uppercase shadow-[0_0_30px_rgba(108,92,231,0.4)] hover:scale-105 transition-all">
-              Start Your Journey →
-            </button>
+            <Link href="/ContactUs">
+              <button className="px-10 py-5 bg-gradient-to-r from-[#6c5ce7] to-[#a29bfe] rounded-2xl font-black text-xs tracking-widest uppercase shadow-[0_0_30px_rgba(108,92,231,0.4)] hover:scale-105 transition-all cursor-pointer">
+                Start Your Journey →
+              </button>
+            </Link>
           </div>
         </motion.div>
       </section>

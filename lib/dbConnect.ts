@@ -6,9 +6,11 @@ if (!MONGODB_URI) {
   throw new Error('Please define MONGODB_URI in .env.local');
 }
 
+// @ts-ignore - Ignore TypeScript error for global mongoose cache
 let cached = global.mongoose;
 
 if (!cached) {
+  // @ts-ignore
   cached = global.mongoose = { conn: null, promise: null };
 }
 

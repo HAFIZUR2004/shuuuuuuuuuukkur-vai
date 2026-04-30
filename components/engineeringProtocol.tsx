@@ -34,127 +34,11 @@ const steps = [
 const EngineeringProtocol = () => {
   const scrollRef = useRef<HTMLDivElement>(null);
   const lineRef = useRef<HTMLDivElement>(null);
-  const canvasRef = useRef<HTMLCanvasElement>(null);
 
   const { lang } = useLanguage();
   const t = translations[lang];
 
   useEffect(() => {
-    // --- Particle Network Canvas Logic ---
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext("2d");
-    if (!ctx) return;
-
-    let animId: number;
-    let nodes: Array<{
-      x: number;
-      y: number;
-      vx: number;
-      vy: number;
-      r: number;
-      color: string;
-    }> = [];
-
-    const resize = () => {
-      canvas.width = canvas.offsetWidth;
-      canvas.height = canvas.offsetHeight;
-
-      // নোড রি-ইনিশিয়ালাইজ
-      nodes = Array.from({ length: 55 }, () => ({
-        x: Math.random() * canvas.width,
-        y: Math.random() * canvas.height,
-        vx: (Math.random() - 0.5) * 0.4,
-        vy: (Math.random() - 0.5) * 0.4,
-        r: Math.random() * 2.5 + 0.8,
-        color:
-          Math.random() > 0.6
-            ? "rgba(181, 167, 255, 0.7)"
-            : "rgba(62, 232, 246, 0.6)",
-      }));
-    };
-
-    resize();
-    window.addEventListener("resize", resize);
-
-    const draw = () => {
-      if (!ctx || !canvas) return;
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-      // লাইন কানেক্ট করা (distance based)
-      for (let i = 0; i < nodes.length; i++) {
-        for (let j = i + 1; j < nodes.length; j++) {
-          const d = Math.hypot(
-            nodes[i].x - nodes[j].x,
-            nodes[i].y - nodes[j].y,
-          );
-          if (d < 160) {
-            ctx.beginPath();
-            ctx.moveTo(nodes[i].x, nodes[i].y);
-            ctx.lineTo(nodes[j].x, nodes[j].y);
-
-            // দূরত্ব অনুযায়ী opacity এবং গ্রেডিয়েন্ট স্টাইল
-            const opacity = 0.12 * (1 - d / 160);
-
-            // দুটি কালার মিক্স করে লাইনের কালার
-            const gradient = ctx.createLinearGradient(
-              nodes[i].x,
-              nodes[i].y,
-              nodes[j].x,
-              nodes[j].y,
-            );
-            gradient.addColorStop(0, "rgba(181, 167, 255, " + opacity + ")");
-            gradient.addColorStop(1, "rgba(62, 232, 246, " + opacity + ")");
-
-            ctx.strokeStyle = gradient;
-            ctx.lineWidth = 0.6;
-            ctx.stroke();
-          }
-        }
-      }
-
-      // ডট আঁকা এবং মুভ করা
-      nodes.forEach((n) => {
-        ctx.beginPath();
-        ctx.arc(n.x, n.y, n.r, 0, Math.PI * 2);
-        ctx.fillStyle = n.color;
-        ctx.fill();
-
-        // ছোট ডটের জন্য গ্লো ইফেক্ট
-        if (n.r > 1.5) {
-          ctx.beginPath();
-          ctx.arc(n.x, n.y, n.r + 1.5, 0, Math.PI * 2);
-          ctx.fillStyle = `rgba(181, 167, 255, 0.1)`;
-          ctx.fill();
-        }
-
-        n.x += n.vx;
-        n.y += n.vy;
-
-        // বাউন্ডারি চেক
-        if (n.x < 0) {
-          n.x = 0;
-          n.vx *= -1;
-        }
-        if (n.x > canvas.width) {
-          n.x = canvas.width;
-          n.vx *= -1;
-        }
-        if (n.y < 0) {
-          n.y = 0;
-          n.vy *= -1;
-        }
-        if (n.y > canvas.height) {
-          n.y = canvas.height;
-          n.vy *= -1;
-        }
-      });
-
-      animId = requestAnimationFrame(draw);
-    };
-
-    draw();
-
     // --- GSAP Scroll Animations ---
     if (lineRef.current) {
       gsap.fromTo(
@@ -193,36 +77,28 @@ const EngineeringProtocol = () => {
     });
 
     return () => {
-      cancelAnimationFrame(animId);
-      window.removeEventListener("resize", resize);
       ScrollTrigger.getAll().forEach((trigger) => trigger.kill());
     };
   }, []);
+  
   type StepType = {
     bgText: string;
     title: string;
     desc: string;
   };
 
+  // Check if language is Bengali (case insensitive)
+  const isBengali = lang?.toLowerCase() === 'bn';
+
   return (
     <section
       ref={scrollRef}
-      className="relative bg-[#0b0c18] text-white py-20 px-6 overflow-hidden"
+      className="relative bg-[#0b0c18] text-white py-20 px-6 overflow-hidden font-hind"
     >
-      {/* Particle Network Canvas - */}
-      <canvas
-        ref={canvasRef}
-        className="absolute inset-0 w-full h-full pointer-events-none opacity-50 z-0"
-      />
-
-      {/* সাইড গ্লো ইফেক্ট */}
-      <div className="absolute top-0 left-0 w-[500px] h-[500px] bg-purple-900/10 blur-[120px] rounded-full -translate-x-1/2 -translate-y-1/2 pointer-events-none z-0" />
-      <div className="absolute bottom-0 right-0 w-[500px] h-[500px] bg-cyan-900/10 blur-[120px] rounded-full translate-x-1/2 translate-y-1/2 pointer-events-none z-0" />
-
-      <div className="max-w-screen-2xl mx-auto relative z-10 ">
-        <h2 className="text-6xl md:text-8xl font-black text-center mb-40 tracking-tighter">
+      <div className="max-w-screen-2xl mx-auto relative z-10">
+        <h2 className={`text-6xl md:text-8xl font-black text-center mb-40 tracking-tight px-4 ${isBengali ? 'font-hind' : ''}`}>
           {t.protocolTitle}{" "}
-          <span className="text-transparent bg-clip-text bg-linear-to-b from-white to-white/10 italic font-light">
+          <span className="text-transparent bg-clip-text bg-gradient-to-b from-white to-white/10 italic font-light inline-block pr-4">
             {t.protocolTitleItalic}
           </span>
         </h2>
@@ -260,12 +136,12 @@ const EngineeringProtocol = () => {
                       </span>
 
                       <h4
-                        className="text-2xl font-bold mb-2"
+                        className={`text-2xl font-bold mb-2 ${isBengali ? 'font-hind' : ''}`}
                         style={{ color: design.color }}
                       >
                         {design.id}. {step.title}
                       </h4>
-                      <p className="text-white/40 max-w-[400px] leading-relaxed mx-auto md:mx-0">
+                      <p className={`text-white/40 max-w-[400px] leading-relaxed mx-auto md:mx-0 ${isBengali ? 'font-hind' : ''}`}>
                         {step.desc}
                       </p>
                     </div>
@@ -296,6 +172,15 @@ const EngineeringProtocol = () => {
           </div>
         </div>
       </div>
+
+      {/* ইনলাইন স্টাইল যোগ করা হচ্ছে */}
+      <style jsx>{`
+        @import url('https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@300;400;500;600;700&display=swap');
+        
+        .font-hind {
+          font-family: 'Hind Siliguri', 'Inter', sans-serif;
+        }
+      `}</style>
     </section>
   );
 };

@@ -39,6 +39,21 @@ interface ProjectType {
   colorKey?: string;
 }
 
+// লোকালাইজেশন টাইপ
+interface PortfolioTranslation {
+  badge: string;
+  title: string;
+  titleGradient: string;
+  desc?: string;
+  exploreBtn?: string;
+  loading?: string;
+  noProjects?: string;
+  noProjectsDesc?: string;
+  loadingTexts?: string[];
+  pleaseWait?: string;
+  complete?: string;
+}
+
 // কালার ম্যাপিং
 const colorMap: Record<string, string> = {
   purple: "#b5a7ff",
@@ -50,7 +65,7 @@ const colorMap: Record<string, string> = {
 
 export default function HomePage() {
   const { lang } = useLanguage();
-  const t = translations[lang];
+  const t = translations[lang] as any;
 
   const [projects, setProjects] = useState<ProjectType[]>([]);
   const [loading, setLoading] = useState(true);
@@ -256,14 +271,16 @@ export default function HomePage() {
     return () => ctx.revert();
   }, [loading, projects]);
 
-  // Loading State
+  // Loading State - Fixed version
   if (loading) {
     return (
       <section className="relative bg-[#0b0c18] px-6 overflow-hidden py-20 min-h-screen flex items-center justify-center">
         <div className="text-center">
           <div className="w-16 h-16 border-4 border-purple-500/30 border-t-purple-500 rounded-full animate-spin mx-auto mb-4"></div>
           <p className="text-white/60">
-            {t.portfolio?.loading || "Loading amazing projects..."}
+            {t?.portfolio?.loading || 
+             t?.portfolio?.loadingTexts?.[0] || 
+             "Loading amazing projects..."}
           </p>
         </div>
       </section>
@@ -290,13 +307,13 @@ export default function HomePage() {
           <div className="flex items-center gap-4 mb-4">
             <span className="h-[1px] w-12 bg-cyan-500" />
             <p className="text-cyan-400 font-mono text-xs uppercase tracking-[0.5em]">
-              {t.portfolio?.badge || "Selected Works"}
+              {t?.portfolio?.badge || "Selected Works"}
             </p>
           </div>
           <h2 className="text-6xl md:text-8xl font-black text-white tracking-tighter uppercase leading-none">
-            {t.portfolio?.title || "Digital"}{" "}
+            {t?.portfolio?.title || "Digital"}{" "}
             <span className="text-transparent bg-clip-text bg-gradient-to-b from-white to-white/10 italic font-light">
-              {t.portfolio?.titleGradient || "Artifacts."}
+              {t?.portfolio?.titleGradient || "Artifacts."}
             </span>
           </h2>
         </div>
@@ -396,7 +413,7 @@ export default function HomePage() {
           <Link href="/projects">
             <button className="group relative px-8 py-4 bg-transparent border border-white/10 overflow-hidden rounded-full transition-all duration-300 hover:border-cyan-500/50">
               <span className="relative z-10 text-white/80 font-mono text-xs uppercase tracking-widest group-hover:text-cyan-400 transition-colors">
-                {t.portfolio?.exploreBtn || "Explore All Artifacts"}
+                {t?.portfolio?.exploreBtn || "Explore All Artifacts"}
               </span>
               <div className="absolute inset-0 bg-white opacity-0 group-hover:opacity-[0.02] transition-opacity" />
             </button>

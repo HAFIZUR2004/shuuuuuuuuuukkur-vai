@@ -15,7 +15,12 @@ import {
   Award,
 } from "lucide-react";
 
-// ✅ টার্গেট ভ্যালু সহ stats কনফিগ (শুধু icon, targetValue, suffix)
+// Helper function for formatted counter
+const getFormattedCounter = (value: number, suffix: string) => {
+  return `${value}${suffix}`;
+};
+
+// Stats configuration
 const statsConfig = [
   {
     icon: Clock,
@@ -37,7 +42,7 @@ const statsConfig = [
   },
 ];
 
-// ✅ সঠিক টাইপ সহ variants
+// Card variants for animation
 const cardVariants: Variants = {
   hidden: { opacity: 0, y: 50 },
   visible: (i: number) => ({
@@ -46,16 +51,16 @@ const cardVariants: Variants = {
     transition: {
       delay: i * 0.15,
       duration: 0.6,
-      type: "spring" as const, // ← 'as const' যোগ করুন
+      type: "spring" as const,
       stiffness: 100,
     },
   }),
 };
 
 const SuccessSection = () => {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
   const [counters, setCounters] = useState([0, 0, 0]);
   const sectionRef = useRef<HTMLElement>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
   const { ref: inViewRef, inView } = useInView({
     triggerOnce: true,
     threshold: 0.2,
@@ -63,7 +68,47 @@ const SuccessSection = () => {
 
   const { lang } = useLanguage();
   const t = translations[lang];
-  const statsData = t.stats;
+
+  // ✅ FIXED: Remove duplicate declaration - use a different name for the function result
+  const dynamicStatsData = React.useMemo(() => {
+    if (lang === "BN" && t.stats) {
+      return t.stats.map((stat: any, idx: number) => ({
+        title: stat.title,
+        desc: stat.desc,
+        icon: [Clock, Briefcase, Users][idx] || Clock,
+        isCounter: true,
+        targetValue: idx === 2 ? 100 : 2,
+        suffix: idx === 2 ? "%" : "+",
+      }));
+    }
+    // Default data for English
+    return [
+      {
+        title: "2+ Years",
+        desc: "Of dedicated craft in digital architecture.",
+        icon: Clock,
+        isCounter: true,
+        targetValue: 2,
+        suffix: "+",
+      },
+      {
+        title: "2 Projects",
+        desc: "High-impact solutions delivered globally.",
+        icon: Briefcase,
+        isCounter: true,
+        targetValue: 2,
+        suffix: "+",
+      },
+      {
+        title: "100% Client",
+        desc: "Satisfaction rate across all partnerships.",
+        icon: Users,
+        isCounter: true,
+        targetValue: 100,
+        suffix: "%",
+      },
+    ];
+  }, [lang, t.stats]);
 
   // Scroll animation
   const { scrollYProgress } = useScroll({
@@ -73,7 +118,7 @@ const SuccessSection = () => {
   const opacity = useTransform(scrollYProgress, [0, 0.5, 1], [0.3, 1, 0.3]);
   const scale = useTransform(scrollYProgress, [0, 0.5, 1], [0.95, 1, 0.95]);
 
-  // কাউন্টার অ্যানিমেশন
+  // Counter animation
   useEffect(() => {
     if (inView) {
       statsConfig.forEach((stat, idx) => {
@@ -252,13 +297,14 @@ const SuccessSection = () => {
 
   return (
     <section
+      id="success-section"
       ref={(el) => {
         if (el) {
           sectionRef.current = el;
           inViewRef(el);
         }
       }}
-      className="relative bg-gradient-to-br from-[#0b0c18] via-[#0f0f1a] to-[#0b0c18] text-white py-24 px-6 overflow-hidden"
+      className={`relative bg-[#0b0c18] text-white py-24 px-6 overflow-hidden ${lang === "BN" ? "font-hind" : ""}`}
     >
       {/* Particle Network Canvas */}
       <canvas
@@ -290,7 +336,6 @@ const SuccessSection = () => {
         style={{ opacity, scale }}
         className="max-w-7xl mx-auto relative z-10"
       >
-        {/* Section Header */}
         <div className="text-center mb-20">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -343,7 +388,7 @@ const SuccessSection = () => {
           {statsConfig.map((config, i) => {
             const IconComponent = config.icon;
             const counterValue = counters[i];
-            const statInfo = statsData[i];
+            const statInfo = dynamicStatsData[i];
 
             return (
               <motion.div
@@ -354,6 +399,7 @@ const SuccessSection = () => {
                 whileInView="visible"
                 viewport={{ once: true, margin: "-50px" }}
                 whileHover={{ y: -10 }}
+                transition={{ delay: i * 0.15 }}
                 className="group relative rounded-3xl bg-white/[0.02] backdrop-blur-sm border border-white/5 overflow-hidden transition-all duration-500 hover:border-purple-500/30 hover:shadow-2xl"
               >
                 <div className="absolute inset-0 bg-gradient-to-br from-purple-600/5 via-transparent to-cyan-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
@@ -385,8 +431,7 @@ const SuccessSection = () => {
                     className="text-4xl md:text-5xl font-black mb-3 tracking-tight"
                   >
                     <span className="bg-gradient-to-r from-white to-white/70 bg-clip-text text-transparent">
-                      {counterValue}
-                      {config.suffix}
+                      {getFormattedCounter(counterValue, config.suffix)}
                     </span>
                   </motion.h3>
 

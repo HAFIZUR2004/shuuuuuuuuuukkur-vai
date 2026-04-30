@@ -3,12 +3,25 @@
 import { useLanguage } from "@/constants/LanguageContext";
 import { translations } from "@/constants/translations";
 import { useEffect, useRef } from "react";
+import { useRouter } from "next/navigation"; 
 
 export default function HeroSection() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const { lang } = useLanguage();
   const t = translations[lang];
+   const router = useRouter(); 
 
+ const handleContactClick = () => {
+    router.push('/ContactUs');
+  };
+
+   const handleServiceClick = () => {
+   
+    const serviceSection = document.getElementById('success-section');
+    if (serviceSection) {
+      serviceSection.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -24,7 +37,7 @@ export default function HeroSection() {
     resize();
     window.addEventListener("resize", resize);
 
-    const nodes = Array.from({ length: 55 }, () => ({
+    const nodes = Array.from({ length: 35 }, () => ({
       x: Math.random() * canvas.width,
       y: Math.random() * canvas.height,
       vx: (Math.random() - 0.5) * 0.25,
@@ -42,7 +55,7 @@ export default function HeroSection() {
           const dx = nodes[i].x - nodes[j].x;
           const dy = nodes[i].y - nodes[j].y;
           const d = Math.sqrt(dx * dx + dy * dy);
-          if (d < 160) {
+          if (d < 110) {
             ctx.beginPath();
             ctx.moveTo(nodes[i].x, nodes[i].y);
             ctx.lineTo(nodes[j].x, nodes[j].y);
@@ -81,6 +94,17 @@ export default function HeroSection() {
         <canvas ref={canvasRef} className="hero-canvas" aria-hidden />
         <div className="glow-left" aria-hidden />
         <div className="glow-bottom" aria-hidden />
+
+        {/* Subtle background gradient for depth */}
+        <div
+  className="bg-gradient"
+  aria-hidden
+  style={{
+    background:
+      "radial-gradient(circle at 20% 40%, rgba(110, 60, 210, 0.55) 0%, rgba(11, 12, 24, 0) 80%)",
+  }}
+/>
+
 
         {/* Bottom wave lines */}
         <svg
@@ -149,8 +173,12 @@ export default function HeroSection() {
           <p className="desc">{t.heroDesc}</p>
 
           <div className="btns">
-            <button className="btn btn-primary">{t.heroBtnPrimary}</button>
-            <button className="btn btn-secondary">{t.heroBtnSecondary}</button>
+            <button className="btn btn-primary" onClick={handleContactClick}>
+              {t.heroBtnPrimary}
+            </button>
+             <button className="btn btn-secondary" onClick={handleServiceClick}>
+              {t.heroBtnSecondary}
+            </button>
           </div>
         </div>
       </section>
@@ -265,7 +293,7 @@ function GlobeSVG() {
   return (
     <svg
       viewBox="0 0 600 480"
-      xmlns="http://www.w3.org/000/svg"
+      xmlns="http://www.w3.org/2000/svg"
       width="100%"
       height="100%"
     >
@@ -586,6 +614,7 @@ function hexPts(cx: number, cy: number, s: number): string {
 
 const css = `
   @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@300;400;500;600;700&display=swap');
 
   .hero {
     position: relative;
@@ -598,8 +627,23 @@ const css = `
     display: flex;
     align-items: center;
     justify-content: center;
-    font-family: 'Inter', sans-serif;
+    font-family: 'Inter', 'Hind Siliguri', sans-serif;
   }
+  
+  /* বাংলা টেক্সটের জন্য স্পেসিফিক ক্লাস */
+  .bangla-text {
+    font-family: 'Hind Siliguri', 'Inter', sans-serif;
+  }
+  
+  /* Subtle background gradient for depth */
+  .bg-gradient {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at 20% 40%, rgba(40, 20, 100, 0.25) 0%, rgba(11, 12, 24, 0) 70%);
+    pointer-events: none;
+    z-index: 0;
+  }
+  
   .hero-canvas {
     position: absolute;
     inset: 0;
@@ -749,6 +793,11 @@ const css = `
     letter-spacing: -0.025em;
     animation: fadeUp 0.8s 0.12s ease both;
   }
+  /* বাংলা হেডিংয়ের জন্য */
+  .heading.bangla {
+    font-family: 'Hind Siliguri', sans-serif;
+    font-weight: 700;
+  }
   .desc {
     font-size: clamp(0.85rem, 1vw, 1rem);
     line-height: 1.7;
@@ -756,6 +805,11 @@ const css = `
     margin: 0 0 36px;
     max-width: 90%;
     animation: fadeUp 0.8s 0.22s ease both;
+  }
+  /* বাংলা ডেসক্রিপশনের জন্য */
+  .desc.bangla {
+    font-family: 'Hind Siliguri', sans-serif;
+    font-weight: 400;
   }
   .btns {
     display: flex;
@@ -770,7 +824,7 @@ const css = `
     font-weight: 600;
     cursor: pointer;
     border: none;
-    font-family: 'Inter', sans-serif;
+    font-family: 'Inter', 'Hind Siliguri', sans-serif;
     transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
     letter-spacing: 0.01em;
   }
@@ -1024,8 +1078,8 @@ const css = `
     }
     .badge {
       font-size: 10px;
-      padding: 5px 12px 5px 8px;
-    }
+      padding: 5px 12px 5px 8;
+         }
   }
 
   /* Extra small height fix for zoom out */

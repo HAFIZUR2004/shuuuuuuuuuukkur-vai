@@ -1,9 +1,12 @@
+"use client";
+
 import type { Metadata } from "next";
 import { Inter, Hind_Siliguri } from "next/font/google";
-import "./globals.css"; // পাথ আবার আগের মতো ঠিক করা হলো
+import "./globals.css";
 import Navbar from "@/components/Navbar";
-import Footer from "@/components/Footer";
 import { LanguageProvider } from "@/constants/LanguageContext";
+import { usePathname } from "next/navigation";
+import { AIChatbotProvider } from "@/components/AIChatbotProvider";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -17,34 +20,33 @@ const hindSiliguri = Hind_Siliguri({
   variable: "--font-hind",
 });
 
-export const metadata: Metadata = {
-  title: "Grow Business Solutions BD",
-  description: "A concern of Taqwa Supplies",
-  icons: {
-    icon: "/logo.png",
-    apple: "/logo.png",
-  },
-};
-
 export default function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const pathname = usePathname();
+  const isAdmin = pathname?.startsWith("/admin");
+
   return (
     <html
       lang="en"
       className={`dark ${inter.variable} ${hindSiliguri.variable}`}
-      suppressHydrationWarning={true}
+      suppressHydrationWarning
     >
       <body
         className={`${inter.className} bg-[#0b0c18] antialiased text-white flex flex-col min-h-screen`}
-        suppressHydrationWarning={true}
+        suppressHydrationWarning
       >
         <LanguageProvider>
-          <Navbar />
-          <main className="grow relative z-10">{children}</main>
-          <Footer />
+          <AIChatbotProvider>
+            {/* Navbar only for public */}
+            {!isAdmin && <Navbar />}
+
+            <main className="grow relative z-10">{children}</main>
+
+            {/* Footer সরিয়ে ফেলা হয়েছে - এখন PublicLayout handle করবে */}
+          </AIChatbotProvider>
         </LanguageProvider>
       </body>
     </html>

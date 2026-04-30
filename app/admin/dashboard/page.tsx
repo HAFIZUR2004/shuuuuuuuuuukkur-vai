@@ -1,87 +1,78 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import Image from 'next/image';
+import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
+import { motion, AnimatePresence } from 'framer-motion';
+import { 
+  Eye, FolderOpen, Briefcase, MessageSquare, Users, Clock, 
+  CheckCircle, XCircle, TrendingUp, ArrowRight, Bell, 
+  Search, RefreshCw, UserPlus, FileText, Calendar, Activity,
+  Mail, Zap, X
+} from 'lucide-react';
 
-interface Portfolio {
+// Define types
+interface Application {
   _id: string;
-  id: string;
-  title: string;
-  category: string;
-  description: string;
-  tech: string[];
-  colorKey: string;
-  stats: string;
-  image: string;
-  imageAlt: string;
-  github?: string;
-  liveUrl?: string;
+  fullName: string;
+  vacancyTitle: string;
+  status: 'pending' | 'reviewed' | 'accepted' | 'rejected';
+  appliedAt: string;
+  [key: string]: any;
 }
 
 interface Vacancy {
-  _id?: string;
-  id: string;
-  tags: string[];
+  _id: string;
   title: string;
-  desc: string;
-  stack: string[];
-  salary?: string;
-  featured: boolean;
-  color: string;
-  department: string;
+  [key: string]: any;
+}
+
+interface Notification {
+  id: string;
+  title: string;
+  message: string;
+  type: string;
+  read: boolean;
+  createdAt: string;
+  link?: string;
 }
 
 export default function DashboardPage() {
-  // Portfolio States
-  const [portfolios, setPortfolios] = useState<Portfolio[]>([]);
+  const [applications, setApplications] = useState<any[]>([]);
+  const [vacancies, setVacancies] = useState<any[]>([]);
+  const [notifications, setNotifications] = useState<any[]>([]);
+  const [showNotifications, setShowNotifications] = useState(false);
+  const [unreadCount, setUnreadCount] = useState(0);
   const [loading, setLoading] = useState(true);
-  const [modalOpen, setModalOpen] = useState(false);
-  const [editingItem, setEditingItem] = useState<Portfolio | null>(null);
+  const [refreshing, setRefreshing] = useState(false);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [filterStatus, setFilterStatus] = useState('all');
   
-  // Vacancy States
-  const [vacancies, setVacancies] = useState<Vacancy[]>([]);
-  const [vacancyModalOpen, setVacancyModalOpen] = useState(false);
-  const [editingVacancy, setEditingVacancy] = useState<Vacancy | null>(null);
-  const [activeTab, setActiveTab] = useState<'portfolio' | 'vacancies'>('portfolio');
-  
-  // Portfolio Form Data
-  const [formData, setFormData] = useState({
-    title: '',
-    category: '',
-    description: '',
-    tech: '',
-    colorKey: 'purple',
-    stats: '',
-    image: '',
-    imageAlt: '',
-    github: '',
-    liveUrl: '',
-  });
+  const notificationRef = useRef<HTMLDivElement>(null);
 
-  // Vacancy Form Data
-  const [vacancyFormData, setVacancyFormData] = useState({
-    tags: '',
-    title: '',
-    desc: '',
-    stack: '',
-    salary: '',
-    featured: false,
-    color: '#6c5ce7',
-    department: 'Engineering',
-  });
+  useEffect(() => {
+    fetchData();
+    fetchNotifications();
+    
+    const handleClickOutside = (event: MouseEvent) => {
+      if (notificationRef.current && !notificationRef.current.contains(event.target as Node)) {
+        setShowNotifications(false);
+      }
+    };
+    
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
-  // Stats
-  const totalProjects = portfolios.length;
-  const totalVacancies = vacancies.length;
-  const totalVisitors = 12345;
-
-  // ========== PORTFOLIO FUNCTIONS ==========
-  const fetchPortfolios = async () => {
+  const fetchData = async () => {
     try {
-      const res = await fetch('/api/portfolio');
-      const data = await res.json();
-      setPortfolios(data);
+      const [appsRes, vacsRes] = await Promise.all([
+        fetch('/api/applications'),
+        fetch('/api/vacancies')
+      ]);
+      const apps = await appsRes.json();
+      const vacs = await vacsRes.json();
+      setApplications(Array.isArray(apps) ? apps : []);
+      setVacancies(Array.isArray(vacs) ? vacs : []);
     } catch (error) {
       console.error('Error:', error);
     } finally {
@@ -89,940 +80,517 @@ export default function DashboardPage() {
     }
   };
 
-  // ========== VACANCY FUNCTIONS ==========
-  const fetchVacancies = async () => {
+  const fetchNotifications = async () => {
     try {
-      const res = await fetch('/api/vacancies');
+      const res = await fetch('/api/notifications');
       const data = await res.json();
-      setVacancies(data);
+      const notificationsData = Array.isArray(data) ? data : [];
+      setNotifications(notificationsData);
+      const unread = notificationsData.filter((n: any) => !n.read).length;
+      setUnreadCount(unread);
     } catch (error) {
-      console.error('Error fetching vacancies:', error);
+      console.error('Error fetching notifications:', error);
     }
   };
 
-  useEffect(() => {
-    fetchPortfolios();
-    fetchVacancies();
-  }, []);
-
-  // Portfolio Modal
-  const openModal = (item?: Portfolio) => {
-    if (item) {
-      setEditingItem(item);
-      setFormData({
-        title: item.title,
-        category: item.category,
-        description: item.description,
-        tech: item.tech.join(', '),
-        colorKey: item.colorKey,
-        stats: item.stats,
-        image: item.image,
-        imageAlt: item.imageAlt,
-        github: item.github || '',
-        liveUrl: item.liveUrl || '',
-      });
-    } else {
-      setEditingItem(null);
-      setFormData({
-        title: '',
-        category: '',
-        description: '',
-        tech: '',
-        colorKey: 'purple',
-        stats: '',
-        image: '',
-        imageAlt: '',
-        github: '',
-        liveUrl: '',
-      });
-    }
-    setModalOpen(true);
+  const handleRefresh = async () => {
+    setRefreshing(true);
+    await fetchData();
+    await fetchNotifications();
+    setTimeout(() => setRefreshing(false), 1000);
   };
 
-  // Vacancy Modal
-  const openVacancyModal = (vacancy?: Vacancy) => {
-    if (vacancy) {
-      setEditingVacancy(vacancy);
-      setVacancyFormData({
-        tags: vacancy.tags.join(', '),
-        title: vacancy.title,
-        desc: vacancy.desc,
-        stack: vacancy.stack.join(', '),
-        salary: vacancy.salary || '',
-        featured: vacancy.featured,
-        color: vacancy.color,
-        department: vacancy.department,
+  const markAsRead = async (notificationId: string) => {
+    try {
+      await fetch('/api/notifications', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ notificationId, read: true })
       });
-    } else {
-      setEditingVacancy(null);
-      setVacancyFormData({
-        tags: '',
-        title: '',
-        desc: '',
-        stack: '',
-        salary: '',
-        featured: false,
-        color: '#6c5ce7',
-        department: 'Engineering',
-      });
+      setNotifications((prev: any[]) => prev.map((n: any) => 
+        n.id === notificationId ? { ...n, read: true } : n
+      ));
+      setUnreadCount((prev: number) => Math.max(0, prev - 1));
+    } catch (error) {
+      console.error('Error marking as read:', error);
     }
-    setVacancyModalOpen(true);
   };
 
-  // Portfolio Submit
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    const trimmedImage = formData.image.trim();
-    
-    const payload = {
-      title: formData.title,
-      category: formData.category,
-      description: formData.description,
-      tech: formData.tech.split(',').map(t => t.trim()),
-      colorKey: formData.colorKey,
-      stats: formData.stats,
-      image: trimmedImage,
-      imageAlt: formData.imageAlt,
-      github: formData.github?.trim() || '',
-      liveUrl: formData.liveUrl?.trim() || '',
+  const markAllAsRead = async () => {
+    for (const notif of notifications) {
+      if (!notif.read) {
+        await markAsRead(notif.id);
+      }
+    }
+  };
+
+  const getNotificationIcon = (type: string) => {
+    switch(type) {
+      case 'application': return <UserPlus size={16} className="text-green-500" />;
+      case 'message': return <Mail size={16} className="text-blue-500" />;
+      case 'vacancy': return <Briefcase size={16} className="text-purple-500" />;
+      default: return <Zap size={16} className="text-yellow-500" />;
+    }
+  };
+
+  const stats = {
+    total: applications.length,
+    pending: applications.filter((a: any) => a.status === 'pending').length,
+    reviewed: applications.filter((a: any) => a.status === 'reviewed').length,
+    accepted: applications.filter((a: any) => a.status === 'accepted').length,
+    rejected: applications.filter((a: any) => a.status === 'rejected').length,
+    vacancies: vacancies.length,
+  };
+
+  const filteredApplications = applications.filter((app: any) => {
+    const matchesSearch = app.fullName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                          app.vacancyTitle?.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesStatus = filterStatus === 'all' || app.status === filterStatus;
+    return matchesSearch && matchesStatus;
+  });
+
+  const statCards = [
+    { label: 'মোট আবেদন', value: stats.total, icon: Users, color: 'blue', change: '+12%', bgGradient: 'from-blue-500 to-blue-600' },
+    { label: 'পেন্ডিং', value: stats.pending, icon: Clock, color: 'yellow', change: '+3%', bgGradient: 'from-yellow-500 to-yellow-600' },
+    { label: 'রিভিউ করা', value: stats.reviewed, icon: Eye, color: 'purple', change: '+5%', bgGradient: 'from-purple-500 to-purple-600' },
+    { label: 'সিলেক্টেড', value: stats.accepted, icon: CheckCircle, color: 'green', change: '+8%', bgGradient: 'from-green-500 to-green-600' },
+    { label: 'রিজেক্টেড', value: stats.rejected, icon: XCircle, color: 'red', change: '-2%', bgGradient: 'from-red-500 to-red-600' },
+    { label: 'ভ্যাকেন্সি', value: stats.vacancies, icon: Briefcase, color: 'orange', change: '+4%', bgGradient: 'from-orange-500 to-orange-600' },
+  ];
+
+  const quickActions = [
+    { title: 'নতুন ভ্যাকেন্সি', icon: Briefcase, href: '/admin/vacancies', gradient: 'from-purple-600 to-pink-600', description: 'চাকরির বিজ্ঞপ্তি তৈরি করুন' },
+    { title: 'সব আবেদন', icon: Users, href: '/admin/applications', gradient: 'from-blue-600 to-cyan-600', description: 'সকল আবেদন দেখুন' },
+    { title: 'পোর্টফোলিও', icon: FolderOpen, href: '/admin/portfolio', gradient: 'from-emerald-600 to-teal-600', description: 'প্রকল্প যুক্ত করুন' },
+    { title: 'মেসেজ', icon: MessageSquare, href: '/admin/messages', gradient: 'from-orange-600 to-red-600', description: 'সকল মেসেজ দেখুন' },
+  ];
+
+  const getStatusBadge = (status: string) => {
+    const statuses: any = {
+      pending: { label: 'পেন্ডিং', class: 'bg-yellow-100 text-yellow-700 border-yellow-200', icon: Clock },
+      reviewed: { label: 'রিভিউ করা', class: 'bg-purple-100 text-purple-700 border-purple-200', icon: Eye },
+      accepted: { label: 'সিলেক্টেড', class: 'bg-green-100 text-green-700 border-green-200', icon: CheckCircle },
+      rejected: { label: 'রিজেক্টেড', class: 'bg-red-100 text-red-700 border-red-200', icon: XCircle },
     };
-
-    try {
-      let response;
-      if (editingItem) {
-        response = await fetch(`/api/portfolio/${editingItem.id}`, {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload),
-        });
-      } else {
-        response = await fetch('/api/portfolio', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload),
-        });
-      }
-      
-      const result = await response.json();
-      
-      if (!response.ok) {
-        throw new Error(result.error || 'Operation failed');
-      }
-      
-      setModalOpen(false);
-      await fetchPortfolios();
-      alert(editingItem ? '✅ Project updated successfully!' : '✅ Project created successfully!');
-      
-    } catch (error: any) {
-      console.error('❌ Submit error:', error);
-      alert('Failed to save: ' + error.message);
-    }
-  };
-
-  // Vacancy Submit
-  const handleVacancySubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    const payload = {
-      tags: vacancyFormData.tags.split(',').map(t => t.trim()),
-      title: vacancyFormData.title,
-      desc: vacancyFormData.desc,
-      stack: vacancyFormData.stack.split(',').map(s => s.trim()),
-      salary: vacancyFormData.salary,
-      featured: vacancyFormData.featured,
-      color: vacancyFormData.color,
-      department: vacancyFormData.department,
-    };
-
-    try {
-      let response;
-      if (editingVacancy) {
-        response = await fetch(`/api/vacancies/${editingVacancy.id}`, {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ ...payload, id: editingVacancy.id }),
-        });
-      } else {
-        response = await fetch('/api/vacancies', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload),
-        });
-      }
-
-      if (response.ok) {
-        setVacancyModalOpen(false);
-        fetchVacancies();
-        alert(editingVacancy ? '✅ Vacancy updated!' : '✅ Vacancy created!');
-      } else {
-        throw new Error('Failed to save');
-      }
-    } catch (error) {
-      console.error('Submit error:', error);
-      alert('Failed to save vacancy');
-    }
-  };
-
-  // Portfolio Delete
-  const handleDelete = async (id: string) => {
-    if (!confirm('Are you sure you want to delete this project?')) return;
-    
-    try {
-      const response = await fetch(`/api/portfolio/${id}`, { 
-        method: 'DELETE' 
-      });
-      
-      const result = await response.json();
-      
-      if (!response.ok) {
-        throw new Error(result.error || 'Delete failed');
-      }
-      
-      await fetchPortfolios();
-      alert('✅ Project deleted successfully!');
-      
-    } catch (error: any) {
-      console.error('❌ Delete error:', error);
-      alert('Delete failed: ' + error.message);
-    }
-  };
-
-  // Vacancy Delete
-  const handleVacancyDelete = async (id: string) => {
-    if (!confirm('Are you sure you want to delete this vacancy?')) return;
-    
-    try {
-      const response = await fetch(`/api/vacancies/${id}`, { method: 'DELETE' });
-      if (response.ok) {
-        fetchVacancies();
-        alert('✅ Vacancy deleted!');
-      } else {
-        throw new Error('Failed to delete');
-      }
-    } catch (error) {
-      console.error('Delete error:', error);
-      alert('Failed to delete vacancy');
-    }
+    return statuses[status] || statuses.pending;
   };
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-xl">Loading...</div>
+      <div className="flex flex-col items-center justify-center min-h-[60vh]">
+        <motion.div
+          animate={{ rotate: 360 }}
+          transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+        >
+          <RefreshCw size={48} className="text-purple-600" />
+        </motion.div>
+        <p className="mt-4 text-gray-500">লোড হচ্ছে...</p>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Navbar */}
-      <nav className="bg-white shadow-md sticky top-0 z-40">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <div className="flex items-center gap-2">
-              <div className="w-8 h-8 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg"></div>
-              <span className="font-bold text-xl text-gray-800">কোম্পানি ড্যাশবোর্ড</span>
-            </div>
-            <div className="flex items-center gap-4">
-              <Link href="/" className="text-gray-600 hover:text-gray-900 transition">
-                হোম
-              </Link>
-              <Link href="/portfolio" className="text-gray-600 hover:text-gray-900 transition">
-                পোর্টফোলিও
-              </Link>
-              <Link href="/careers" className="text-gray-600 hover:text-gray-900 transition">
-                ক্যারিয়ার
-              </Link>
-              <div className="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center">
-                <span className="text-sm font-semibold text-gray-600">A</span>
-              </div>
-            </div>
-          </div>
+    <div className="space-y-6 md:space-y-8 p-4 md:p-6 lg:p-8 bg-gradient-to-br from-gray-50 to-gray-100 min-h-screen">
+      {/* Header Section */}
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        <div>
+          <motion.h1 
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            className="text-2xl md:text-3xl lg:text-4xl font-bold bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent"
+          >
+            ড্যাশবোর্ড
+          </motion.h1>
+          <motion.p 
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.1 }}
+            className="text-gray-500 mt-1 text-sm md:text-base"
+          >
+            স্বাগতম! আপনার প্ল্যাটফর্মের সম্পূর্ণ সামারি এখানে দেখুন
+          </motion.p>
         </div>
-      </nav>
-
-      {/* Main Content */}
-      <div className="p-4 sm:p-6 md:p-8">
-        <div className="max-w-7xl mx-auto">
+        
+        <div className="flex items-center gap-3">
+          <button 
+            onClick={handleRefresh}
+            className="p-2 bg-white rounded-lg shadow-sm hover:shadow-md transition-all duration-300"
+          >
+            <RefreshCw size={20} className={`text-gray-600 ${refreshing ? 'animate-spin' : ''}`} />
+          </button>
           
-          {/* Header */}
-          <div className="mb-6 sm:mb-8">
-            <h1 className="text-2xl sm:text-3xl font-bold text-gray-800">ড্যাশবোর্ড</h1>
-            <p className="text-gray-500 text-sm sm:text-base mt-1">আপনার কোম্পানির সবকিছু এখান থেকে নিয়ন্ত্রণ করুন</p>
-          </div>
-
-          {/* Stats Cards */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mb-8 sm:mb-10">
-            <div className="bg-white p-4 sm:p-6 rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition">
-              <h3 className="text-gray-500 text-xs sm:text-sm font-medium">মোট ভিজিটর</h3>
-              <p className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-800 mt-2">{totalVisitors.toLocaleString()}</p>
-              <p className="text-green-500 text-xs sm:text-sm mt-2">↑ 12% এই মাসে</p>
-            </div>
-            <div className="bg-white p-4 sm:p-6 rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition">
-              <h3 className="text-gray-500 text-xs sm:text-sm font-medium">প্রকল্প</h3>
-              <p className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-800 mt-2">{totalProjects}</p>
-              <p className="text-blue-500 text-xs sm:text-sm mt-2">সবগুলি সক্রিয়</p>
-            </div>
-            <div className="bg-white p-4 sm:p-6 rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition">
-              <h3 className="text-gray-500 text-xs sm:text-sm font-medium">ভ্যাকেন্সি</h3>
-              <p className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-800 mt-2">{totalVacancies}</p>
-              <p className="text-purple-500 text-xs sm:text-sm mt-2">ওপেন পজিশন</p>
-            </div>
-          </div>
-
-          {/* Tab Navigation */}
-          <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden mb-6">
-            <div className="flex border-b border-gray-200">
-              <button
-                onClick={() => setActiveTab('portfolio')}
-                className={`px-6 py-3 text-sm font-medium transition-all ${
-                  activeTab === 'portfolio'
-                    ? 'text-blue-600 border-b-2 border-blue-600 bg-blue-50'
-                    : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
-                }`}
-              >
-                পোর্টফোলিও প্রজেক্টস
-              </button>
-              <button
-                onClick={() => setActiveTab('vacancies')}
-                className={`px-6 py-3 text-sm font-medium transition-all ${
-                  activeTab === 'vacancies'
-                    ? 'text-purple-600 border-b-2 border-purple-600 bg-purple-50'
-                    : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
-                }`}
-              >
-                ভ্যাকেন্সি
-              </button>
-            </div>
-          </div>
-
-          {/* Portfolio Section */}
-          {activeTab === 'portfolio' && (
-            <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-              <div className="p-4 sm:p-6 border-b border-gray-100">
-                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-                  <div>
-                    <h2 className="text-lg sm:text-xl font-bold text-gray-800">পোর্টফোলিও প্রজেক্টস</h2>
-                    <p className="text-gray-500 text-xs sm:text-sm mt-1">আপনার সব প্রজেক্ট এখানে দেখুন এবং পরিচালনা করুন</p>
+          {/* Notification Button */}
+          <div className="relative" ref={notificationRef}>
+            <button 
+              onClick={() => setShowNotifications(!showNotifications)}
+              className="relative p-2 bg-white rounded-lg shadow-sm hover:shadow-md transition-all duration-300"
+            >
+              <Bell size={20} className="text-gray-600" />
+              {unreadCount > 0 && (
+                <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] bg-red-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center px-1 animate-pulse">
+                  {unreadCount > 9 ? '9+' : unreadCount}
+                </span>
+              )}
+            </button>
+            
+            {/* Notifications Dropdown */}
+            <AnimatePresence>
+              {showNotifications && (
+                <motion.div
+                  initial={{ opacity: 0, y: -10, scale: 0.95 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: -10, scale: 0.95 }}
+                  transition={{ duration: 0.2 }}
+                  className="absolute right-0 mt-2 w-80 md:w-96 bg-white rounded-2xl shadow-2xl z-50 overflow-hidden border border-gray-100"
+                >
+                  <div className="p-4 border-b bg-gradient-to-r from-purple-50 to-pink-50 flex justify-between items-center">
+                    <h3 className="font-semibold text-gray-800">নোটিফিকেশন</h3>
+                    <div className="flex gap-3">
+                      {unreadCount > 0 && (
+                        <button 
+                          onClick={markAllAsRead}
+                          className="text-xs text-purple-600 hover:text-purple-700 flex items-center gap-1"
+                        >
+                          <CheckCircle size={12} />
+                          সব পড়া হয়েছে
+                        </button>
+                      )}
+                      <button 
+                        onClick={() => setShowNotifications(false)}
+                        className="text-gray-400 hover:text-gray-600"
+                      >
+                        <X size={14} />
+                      </button>
+                    </div>
                   </div>
-                  <button
-                    onClick={() => openModal()}
-                    className="w-full sm:w-auto px-5 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl hover:from-blue-700 hover:to-purple-700 transition flex items-center justify-center gap-2 shadow-md hover:shadow-lg"
-                  >
-                    <span className="text-xl">+</span> নতুন প্রজেক্ট যোগ করুন
-                  </button>
-                </div>
-              </div>
-
-              <div className="p-4 sm:p-6">
-                {portfolios.length === 0 ? (
-                  <div className="text-center py-8 sm:py-12">
-                    <p className="text-gray-500 text-sm sm:text-base">কোনো প্রজেক্ট নেই। উপরের বাটনে ক্লিক করে নতুন প্রজেক্ট যোগ করুন।</p>
-                  </div>
-                ) : (
-                  <>
-                    {/* Mobile View */}
-                    <div className="block md:hidden space-y-4">
-                      {portfolios.map((item) => (
-                        <div key={item._id} className="bg-gray-50 rounded-lg p-4 border border-gray-200">
-                          <div className="flex gap-3 mb-3">
-                            <div className="relative w-16 h-16 rounded-lg overflow-hidden bg-gray-200 flex-shrink-0">
-                              <Image
-                                src={item.image?.trim() || ''}
-                                alt={item.imageAlt}
-                                fill
-                                className="object-cover"
-                                onError={(e) => {
-                                  const target = e.target as HTMLImageElement;
-                                  target.src = 'https://placehold.co/200x200/1a1a2e/ffffff?text=No+Image';
-                                }}
-                              />
+                  
+                  <div className="max-h-96 overflow-y-auto">
+                    {notifications.length === 0 ? (
+                      <div className="p-8 text-center text-gray-400">
+                        <Bell size={32} className="mx-auto mb-2 opacity-50" />
+                        <p className="text-sm">কোনো নোটিফিকেশন নেই</p>
+                      </div>
+                    ) : (
+                      notifications.map((notif: any) => (
+                        <div 
+                          key={notif.id}
+                          className={`p-4 border-b hover:bg-gray-50 transition cursor-pointer ${!notif.read ? 'bg-purple-50/30' : ''}`}
+                          onClick={() => {
+                            markAsRead(notif.id);
+                            setShowNotifications(false);
+                            if (notif.link) {
+                              window.location.href = notif.link;
+                            }
+                          }}
+                        >
+                          <div className="flex items-start gap-3">
+                            <div className="flex-shrink-0 mt-1">
+                              {getNotificationIcon(notif.type)}
                             </div>
-                            <div className="flex-1">
-                              <h3 className="font-semibold text-gray-800">{item.title}</h3>
-                              <p className="text-xs text-gray-500 line-clamp-2 mt-1">{item.description}</p>
+                            <div className="flex-1 min-w-0">
+                              <p className="text-sm font-medium text-gray-800">{notif.title}</p>
+                              <p className="text-xs text-gray-500 mt-0.5 line-clamp-2">{notif.message}</p>
+                              <p className="text-[10px] text-gray-400 mt-1">
+                                {new Date(notif.createdAt).toLocaleString('bn-BD', { 
+                                  hour: '2-digit', 
+                                  minute: '2-digit',
+                                  day: 'numeric',
+                                  month: 'short'
+                                })}
+                              </p>
                             </div>
-                          </div>
-                          
-                          <div className="flex flex-wrap gap-2 mb-3">
-                            <span className={`text-xs px-2 py-1 rounded ${
-                              item.colorKey === 'purple' ? 'bg-purple-100 text-purple-600' :
-                              item.colorKey === 'cyan' ? 'bg-cyan-100 text-cyan-600' :
-                              item.colorKey === 'blue' ? 'bg-blue-100 text-blue-600' :
-                              'bg-emerald-100 text-emerald-600'
-                            }`}>
-                              {item.category}
-                            </span>
-                            {item.tech.slice(0, 2).map((t, i) => (
-                              <span key={i} className="text-xs px-2 py-1 bg-gray-200 rounded text-gray-600">
-                                {t}
-                              </span>
-                            ))}
-                            {item.tech.length > 2 && (
-                              <span className="text-xs px-2 py-1 bg-gray-200 rounded text-gray-600">
-                                +{item.tech.length - 2}
-                              </span>
+                            {!notif.read && (
+                              <div className="w-2 h-2 bg-purple-500 rounded-full flex-shrink-0 mt-2"></div>
                             )}
                           </div>
-                          
-                          <div className="flex gap-2">
-                            <button
-                              onClick={() => openModal(item)}
-                              className="flex-1 py-2 bg-amber-500 text-white rounded-lg text-sm hover:bg-amber-600 transition"
-                            >
-                              এডিট
-                            </button>
-                            <button
-                              onClick={() => handleDelete(item.id)}
-                              className="flex-1 py-2 bg-red-500 text-white rounded-lg text-sm hover:bg-red-600 transition"
-                            >
-                              ডিলিট
-                            </button>
-                          </div>
                         </div>
-                      ))}
+                      ))
+                    )}
+                  </div>
+                  
+                  {notifications.length > 0 && (
+                    <div className="p-3 bg-gray-50 text-center border-t">
+                      <Link 
+                        href="/admin/notifications" 
+                        className="text-xs text-purple-600 hover:text-purple-700"
+                        onClick={() => setShowNotifications(false)}
+                      >
+                        সব নোটিফিকেশন দেখুন
+                      </Link>
                     </div>
-
-                    {/* Desktop View */}
-                    <div className="hidden md:block overflow-x-auto">
-                      <table className="w-full min-w-[600px]">
-                        <thead>
-                          <tr className="border-b border-gray-200">
-                            <th className="text-left py-3 px-4 text-gray-600 font-medium">ইমেজ</th>
-                            <th className="text-left py-3 px-4 text-gray-600 font-medium">টাইটেল</th>
-                            <th className="text-left py-3 px-4 text-gray-600 font-medium">ক্যাটাগরি</th>
-                            <th className="text-left py-3 px-4 text-gray-600 font-medium">টেকনোলজি</th>
-                            <th className="text-left py-3 px-4 text-gray-600 font-medium">অ্যাকশন</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {portfolios.map((item) => (
-                            <tr key={item._id} className="border-b border-gray-100 hover:bg-gray-50 transition">
-                              <td className="py-3 px-4">
-                                <div className="relative w-12 h-12 rounded-lg overflow-hidden bg-gray-100">
-                                  <Image
-                                    src={item.image?.trim() || ''}
-                                    alt={item.imageAlt}
-                                    fill
-                                    className="object-cover"
-                                    onError={(e) => {
-                                      const target = e.target as HTMLImageElement;
-                                      target.src = 'https://placehold.co/200x200/1a1a2e/ffffff?text=No+Image';
-                                    }}
-                                  />
-                                </div>
-                              </td>
-                              <td className="py-3 px-4">
-                                <div>
-                                  <p className="font-medium text-gray-800">{item.title}</p>
-                                  <p className="text-xs text-gray-400 line-clamp-1">{item.description}</p>
-                                </div>
-                              </td>
-                              <td className="py-3 px-4">
-                                <span className={`text-xs px-2 py-1 rounded ${
-                                  item.colorKey === 'purple' ? 'bg-purple-100 text-purple-600' :
-                                  item.colorKey === 'cyan' ? 'bg-cyan-100 text-cyan-600' :
-                                  item.colorKey === 'blue' ? 'bg-blue-100 text-blue-600' :
-                                  'bg-emerald-100 text-emerald-600'
-                                }`}>
-                                  {item.category}
-                                </span>
-                              </td>
-                              <td className="py-3 px-4">
-                                <div className="flex flex-wrap gap-1">
-                                  {item.tech.slice(0, 2).map((t, i) => (
-                                    <span key={i} className="text-xs px-2 py-0.5 bg-gray-100 rounded text-gray-600">
-                                      {t}
-                                    </span>
-                                  ))}
-                                  {item.tech.length > 2 && (
-                                    <span className="text-xs px-2 py-0.5 bg-gray-100 rounded text-gray-600">
-                                      +{item.tech.length - 2}
-                                    </span>
-                                  )}
-                                </div>
-                              </td>
-                              <td className="py-3 px-4">
-                                <div className="flex gap-2">
-                                  <button
-                                    onClick={() => openModal(item)}
-                                    className="px-3 py-1.5 bg-amber-500 text-white rounded-lg text-sm hover:bg-amber-600 transition"
-                                  >
-                                    এডিট
-                                  </button>
-                                  <button
-                                    onClick={() => handleDelete(item.id)}
-                                    className="px-3 py-1.5 bg-red-500 text-white rounded-lg text-sm hover:bg-red-600 transition"
-                                  >
-                                    ডিলিট
-                                  </button>
-                                </div>
-                              </td>
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
-                    </div>
-                  </>
-                )}
-              </div>
+                  )}
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+          
+          <div className="flex items-center gap-2 bg-white px-3 py-2 rounded-lg shadow-sm">
+            <div className="w-8 h-8 bg-gradient-to-r from-purple-600 to-pink-600 rounded-full flex items-center justify-center">
+              <span className="text-white text-sm font-bold">AD</span>
             </div>
-          )}
-
-          {/* Vacancies Section */}
-          {activeTab === 'vacancies' && (
-            <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-              <div className="p-4 sm:p-6 border-b border-gray-100">
-                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-                  <div>
-                    <h2 className="text-lg sm:text-xl font-bold text-gray-800">ভ্যাকেন্সি</h2>
-                    <p className="text-gray-500 text-xs sm:text-sm mt-1">আপনার সব ভ্যাকেন্সি এখানে দেখুন এবং পরিচালনা করুন</p>
-                  </div>
-                  <button
-                    onClick={() => openVacancyModal()}
-                    className="w-full sm:w-auto px-5 py-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-xl hover:from-purple-700 hover:to-pink-700 transition flex items-center justify-center gap-2 shadow-md hover:shadow-lg"
-                  >
-                    <span className="text-xl">+</span> নতুন ভ্যাকেন্সি যোগ করুন
-                  </button>
-                </div>
-              </div>
-
-              <div className="p-4 sm:p-6">
-                {vacancies.length === 0 ? (
-                  <div className="text-center py-8 sm:py-12">
-                    <p className="text-gray-500 text-sm sm:text-base">কোনো ভ্যাকেন্সি নেই। উপরের বাটনে ক্লিক করে নতুন ভ্যাকেন্সি যোগ করুন।</p>
-                  </div>
-                ) : (
-                  <div className="overflow-x-auto">
-                    <table className="w-full min-w-[800px]">
-                      <thead>
-                        <tr className="border-b border-gray-200">
-                          <th className="text-left py-3 px-4 text-gray-600 font-medium">টাইটেল</th>
-                          <th className="text-left py-3 px-4 text-gray-600 font-medium">ডিপার্টমেন্ট</th>
-                          <th className="text-left py-3 px-4 text-gray-600 font-medium">ট্যাগস</th>
-                          <th className="text-left py-3 px-4 text-gray-600 font-medium">টেক স্ট্যাক</th>
-                          <th className="text-left py-3 px-4 text-gray-600 font-medium">সেলারি</th>
-                          <th className="text-left py-3 px-4 text-gray-600 font-medium">ফিচার্ড</th>
-                          <th className="text-left py-3 px-4 text-gray-600 font-medium">অ্যাকশন</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {vacancies.map((item) => (
-                          <tr key={item._id} className="border-b border-gray-100 hover:bg-gray-50 transition">
-                            <td className="py-3 px-4">
-                              <p className="font-medium text-gray-800">{item.title}</p>
-                              <p className="text-xs text-gray-400 line-clamp-1">{item.desc}</p>
-                            </td>
-                            <td className="py-3 px-4">
-                              <span className="text-xs px-2 py-1 rounded bg-purple-100 text-purple-600">
-                                {item.department}
-                              </span>
-                            </td>
-                            <td className="py-3 px-4">
-                              <div className="flex flex-wrap gap-1">
-                                {item.tags.slice(0, 2).map((t, i) => (
-                                  <span key={i} className="text-xs px-2 py-0.5 bg-gray-100 rounded text-gray-600">
-                                    {t}
-                                  </span>
-                                ))}
-                                {item.tags.length > 2 && (
-                                  <span className="text-xs px-2 py-0.5 bg-gray-100 rounded text-gray-600">
-                                    +{item.tags.length - 2}
-                                  </span>
-                                )}
-                              </div>
-                            </td>
-                            <td className="py-3 px-4">
-                              <div className="flex flex-wrap gap-1">
-                                {item.stack.slice(0, 2).map((s, i) => (
-                                  <span key={i} className="text-xs px-2 py-0.5 bg-blue-50 rounded text-blue-600">
-                                    {s}
-                                  </span>
-                                ))}
-                                {item.stack.length > 2 && (
-                                  <span className="text-xs px-2 py-0.5 bg-blue-50 rounded text-blue-600">
-                                    +{item.stack.length - 2}
-                                  </span>
-                                )}
-                              </div>
-                            </td>
-                            <td className="py-3 px-4">
-                              <span className="text-xs text-gray-600">{item.salary || 'N/A'}</span>
-                            </td>
-                            <td className="py-3 px-4">
-                              {item.featured && (
-                                <span className="text-xs px-2 py-1 rounded bg-yellow-100 text-yellow-600">
-                                  Featured
-                                </span>
-                              )}
-                            </td>
-                            <td className="py-3 px-4">
-                              <div className="flex gap-2">
-                                <button
-                                  onClick={() => openVacancyModal(item)}
-                                  className="px-3 py-1.5 bg-amber-500 text-white rounded-lg text-sm hover:bg-amber-600 transition"
-                                >
-                                  এডিট
-                                </button>
-                                <button
-                                  onClick={() => handleVacancyDelete(item.id)}
-                                  className="px-3 py-1.5 bg-red-500 text-white rounded-lg text-sm hover:bg-red-600 transition"
-                                >
-                                  ডিলিট
-                                </button>
-                              </div>
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                )}
-              </div>
+            <div className="hidden md:block">
+              <p className="text-sm font-medium">Admin User</p>
+              <p className="text-xs text-gray-500">Super Admin</p>
             </div>
-          )}
+          </div>
         </div>
       </div>
 
-      {/* Portfolio Modal */}
-      {modalOpen && (
-        <div 
-          className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-2 sm:p-4"
-          onClick={(e) => {
-            if (e.target === e.currentTarget) setModalOpen(false);
-          }}
-        >
-          <div className="bg-white rounded-xl sm:rounded-2xl max-w-2xl w-full max-h-[95vh] sm:max-h-[90vh] overflow-hidden flex flex-col">
-            <div className="sticky top-0 bg-gradient-to-r from-blue-600 to-purple-600 p-4 sm:p-6 flex justify-between items-center">
-              <h2 className="text-lg sm:text-xl md:text-2xl font-bold text-white">
-                {editingItem ? 'প্রজেক্ট এডিট করুন' : 'নতুন প্রজেক্ট যোগ করুন'}
-              </h2>
-              <button
-                onClick={() => setModalOpen(false)}
-                className="text-white/80 hover:text-white bg-white/20 hover:bg-white/30 rounded-full w-8 h-8 flex items-center justify-center transition-all duration-200 hover:rotate-90"
-              >
-                <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              </button>
+      {/* Stats Grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4 md:gap-6">
+        {statCards.map((stat, idx) => (
+          <motion.div
+            key={stat.label}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: idx * 0.05 }}
+            whileHover={{ y: -5, transition: { duration: 0.2 } }}
+            className="group relative overflow-hidden bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300"
+          >
+            <div className={`absolute top-0 left-0 w-1 h-full bg-gradient-to-b ${stat.bgGradient}`} />
+            <div className="p-4 md:p-5">
+              <div className="flex items-start justify-between mb-3">
+                <div className={`p-2 rounded-xl bg-gradient-to-br ${stat.bgGradient} bg-opacity-10`}>
+                  <stat.icon size={22} className={`text-${stat.color}-600`} />
+                </div>
+                <span className={`text-xs font-medium px-2 py-1 rounded-full ${
+                  stat.change.startsWith('+') ? 'bg-green-100 text-green-600' : 'bg-red-100 text-red-600'
+                }`}>
+                  {stat.change}
+                </span>
+              </div>
+              <div>
+                <p className="text-gray-500 text-xs md:text-sm uppercase tracking-wide">{stat.label}</p>
+                <p className="text-2xl md:text-3xl font-bold text-gray-800 mt-1">{stat.value}</p>
+              </div>
+              <div className="absolute bottom-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity">
+                <TrendingUp size={16} className="text-gray-400" />
+              </div>
             </div>
+          </motion.div>
+        ))}
+      </div>
 
-            <div className="overflow-y-auto flex-1 p-4 sm:p-6 custom-scrollbar">
-              <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-5">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-5">
-                  <div>
-                    <label className="block text-sm font-medium text-black mb-1">প্রজেক্ট টাইটেল *</label>
-                    <input
-                      type="text"
-                      className="w-full px-3 sm:px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm sm:text-base text-black"
-                      value={formData.title}
-                      onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                      required
-                    />
+      {/* Quick Actions */}
+      <div>
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-lg md:text-xl font-semibold text-gray-800">দ্রুত অ্যাকশন</h2>
+          <Link href="/admin/all-actions" className="text-purple-600 text-sm hover:text-purple-700 flex items-center gap-1">
+            সব দেখুন <ArrowRight size={14} />
+          </Link>
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
+          {quickActions.map((action, idx) => (
+            <motion.div
+              key={action.title}
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: idx * 0.1 }}
+              whileHover={{ y: -5 }}
+            >
+              <Link href={action.href} className="block group">
+                <div className={`relative overflow-hidden bg-gradient-to-r ${action.gradient} rounded-2xl p-5 shadow-lg hover:shadow-xl transition-all duration-300`}>
+                  <action.icon size={32} className="text-white mb-3 opacity-90 group-hover:scale-110 transition-transform" />
+                  <h3 className="text-white font-semibold text-lg mb-1">{action.title}</h3>
+                  <p className="text-white/70 text-sm">{action.description}</p>
+                  <div className="absolute bottom-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <ArrowRight size={20} className="text-white" />
                   </div>
-                  <div>
-                    <label className="block text-sm font-medium text-black mb-1">ক্যাটাগরি *</label>
-                    <input
-                      type="text"
-                      className="w-full px-3 sm:px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm sm:text-base text-black"
-                      value={formData.category}
-                      onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                      required
-                    />
-                  </div>
                 </div>
+              </Link>
+            </motion.div>
+          ))}
+        </div>
+      </div>
 
-                <div>
-                  <label className="block text-sm font-medium text-black mb-1">বিবরণ *</label>
-                  <textarea
-                    rows={4}
-                    className="w-full px-3 sm:px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm sm:text-base text-black"
-                    value={formData.description}
-                    onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                    required
-                  />
-                </div>
+      {/* Recent Applications Section */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.3 }}
+        className="bg-white rounded-2xl shadow-lg overflow-hidden"
+      >
+        <div className="p-4 md:p-6 border-b border-gray-100">
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+            <div>
+              <h2 className="text-lg md:text-xl font-semibold text-gray-800">সর্বশেষ আবেদন</h2>
+              <p className="text-gray-500 text-sm mt-1">মোট {applications.length}টি আবেদনের মধ্যে সর্বশেষ ৫টি</p>
+            </div>
+            
+            {/* Search and Filter */}
+            <div className="flex flex-col sm:flex-row gap-3">
+              <div className="relative">
+                <Search size={18} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                <input
+                  type="text"
+                  placeholder="খুঁজুন..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="pl-10 pr-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent text-sm"
+                />
+              </div>
+              <select
+                value={filterStatus}
+                onChange={(e) => setFilterStatus(e.target.value)}
+                className="px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 text-sm bg-white"
+              >
+                <option value="all">সব স্ট্যাটাস</option>
+                <option value="pending">পেন্ডিং</option>
+                <option value="reviewed">রিভিউ করা</option>
+                <option value="accepted">সিলেক্টেড</option>
+                <option value="rejected">রিজেক্টেড</option>
+              </select>
+            </div>
+          </div>
+        </div>
 
-                <div>
-                  <label className="block text-sm font-medium text-black mb-1">টেকনোলজি * (কমা দিয়ে আলাদা করুন)</label>
-                  <input
-                    type="text"
-                    className="w-full px-3 sm:px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm sm:text-base text-black"
-                    value={formData.tech}
-                    onChange={(e) => setFormData({ ...formData, tech: e.target.value })}
-                    required
-                  />
-                </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">
-                  <div>
-                    <label className="block text-sm font-medium text-black mb-1">কালার থিম</label>
-                    <select
-                      className="w-full px-3 sm:px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-sm sm:text-base text-black"
-                      value={formData.colorKey}
-                      onChange={(e) => setFormData({ ...formData, colorKey: e.target.value })}
+        <div className="overflow-x-auto">
+          <table className="w-full">
+            <thead className="bg-gray-50 border-b border-gray-100">
+              <tr>
+                <th className="text-left p-4 text-gray-600 text-sm font-medium">আবেদনকারী</th>
+                <th className="text-left p-4 text-gray-600 text-sm font-medium hidden md:table-cell">ভ্যাকেন্সি</th>
+                <th className="text-left p-4 text-gray-600 text-sm font-medium">স্ট্যাটাস</th>
+                <th className="text-left p-4 text-gray-600 text-sm font-medium hidden lg:table-cell">তারিখ</th>
+                <th className="text-left p-4 text-gray-600 text-sm font-medium">অ্যাকশন</th>
+              </tr>
+            </thead>
+            <tbody>
+              <AnimatePresence>
+                {filteredApplications.slice(0, 5).map((app: any, idx: number) => {
+                  const status = getStatusBadge(app.status);
+                  const StatusIcon = status.icon;
+                  return (
+                    <motion.tr
+                      key={app._id}
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      exit={{ opacity: 0, x: 20 }}
+                      transition={{ delay: idx * 0.05 }}
+                      className="border-b border-gray-50 hover:bg-purple-50/30 transition-colors duration-300"
                     >
-                      <option value="purple">Purple</option>
-                      <option value="cyan">Cyan</option>
-                      <option value="blue">Blue</option>
-                      <option value="emerald">Emerald</option>
-                    </select>
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-black mb-1">স্ট্যাটস *</label>
-                    <input
-                      type="text"
-                      className="w-full px-3 sm:px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-sm sm:text-base text-black"
-                      value={formData.stats}
-                      onChange={(e) => setFormData({ ...formData, stats: e.target.value })}
-                      required
-                    />
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-black mb-1">ইমেজ URL *</label>
-                  <input
-                    type="url"
-                    className="w-full px-3 sm:px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-sm sm:text-base text-black"
-                    value={formData.image}
-                    onChange={(e) => setFormData({ ...formData, image: e.target.value })}
-                    required
-                  />
-                  {formData.image && (
-                    <div className="mt-2 relative w-20 h-20 rounded-lg overflow-hidden border border-gray-200">
-                      <Image 
-                        src={formData.image.trim()}
-                        alt="Preview" 
-                        fill 
-                        className="object-cover"
-                        onError={(e) => {
-                          const target = e.target as HTMLImageElement;
-                          target.src = 'https://placehold.co/200x200/1a1a2e/ffffff?text=Invalid+URL';
-                        }}
-                      />
+                      <td className="p-4">
+                        <div>
+                          <p className="font-medium text-gray-800">{app.fullName || 'নাম নেই'}</p>
+                          <p className="text-xs text-gray-400 md:hidden mt-1">{app.vacancyTitle}</p>
+                        </div>
+                      </td>
+                      <td className="p-4 hidden md:table-cell">
+                        <span className="inline-flex items-center gap-1 px-2 py-1 bg-purple-50 text-purple-700 rounded-lg text-xs font-medium">
+                          <Briefcase size={12} />
+                          {app.vacancyTitle}
+                        </span>
+                      </td>
+                      <td className="p-4">
+                        <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium border ${status.class}`}>
+                          <StatusIcon size={12} />
+                          {status.label}
+                        </span>
+                      </td>
+                      <td className="p-4 hidden lg:table-cell">
+                        <div className="flex items-center gap-1.5 text-gray-500 text-sm">
+                          <Calendar size={14} />
+                          {new Date(app.appliedAt).toLocaleDateString('bn-BD')}
+                        </div>
+                      </td>
+                      <td className="p-4">
+                        <Link 
+                          href={`/admin/applications/${app._id}`} 
+                          className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg text-sm hover:from-blue-600 hover:to-blue-700 transition-all duration-300 shadow-sm hover:shadow"
+                        >
+                          <Eye size={14} />
+                          দেখুন
+                        </Link>
+                      </td>
+                    </motion.tr>
+                  );
+                })}
+              </AnimatePresence>
+              {filteredApplications.length === 0 && (
+                <tr>
+                  <td colSpan={5} className="text-center p-12">
+                    <div className="flex flex-col items-center gap-3">
+                      <FileText size={48} className="text-gray-300" />
+                      <p className="text-gray-400">কোনো আবেদন নেই</p>
                     </div>
-                  )}
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-black mb-1">ইমেজ Alt Text *</label>
-                  <input
-                    type="text"
-                    className="w-full px-3 sm:px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-sm sm:text-base text-black"
-                    value={formData.imageAlt}
-                    onChange={(e) => setFormData({ ...formData, imageAlt: e.target.value })}
-                    required
-                  />
-                </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">
-                  <div>
-                    <label className="block text-sm font-medium text-black mb-1">GitHub লিংক (optional)</label>
-                    <input
-                      type="url"
-                      className="w-full px-3 sm:px-4 py-2 border border-gray-300 rounded-lg text-sm sm:text-base text-black"
-                      value={formData.github}
-                      onChange={(e) => setFormData({ ...formData, github: e.target.value })}
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-black mb-1">লাইভ লিংক (optional)</label>
-                    <input
-                      type="url"
-                      className="w-full px-3 sm:px-4 py-2 border border-gray-300 rounded-lg text-sm sm:text-base text-black"
-                      value={formData.liveUrl}
-                      onChange={(e) => setFormData({ ...formData, liveUrl: e.target.value })}
-                    />
-                  </div>
-                </div>
-
-                                <div className="flex gap-3 pt-4">
-                  <button
-                    type="button"
-                    onClick={() => setModalOpen(false)}
-                    className="flex-1 px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition font-medium"
-                  >
-                    বাতিল করুন
-                  </button>
-                  <button
-                    type="submit"
-                    className="flex-1 px-4 py-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg hover:from-blue-700 hover:to-purple-700 transition font-medium"
-                  >
-                    {editingItem ? 'আপডেট করুন' : 'সংরক্ষণ করুন'}
-                  </button>
-                </div>
-              </form>
-            </div>
-          </div>
+                  </td>
+                </tr>
+              )}
+            </tbody>
+           </table>
         </div>
-      )}
 
-      {/* Vacancy Modal */}
-      {vacancyModalOpen && (
-        <div 
-          className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-2 sm:p-4"
-          onClick={(e) => {
-            if (e.target === e.currentTarget) setVacancyModalOpen(false);
-          }}
+        {applications.length > 5 && (
+          <div className="p-4 border-t border-gray-100 bg-gray-50">
+            <Link 
+              href="/admin/applications" 
+              className="flex items-center justify-center gap-2 text-purple-600 hover:text-purple-700 text-sm font-medium transition"
+            >
+              সব আবেদন দেখুন <ArrowRight size={16} />
+            </Link>
+          </div>
+        )}
+      </motion.div>
+
+      {/* Additional Info Section */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Recent Activity */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.4 }}
+          className="bg-white rounded-2xl shadow-lg p-4 md:p-6"
         >
-          <div className="bg-white rounded-xl sm:rounded-2xl max-w-2xl w-full max-h-[95vh] sm:max-h-[90vh] overflow-hidden flex flex-col">
-            <div className="sticky top-0 bg-gradient-to-r from-purple-600 to-pink-600 p-4 sm:p-6 flex justify-between items-center">
-              <h2 className="text-lg sm:text-xl md:text-2xl font-bold text-white">
-                {editingVacancy ? 'ভ্যাকেন্সি এডিট করুন' : 'নতুন ভ্যাকেন্সি যোগ করুন'}
-              </h2>
-              <button
-                onClick={() => setVacancyModalOpen(false)}
-                className="text-white/80 hover:text-white bg-white/20 hover:bg-white/30 rounded-full w-8 h-8 flex items-center justify-center transition-all duration-200 hover:rotate-90"
-              >
-                <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              </button>
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="font-semibold text-gray-800">সাম্প্রতিক কার্যকলাপ</h3>
+            <Activity size={18} className="text-gray-400" />
+          </div>
+          <div className="space-y-4">
+            {applications.slice(0, 3).map((app: any) => (
+              <div key={app._id} className="flex items-start gap-3">
+                <div className="w-8 h-8 rounded-full bg-purple-100 flex items-center justify-center flex-shrink-0">
+                  <UserPlus size={14} className="text-purple-600" />
+                </div>
+                <div className="flex-1">
+                  <p className="text-sm text-gray-700">
+                    <span className="font-medium">{app.fullName}</span> একটি নতুন আবেদন জমা দিয়েছেন
+                  </p>
+                  <p className="text-xs text-gray-400 mt-1">{app.vacancyTitle}</p>
+                </div>
+                <span className="text-xs text-gray-400">{new Date(app.appliedAt).toLocaleTimeString()}</span>
+              </div>
+            ))}
+          </div>
+        </motion.div>
+
+        {/* Quick Stats */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.5 }}
+          className="bg-gradient-to-r from-purple-600 to-pink-600 rounded-2xl shadow-lg p-4 md:p-6 text-white"
+        >
+          <h3 className="font-semibold mb-4">দ্রুত পরিসংখ্যান</h3>
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <p className="text-white/70 text-sm">কনভার্সন রেট</p>
+              <p className="text-2xl font-bold">{stats.total ? ((stats.accepted / stats.total) * 100).toFixed(1) : 0}%</p>
             </div>
-
-            <div className="overflow-y-auto flex-1 p-4 sm:p-6">
-              <form onSubmit={handleVacancySubmit} className="space-y-4 sm:space-y-5">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-5">
-                  <div>
-                    <label className="block text-sm font-medium text-black mb-1">ভ্যাকেন্সি টাইটেল *</label>
-                    <input
-                      type="text"
-                      className="w-full px-3 sm:px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 text-sm sm:text-base text-black"
-                      value={vacancyFormData.title}
-                      onChange={(e) => setVacancyFormData({ ...vacancyFormData, title: e.target.value })}
-                      required
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-black mb-1">ডিপার্টমেন্ট *</label>
-                    <select
-                      className="w-full px-3 sm:px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 text-sm sm:text-base text-black"
-                      value={vacancyFormData.department}
-                      onChange={(e) => setVacancyFormData({ ...vacancyFormData, department: e.target.value })}
-                      required
-                    >
-                      <option value="Engineering">Engineering</option>
-                      <option value="Marketing">Marketing</option>
-                      <option value="Sales">Sales</option>
-                      <option value="HR">HR</option>
-                      <option value="Design">Design</option>
-                      <option value="Management">Management</option>
-                    </select>
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-black mb-1">বিবরণ *</label>
-                  <textarea
-                    rows={4}
-                    className="w-full px-3 sm:px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 text-sm sm:text-base text-black"
-                    value={vacancyFormData.desc}
-                    onChange={(e) => setVacancyFormData({ ...vacancyFormData, desc: e.target.value })}
-                    required
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-black mb-1">ট্যাগস * (কমা দিয়ে আলাদা করুন)</label>
-                  <input
-                    type="text"
-                    className="w-full px-3 sm:px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 text-sm sm:text-base text-black"
-                    value={vacancyFormData.tags}
-                    onChange={(e) => setVacancyFormData({ ...vacancyFormData, tags: e.target.value })}
-                    placeholder="Remote, Full-time, Urgent"
-                    required
-                  />
-                  <p className="text-xs text-gray-400 mt-1">উদাহরণ: Remote, Full-time, Internship</p>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-black mb-1">টেক স্ট্যাক * (কমা দিয়ে আলাদা করুন)</label>
-                  <input
-                    type="text"
-                    className="w-full px-3 sm:px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 text-sm sm:text-base text-black"
-                    value={vacancyFormData.stack}
-                    onChange={(e) => setVacancyFormData({ ...vacancyFormData, stack: e.target.value })}
-                    placeholder="React, Node.js, MongoDB"
-                    required
-                  />
-                  <p className="text-xs text-gray-400 mt-1">উদাহরণ: React, Python, AWS</p>
-                </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">
-                  <div>
-                    <label className="block text-sm font-medium text-black mb-1">সেলারি (optional)</label>
-                    <input
-                      type="text"
-                      className="w-full px-3 sm:px-4 py-2 border border-gray-300 rounded-lg text-sm sm:text-base text-black"
-                      value={vacancyFormData.salary}
-                      onChange={(e) => setVacancyFormData({ ...vacancyFormData, salary: e.target.value })}
-                      placeholder="$50k - $70k"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-black mb-1">কালার কোড</label>
-                    <input
-                      type="color"
-                      className="w-full h-10 px-2 py-1 border border-gray-300 rounded-lg cursor-pointer"
-                      value={vacancyFormData.color}
-                      onChange={(e) => setVacancyFormData({ ...vacancyFormData, color: e.target.value })}
-                    />
-                  </div>
-                </div>
-
-                <div className="flex items-center gap-3">
-                  <input
-                    type="checkbox"
-                    id="featured"
-                    className="w-4 h-4 text-purple-600 rounded focus:ring-purple-500"
-                    checked={vacancyFormData.featured}
-                    onChange={(e) => setVacancyFormData({ ...vacancyFormData, featured: e.target.checked })}
-                  />
-                  <label htmlFor="featured" className="text-sm font-medium text-black">
-                    ফিচার্ড ভ্যাকেন্সি হিসেবে চিহ্নিত করুন
-                  </label>
-                </div>
-
-                <div className="flex gap-3 pt-4">
-                  <button
-                    type="button"
-                    onClick={() => setVacancyModalOpen(false)}
-                    className="flex-1 px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition font-medium"
-                  >
-                    বাতিল করুন
-                  </button>
-                  <button
-                    type="submit"
-                    className="flex-1 px-4 py-2 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-lg hover:from-purple-700 hover:to-pink-700 transition font-medium"
-                  >
-                    {editingVacancy ? 'আপডেট করুন' : 'সংরক্ষণ করুন'}
-                  </button>
-                </div>
-              </form>
+            <div>
+              <p className="text-white/70 text-sm">অ্যাপ্রুভাল রেট</p>
+              <p className="text-2xl font-bold">{stats.reviewed ? ((stats.accepted / stats.reviewed) * 100).toFixed(1) : 0}%</p>
+            </div>
+            <div>
+              <p className="text-white/70 text-sm">পেন্ডিং রেসপন্স</p>
+              <p className="text-2xl font-bold">{stats.pending}</p>
+            </div>
+            <div>
+              <p className="text-white/70 text-sm">অ্যাক্টিভ ভ্যাকেন্সি</p>
+              <p className="text-2xl font-bold">{stats.vacancies}</p>
             </div>
           </div>
-        </div>
-      )}
-
-      {/* Custom Scrollbar Styles */}
-      <style jsx>{`
-        .custom-scrollbar::-webkit-scrollbar {
-          width: 6px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-track {
-          background: #f1f1f1;
-          border-radius: 10px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb {
-          background: #888;
-          border-radius: 10px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-          background: #555;
-        }
-      `}</style>
+        </motion.div>
+      </div>
     </div>
   );
 }

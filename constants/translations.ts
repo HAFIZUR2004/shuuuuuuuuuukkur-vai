@@ -4,6 +4,7 @@ export type TeamMember = {
   description: string;
   image?: string;
 };
+
 export const translations = {
   EN: {
     // Navbar
@@ -42,7 +43,6 @@ export const translations = {
     statValue: "99.99%",
 
     //Engineering Protocol
-
     protocolTitle: "The Engineering",
     protocolTitleItalic: "Protocol.",
     steps: [
@@ -169,6 +169,7 @@ export const translations = {
         },
       ],
     },
+
     // premiumReviews
     premiumReviews: {
       badge: "Social Proof",
@@ -184,6 +185,8 @@ export const translations = {
         happyClients: "200+ Happy Clients",
         projectsDelivered: "50+ Projects Delivered",
         support: "24/7 Support",
+        loadingText: "Loading Reviews",
+        loadingSubText: "Please wait",
       },
       testimonials: [
         {
@@ -278,13 +281,16 @@ export const translations = {
       prevButton: "Previous",
       nextButton: "Next",
     },
-    // Projects
+
+    // Portfolio Page (for dynamic portfolio component)
     portfolioPage: {
       badge: "Our Portfolio",
       title: "All",
       titleGradient: "Projects",
       description:
         "Explore our complete collection of digital masterpieces — each project represents a unique challenge solved with creativity and technical excellence.",
+      viewProject: "View Project",
+      loadMore: "Load More Projects",
       stats: {
         totalProjects: "Total Projects",
         clientSatisfaction: "Client Satisfaction",
@@ -298,16 +304,7 @@ export const translations = {
       projects: "projects",
     },
 
-    // portfolio
-
-    portfolio: {
-      badge: "Selected Works",
-      title: "Digital",
-      titleGradient: "Artifacts.",
-      exploreBtn: "Explore All Artifacts",
-      loading: "Loading amazing projects...",
-    },
-    // homePortfolioPage
+    // Home Portfolio Section
     homePage: {
       badge: "Featured Work",
       title: "Creative",
@@ -315,13 +312,43 @@ export const translations = {
       description:
         "Explore our collection of digital masterpieces — each project represents a unique challenge solved with creativity and technical excellence.",
       viewAll: "View All Projects",
+      viewProject: "View Project",
       stats: {
         featuredProjects: "Featured Projects",
         clientSatisfaction: "Client Satisfaction",
         support: "Support",
       },
     },
+
+    // Portfolio Gallery (DynamicPortfolioPage এর জন্য)
+    portfolio: {
+      badge: "Selected Works",
+      title: "Creative",
+      titleGradient: "Artifacts",
+      desc: "Explore our collection of digital masterpieces — each project represents a unique challenge solved with creativity and technical excellence.",
+      viewAll: "View All Projects",
+      viewProject: "View Project",
+      loading: "Loading amazing projects...",
+      exploreBtn: "Explore All Artifacts",
+      stats: [
+        { label: "Projects Delivered", suffix: "+" },
+        { label: "Client Satisfaction", suffix: "%" },
+        { label: "Support", suffix: "" },
+      ],
+      noProjects: "No projects found.",
+      noProjectsDesc:
+        "Add some projects from the admin dashboard to see them here.",
+      loadingTexts: [
+        "Loading Projects",
+        "Fetching Data",
+        "Preparing Interface",
+        "Almost Ready",
+      ],
+      pleaseWait: "Please wait",
+      complete: "Complete",
+    },
   },
+
   BN: {
     //Navbar
     menu: "মেনু",
@@ -348,7 +375,6 @@ export const translations = {
     nodes: "নোড",
 
     //Hero
-
     heroBadge: "গ্রো বিজনেস সলিউশনস বিডি",
     heroHeading1: "আপনার লক্ষ্য, আমাদের দক্ষতা -",
     heroHeading2: "একসাথেই গড়ি সফলতা।",
@@ -369,17 +395,17 @@ export const translations = {
         bgText: "স্থাপত্য",
       },
       {
-        title: "পরিকল্পনা ",
+        title: "পরিকল্পনা",
         desc: "উচ্চমানের ইউজার জার্নি ডিজাইন এবং টেকনিক্যাল স্ট্যাক ম্যাপ তৈরি করা।",
         bgText: "কোড",
       },
       {
-        title: "প্রকৌশল ",
+        title: "প্রকৌশল",
         desc: "মডুলার এবং টেস্ট-ড্রিভেন আর্কিটেকচারের মাধ্যমে দ্রুত ডেভেলপমেন্ট সম্পন্ন করা।",
         bgText: "গতি",
       },
       {
-        title: "অপ্টিমাইজেশন ",
+        title: "অপ্টিমাইজেশন",
         desc: "ক্রমাগত উন্নতি এবং হাই-স্পিড গ্লোবাল নোডগুলোতে অ্যাপ্লিকেশন স্থাপন করা।",
         bgText: "গ্লোবাল",
       },
@@ -412,20 +438,6 @@ export const translations = {
       premiumQuality: "প্রিমিয়াম কোয়ালিটি",
     },
 
-    homePage: {
-      badge: "বৈশিষ্ট্যযুক্ত কাজ",
-      title: "ক্রিয়েটিভ",
-      titleGradient: "আর্টিফ্যাক্টস",
-      description:
-        "আমাদের ডিজিটাল মাস্টারপিসের সংগ্রহ অন্বেষণ করুন — প্রতিটি প্রকল্প সৃজনশীলতা এবং প্রযুক্তিগত উৎকর্ষের সাথে সমাধান করা একটি অনন্য চ্যালেঞ্জকে প্রতিনিধিত্ব করে।",
-      viewAll: "সব প্রকল্প দেখুন",
-      stats: {
-        featuredProjects: "বৈশিষ্ট্যযুক্ত প্রকল্প",
-        clientSatisfaction: "ক্লায়েন্ট সন্তুষ্টি",
-        support: "সাপোর্ট",
-      },
-    },
-
     // Team Section
     teamHorizontal: {
       badge: "দলের সাথে সাক্ষাৎ",
@@ -451,7 +463,7 @@ export const translations = {
           },
         },
         {
-          name: " শুকুর মাহমুদ",
+          name: "শুকুর মাহমুদ",
           role: "কোয়ান্টাম সিকিউরিটি লিড",
           company: "সাইবারডাইন সিস্টেমস",
           image: "/team/shukur.png",
@@ -501,62 +513,7 @@ export const translations = {
       ],
     },
 
-    // Tech Stack Section
-    techStack: {
-      title: "দ্যা",
-      titleGradient: "এটমিক",
-      titleEnd: "স্ট্যাক।",
-      features: [
-        {
-          title: "অপটিমাইজড কোর",
-          desc: "শূন্য ডাউনটাইমের জন্য লেটেন্সি-টিউনড সার্ভার পরিবেশ।",
-        },
-        {
-          title: "রিঅ্যাকটিভ ইউআই",
-          desc: "স্টেট-ড্রিভেন ফ্লুইড ইন্টারফেস যা নিখুঁত ইউজার ইন্টারঅ্যাকশন নিশ্চিত করে।",
-        },
-        {
-          title: "ডিস্ট্রিবিউটেড এজ",
-          desc: "গ্লোবাল সিডিএন ডেলিভারি যা সর্বত্র দ্রুতগতির অ্যাক্সেস নিশ্চিত করে।",
-        },
-        {
-          title: "আয়রনক্ল্যাড সিকিউরিটি",
-          desc: "এন্ড-টু-এন্ড এনক্রিপশন এবং অ্যাডভান্সড অথেন্টিকেশন প্রোটোকল।",
-        },
-        {
-          title: "স্কেলেবল লজিক",
-          desc: "দীর্ঘমেয়াদী রক্ষণাবেক্ষণ এবং বৃদ্ধির জন্য মডুলার আর্কিটেকচার।",
-        },
-        {
-          title: "স্মার্ট ইনসাইটস",
-          desc: "রিয়েল-টাইম মনিটরিং এবং ইউজার বিহেভিয়ার ডেটা ট্র্যাকিং।",
-        },
-      ],
-      centerText: "MERN+",
-      prevButton: "পূর্ববর্তী",
-      nextButton: "পরবর্তী",
-    },
-    // Projects
-    portfolioPage: {
-      badge: "আমাদের পোর্টফোলিও",
-      title: "সমস্ত",
-      titleGradient: "প্রজেক্ট",
-      description:
-        "আমাদের ডিজিটাল মাস্টারপিসের সম্পূর্ণ সংগ্রহ অন্বেষণ করুন — প্রতিটি প্রজেক্ট সৃজনশীলতা এবং প্রযুক্তিগত শ্রেষ্ঠত্বের সাথে সমাধান করা একটি অনন্য চ্যালেঞ্জকে প্রতিনিধিত্ব করে।",
-      stats: {
-        totalProjects: "মোট প্রজেক্ট",
-        clientSatisfaction: "ক্লায়েন্ট সন্তুষ্টি",
-        support: "সাপোর্ট",
-      },
-      noProjects: "কোনো প্রজেক্ট পাওয়া যায়নি।",
-      noProjectsDesc:
-        "এখানে প্রজেক্ট দেখতে অ্যাডমিন ড্যাশবোর্ড থেকে কিছু প্রজেক্ট যোগ করুন।",
-      showing: "দেখানো হচ্ছে",
-      project: "প্রজেক্ট",
-      projects: "প্রজেক্ট",
-    },
-
-    // premiumReviews
+    // premiumReviews (Bengali)
     premiumReviews: {
       badge: "সামাজিক প্রমাণ",
       title: "যাদের আস্থা অর্জন করেছি",
@@ -571,6 +528,8 @@ export const translations = {
         happyClients: "২০০+ সন্তুষ্ট ক্লায়েন্ট",
         projectsDelivered: "৫০+ প্রজেক্ট ডেলিভারি",
         support: "২৪/৭ সাপোর্ট",
+        loadingText: "পর্যালোচনা লোড হচ্ছে",
+        loadingSubText: "অনুগ্রহ করে অপেক্ষা করুন",
       },
       testimonials: [
         {
@@ -611,31 +570,7 @@ export const translations = {
       ],
     },
 
-    // portfolio
-    portfolio: {
-      badge: "নির্বাচিত কাজ",
-      title: "ডিজিটাল",
-      titleGradient: "আর্টিফ্যাক্টস।",
-      exploreBtn: "সব আর্টিফ্যাক্ট দেখুন",
-      loading: "প্রকল্প লোড হচ্ছে...",
-    },
-    // dynamicPortfolioPage
-    dynamicPortfolioPage: {
-      badge: "আমাদের পোর্টফোলিও",
-      title: "ক্রিয়েটিভ",
-      titleGradient: "আর্টিফ্যাক্টস",
-      description:
-        "আমাদের ডিজিটাল মাস্টারপিসের সংগ্রহ অন্বেষণ করুন — প্রতিটি প্রকল্প সৃজনশীলতা এবং প্রযুক্তিগত উৎকর্ষের সাথে সমাধান করা একটি অনন্য চ্যালেঞ্জকে প্রতিনিধিত্ব করে।",
-      viewProject: "প্রকল্প দেখুন",
-      loadMore: "আরও প্রকল্প লোড করুন",
-      stats: {
-        totalProjects: "প্রকল্প ডেলিভারি",
-        clientSatisfaction: "ক্লায়েন্ট সন্তুষ্টি",
-        support: "সাপোর্ট",
-      },
-    },
-
-    // contact us
+    // Contact Us
     secureChannel: "সরাসরি পরামর্শ গেটওয়ে",
     initiate: "আপনার ব্র্যান্ডকে",
     connection: "বিকশিত করুন",
@@ -654,6 +589,108 @@ export const translations = {
     neuralLink: "নিউরন লিংক",
     phone: "+৮৮০ ১২৩৪ ৫৬৭ ৮৯০",
     email: "contact@growbusiness.solutions",
+
+    // Tech Stack Section
+    techStack: {
+      title: "দ্যা",
+      titleGradient: "এটমিক",
+      titleEnd: "স্ট্যাক।",
+      features: [
+        {
+          title: "অপটিমাইজড কোর",
+          desc: "শূন্য ডাউনটাইমের জন্য লেটেন্সি-টিউনড সার্ভার পরিবেশ।",
+        },
+        {
+          title: "রিঅ্যাকটিভ ইউআই",
+          desc: "স্টেট-ড্রিভেন ফ্লুইড ইন্টারফেস যা নিখুঁত ইউজার ইন্টারঅ্যাকশন নিশ্চিত করে।",
+        },
+        {
+          title: "ডিস্ট্রিবিউটেড এজ",
+          desc: "গ্লোবাল সিডিএন ডেলিভারি যা সর্বত্র দ্রুতগতির অ্যাক্সেস নিশ্চিত করে।",
+        },
+        {
+          title: "আয়রনক্ল্যাড সিকিউরিটি",
+          desc: "এন্ড-টু-এন্ড এনক্রিপশন এবং অ্যাডভান্সড অথেন্টিকেশন প্রোটোকল।",
+        },
+        {
+          title: "স্কেলেবল লজিক",
+          desc: "দীর্ঘমেয়াদী রক্ষণাবেক্ষণ এবং বৃদ্ধির জন্য মডুলার আর্কিটেকচার।",
+        },
+        {
+          title: "স্মার্ট ইনসাইটস",
+          desc: "রিয়েল-টাইম মনিটরিং এবং ইউজার বিহেভিয়ার ডেটা ট্র্যাকিং।",
+        },
+      ],
+      centerText: "MERN+",
+      prevButton: "পূর্ববর্তী",
+      nextButton: "পরবর্তী",
+    },
+
+    // Portfolio Page (for dynamic portfolio component)
+    portfolioPage: {
+      badge: "আমাদের পোর্টফোলিও",
+      title: "সমস্ত",
+      titleGradient: "প্রজেক্ট",
+      description:
+        "আমাদের ডিজিটাল মাস্টারপিসের সম্পূর্ণ সংগ্রহ অন্বেষণ করুন — প্রতিটি প্রজেক্ট সৃজনশীলতা এবং প্রযুক্তিগত শ্রেষ্ঠত্বের সাথে সমাধান করা একটি অনন্য চ্যালেঞ্জকে প্রতিনিধিত্ব করে।",
+      viewProject: "প্রকল্প দেখুন",
+      loadMore: "আরও প্রকল্প লোড করুন",
+      stats: {
+        totalProjects: "মোট প্রজেক্ট",
+        clientSatisfaction: "ক্লায়েন্ট সন্তুষ্টি",
+        support: "সাপোর্ট",
+      },
+      noProjects: "কোনো প্রজেক্ট পাওয়া যায়নি।",
+      noProjectsDesc:
+        "এখানে প্রজেক্ট দেখতে অ্যাডমিন ড্যাশবোর্ড থেকে কিছু প্রজেক্ট যোগ করুন।",
+      showing: "দেখানো হচ্ছে",
+      project: "প্রজেক্ট",
+      projects: "প্রজেক্ট",
+    },
+
+    // Home Portfolio Section
+    homePage: {
+      badge: "বৈশিষ্ট্যযুক্ত কাজ",
+      title: "ক্রিয়েটিভ",
+      titleGradient: "আর্টিফ্যাক্টস",
+      description:
+        "আমাদের ডিজিটাল মাস্টারপিসের সংগ্রহ অন্বেষণ করুন — প্রতিটি প্রকল্প সৃজনশীলতা এবং প্রযুক্তিগত উৎকর্ষের সাথে সমাধান করা একটি অনন্য চ্যালেঞ্জকে প্রতিনিধিত্ব করে।",
+      viewAll: "সব প্রকল্প দেখুন",
+      viewProject: "প্রকল্প দেখুন",
+      stats: {
+        featuredProjects: "বৈশিষ্ট্যযুক্ত প্রকল্প",
+        clientSatisfaction: "ক্লায়েন্ট সন্তুষ্টি",
+        support: "সাপোর্ট",
+      },
+    },
+
+    // Portfolio Gallery (DynamicPortfolioPage এর জন্য)
+    portfolio: {
+      badge: "নির্বাচিত কাজ",
+      title: "ক্রিয়েটিভ",
+      titleGradient: "আর্টিফ্যাক্টস",
+      desc: "আমাদের ডিজিটাল মাস্টারপিসের সংগ্রহ অন্বেষণ করুন — প্রতিটি প্রকল্প সৃজনশীলতা এবং প্রযুক্তিগত উৎকর্ষের সাথে সমাধান করা একটি অনন্য চ্যালেঞ্জকে প্রতিনিধিত্ব করে।",
+      viewAll: "সব প্রকল্প দেখুন",
+      viewProject: "প্রকল্প দেখুন",
+      loading: "প্রকল্প লোড হচ্ছে...",
+      exploreBtn: "সব আর্টিফ্যাক্ট দেখুন",
+      stats: [
+        { label: "প্রকল্প ডেলিভারি", suffix: "+" },
+        { label: "ক্লায়েন্ট সন্তুষ্টি", suffix: "%" },
+        { label: "সাপোর্ট", suffix: "" },
+      ],
+      noProjects: "কোনো প্রজেক্ট পাওয়া যায়নি।",
+      noProjectsDesc:
+        "এখানে প্রজেক্ট দেখতে অ্যাডমিন ড্যাশবোর্ড থেকে কিছু প্রজেক্ট যোগ করুন।",
+      loadingTexts: [
+        "প্রকল্প লোড হচ্ছে",
+        "ডাটা আনছি",
+        "ইন্টারফেস প্রস্তুত করছি",
+        "প্রায় শেষ",
+      ],
+      pleaseWait: "অনুগ্রহ করে অপেক্ষা করুন",
+      complete: "সম্পূর্ণ",
+    },
   },
 };
 

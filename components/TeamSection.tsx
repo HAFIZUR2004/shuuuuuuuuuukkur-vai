@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useRef, useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import Image from "next/image";
 import { motion, useScroll, useTransform } from "framer-motion";
 import {
@@ -39,6 +39,7 @@ const TeamSection = () => {
 
   const { lang } = useLanguage();
   const t = translations[lang];
+
   const teamData = t.teamHorizontal;
   const members = teamData.members;
 
@@ -205,7 +206,7 @@ const TeamSection = () => {
   return (
     <section
       ref={containerRef}
-      className="relative bg-gradient-to-br from-[#0b0c18] via-[#0f0f1a] to-[#0b0c18] py-24 px-6 md:px-10 overflow-hidden"
+      className={`relative bg-[#0b0c18] py-24 px-6 md:px-10 overflow-hidden ${lang === "BN" ? "font-hind" : ""}`}
     >
       <canvas
         ref={canvasRef}
@@ -312,7 +313,7 @@ const TeamSection = () => {
             msOverflowStyle: "none",
           }}
         >
-          {members.map((member, idx) => (
+          {members.map((member: any, idx: number) => (
             <motion.div
               key={idx}
               initial={{ opacity: 0, x: 50 }}
@@ -324,7 +325,7 @@ const TeamSection = () => {
             >
               <div className="relative h-[380px] w-full overflow-hidden bg-gradient-to-br from-purple-900/20 to-cyan-900/20">
                 <Image
-                  src={member.image}
+                  src={member.image || "/team/placeholder.jpg"}
                   alt={member.name}
                   fill
                   className="object-cover transition-transform duration-700 group-hover:scale-110"
@@ -339,7 +340,9 @@ const TeamSection = () => {
                     {member.name.split(" ").slice(1).join(" ")}
                   </span>
                 </h3>
-                <p className="text-cyan-400 mt-2 text-sm font-medium">
+                <p
+                  className={`text-cyan-400 mt-2 text-sm font-medium ${lang === "BN" ? "font-hind" : ""}`}
+                >
                   {member.role}
                 </p>
                 <p className="text-white/30 text-xs mt-1">{member.company}</p>

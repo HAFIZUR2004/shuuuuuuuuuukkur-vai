@@ -27,21 +27,22 @@ const nextConfig: NextConfig = {
         port: "",
         pathname: "/**",
       },
-      // আপনার জন্য আরও কিছু কমন হোস্টনেম (optional)
       {
         protocol: "https",
-        hostname: "**.postimg.cc", // সব সাবডোমেইনের জন্য
+        hostname: "**.postimg.cc",
         port: "",
         pathname: "/**",
       },
       {
         protocol: "https",
-        hostname: "*.cloudinary.com", // Cloudinary ইমেজ হোস্টিং
+        hostname: "*.cloudinary.com",
         port: "",
         pathname: "/**",
       },
     ],
   },
+  // এই অপশনগুলো সরিয়ে দিন (deprecated)
+  output: 'standalone',
 };
 
 export default nextConfig;

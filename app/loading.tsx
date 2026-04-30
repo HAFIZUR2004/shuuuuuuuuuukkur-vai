@@ -1,157 +1,177 @@
 "use client";
 
-import React, { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import Image from "next/image";
+import React, { useEffect, useState } from "react";
+import { motion } from "framer-motion";
 
-const LogoSpinner = () => {
-  const [showSpinner, setShowSpinner] = useState(false);
+export default function Loading() {
+  const [loadingProgress, setLoadingProgress] = useState(0);
+  const [loadingText, setLoadingText] = useState("Loading");
 
-  const handleLoading = () => {
-    setShowSpinner(true);
-    // ৩ সেকেন্ড পর অটোমেটিক বন্ধ হবে
-    setTimeout(() => setShowSpinner(false), 3000);
-  };
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setLoadingProgress((prev) => {
+        if (prev >= 100) {
+          clearInterval(interval);
+          return 100;
+        }
+        return prev + 2;
+      });
+    }, 40);
+
+    const texts = ["Fetching Data", "Processing Assets", "Preparing Interface", "Almost Ready"];
+    let textIndex = 0;
+    const textInterval = setInterval(() => {
+      if (textIndex < texts.length) {
+        setLoadingText(texts[textIndex]);
+        textIndex++;
+      }
+    }, 800);
+
+    return () => {
+      clearInterval(interval);
+      clearInterval(textInterval);
+    };
+  }, []);
 
   return (
-    <section className="flex flex-col items-center justify-center min-h-screen bg-[#0b0c18] text-white p-10 font-sans">
-      <h1 className="text-3xl font-black mb-16 text-center tracking-tighter uppercase">
-        Logo <span className="text-cyan-400 italic">Animation System</span>
-      </h1>
+    <div className="fixed inset-0 bg-gradient-to-br from-[#0b0c18] via-[#0f0f1a] to-[#0b0c18] flex flex-col items-center justify-center z-[200]">
+      {/* Background Animation */}
+      <div className="absolute inset-0 overflow-hidden">
+        <motion.div
+          className="absolute w-[600px] h-[600px] bg-purple-600/20 rounded-full"
+          animate={{ x: [-300, 300], y: [-300, 300] }}
+          transition={{ duration: 10, repeat: Infinity, repeatType: "reverse" }}
+        />
+        <motion.div
+          className="absolute w-[500px] h-[500px] bg-cyan-500/20 rounded-full bottom-0 right-0"
+          animate={{ x: [300, -300], y: [300, -300] }}
+          transition={{ duration: 8, repeat: Infinity, repeatType: "reverse" }}
+        />
+      </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-10 items-center justify-center">
-        {/* ভার্সন ১: বেসিক ঘূর্ণন */}
-        <div className="flex flex-col items-center gap-6 border border-white/5 p-8 rounded-2xl bg-[#121323] hover:border-white/20 transition-all">
-          <p className="text-[10px] text-gray-500 font-mono uppercase tracking-widest">
-            Protocol_01: Linear
-          </p>
-          <motion.div
-            className="w-20 h-20"
-            animate={{ rotate: 360 }}
-            transition={{ duration: 2, ease: "linear", repeat: Infinity }}
-          >
-            <Image src="/logo.png" alt="Logo" fill className="object-contain" />
-          </motion.div>
-        </div>
+      {/* Grid Overlay */}
+      <div 
+        className="absolute inset-0 opacity-[0.05]"
+        style={{
+          backgroundImage: `linear-gradient(rgba(255,255,255,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.05) 1px, transparent 1px)`,
+          backgroundSize: "50px 50px",
+        }}
+      />
 
-        {/* ভার্সন ২: পালস এবং ঘূর্ণন */}
-        <div className="flex flex-col items-center gap-6 border border-white/5 p-8 rounded-2xl bg-[#121323] hover:border-white/20 transition-all">
-          <p className="text-[10px] text-gray-500 font-mono uppercase tracking-widest">
-            Protocol_02: Pulse
-          </p>
-          <motion.div
-            className="w-20 h-20"
-            animate={{
-              scale: [1, 1.15, 1],
-              rotate: [0, 360],
-            }}
-            transition={{
-              scale: { duration: 1.2, ease: "easeInOut", repeat: Infinity },
-              rotate: { duration: 2, ease: "linear", repeat: Infinity },
-            }}
-          >
-            <Image src="/logo.png" alt="Logo" fill className="object-contain" />
-          </motion.div>
-        </div>
+      {/* Main Spinner - Quantum Ring */}
+      <motion.div
+        className="relative w-32 h-32 mb-8"
+        initial={{ scale: 0.8, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        transition={{ type: "spring", damping: 15 }}
+      >
+        <motion.div
+          className="absolute inset-0 rounded-full border-4 border-transparent border-t-cyan-500 border-r-purple-500"
+          animate={{ rotate: 360 }}
+          transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+        />
+        <motion.div
+          className="absolute inset-2 rounded-full border-4 border-transparent border-b-cyan-400 border-l-purple-400"
+          animate={{ rotate: -360 }}
+          transition={{ duration: 1.5, repeat: Infinity, ease: "linear" }}
+        />
+        <motion.div
+          className="absolute inset-4 rounded-full border-4 border-transparent border-t-pink-500 border-r-blue-500"
+          animate={{ rotate: 360 }}
+          transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
+        />
+        <motion.div
+          className="absolute inset-0 flex items-center justify-center"
+          animate={{ scale: [1, 1.1, 1], opacity: [0.5, 1, 0.5] }}
+          transition={{ duration: 1.5, repeat: Infinity }}
+        >
+          <div className="w-10 h-10 bg-gradient-to-r from-cyan-500 to-purple-500 rounded-full blur-md" />
+        </motion.div>
+      </motion.div>
 
-        {/* ভার্সন ৩: কালার গ্লো */}
-        <div className="flex flex-col items-center gap-6 border border-white/5 p-8 rounded-2xl bg-[#121323] hover:border-white/20 transition-all">
-          <p className="text-[10px] text-gray-500 font-mono uppercase tracking-widest">
-            Protocol_03: Glow
-          </p>
-          <div className="relative flex items-center justify-center">
-            <motion.div
-              className="absolute w-24 h-24 rounded-full blur-2xl"
-              animate={{
-                backgroundColor: [
-                  "rgba(34, 211, 238, 0.3)",
-                  "rgba(139, 92, 246, 0.3)",
-                  "rgba(34, 211, 238, 0.3)",
-                ],
-              }}
-              transition={{ duration: 3, repeat: Infinity }}
+      {/* Logo Container - Your Company Logo */}
+      <motion.div
+        className="relative w-20 h-20 mb-6"
+        animate={{
+          rotate: 360,
+          scale: [1, 1.05, 1],
+        }}
+        transition={{
+          rotate: { duration: 3, repeat: Infinity, ease: "linear" },
+          scale: { duration: 1.5, repeat: Infinity },
+        }}
+      >
+        {/* Gradient Border Ring for Premium Look */}
+        <div className="absolute inset-0 rounded-full bg-gradient-to-r from-purple-500 to-cyan-500 p-[2px]">
+          <div className="w-full h-full rounded-full bg-gradient-to-br from-[#0b0c18] to-[#0f0f1a] flex items-center justify-center overflow-hidden">
+            {/* Your Company Logo */}
+            <img 
+              src="/logo.png" 
+              alt="Company Logo" 
+              className="w-16 h-16 object-contain rounded-full"
             />
-            <motion.div
-              className="relative w-20 h-20 z-10"
-              animate={{ rotate: -360 }}
-              transition={{ duration: 2, ease: "circOut", repeat: Infinity }}
-            >
-              <Image
-                src="/logo.png"
-                alt="Logo"
-                fill
-                className="object-contain"
-              />
-            </motion.div>
           </div>
         </div>
-      </div>
+      </motion.div>
 
-      {/* অ্যাকশন বাটন */}
-      <div className="mt-20">
-        <motion.button
-          onClick={handleLoading}
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-          className="px-10 py-4 bg-cyan-500 text-black font-bold rounded-full shadow-[0_0_20px_rgba(34,211,238,0.4)] hover:bg-white transition-colors uppercase text-sm tracking-widest"
-        >
-          Execute Protocol
-        </motion.button>
-      </div>
+      {/* Loading Text */}
+      <motion.div
+        className="text-center space-y-3"
+        animate={{ opacity: [0.4, 1, 0.4] }}
+        transition={{ duration: 1.5, repeat: Infinity }}
+      >
+        <p className="text-xl md:text-2xl font-bold bg-gradient-to-r from-cyan-400 to-purple-400 bg-clip-text text-transparent">
+          {loadingText}
+        </p>
+        <p className="text-cyan-400/50 font-mono text-[10px] tracking-[0.3em] uppercase">
+          Please wait
+        </p>
+      </motion.div>
 
-      {/* ফুল স্ক্রিন ওভারলে লোডার */}
-      <AnimatePresence>
-        {showSpinner && (
+      {/* Progress Bar */}
+      <div className="w-64 md:w-80 mt-8">
+        <div className="h-[2px] bg-white/10 rounded-full overflow-hidden">
           <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-[#0b0c18]/95 flex flex-col items-center justify-center z-[100] backdrop-blur-md"
-          >
-            <motion.div
-              className="w-32 h-32 mb-8"
-              animate={{
-                rotate: 360,
-                scale: [1, 1.1, 1],
-              }}
-              transition={{
-                rotate: { duration: 1.5, ease: "linear", repeat: Infinity },
-                scale: { duration: 1, ease: "easeInOut", repeat: Infinity },
-              }}
-            >
-              <Image
-                src="/logo.png"
-                alt="Loading"
-                fill
-                className="object-contain drop-shadow-[0_0_30px_rgba(34,211,238,0.5)]"
-              />
-            </motion.div>
+            className="h-full bg-gradient-to-r from-cyan-500 to-purple-500 rounded-full"
+            initial={{ width: "0%" }}
+            animate={{ width: `${loadingProgress}%` }}
+            transition={{ duration: 0.1 }}
+          />
+        </div>
+        <motion.p
+          className="text-[10px] text-white/30 text-center mt-2 font-mono"
+          animate={{ opacity: [0.3, 1, 0.3] }}
+          transition={{ duration: 1, repeat: Infinity }}
+        >
+          {loadingProgress}% Complete
+        </motion.p>
+      </div>
 
-            <motion.div
-              className="flex flex-col items-center gap-2"
-              animate={{ opacity: [0.4, 1, 0.4] }}
-              transition={{ duration: 1.5, repeat: Infinity }}
-            >
-              <p className="text-cyan-400 font-mono text-sm tracking-[0.5em] uppercase">
-                Initializing
-              </p>
-              <div className="w-48 h-[1px] bg-white/10 relative overflow-hidden">
-                <motion.div
-                  className="absolute inset-0 bg-cyan-500"
-                  animate={{ x: [-200, 200] }}
-                  transition={{
-                    duration: 1.5,
-                    repeat: Infinity,
-                    ease: "easeInOut",
-                  }}
-                />
-              </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </section>
+      {/* Particle Effects */}
+      <div className="absolute inset-0 pointer-events-none">
+        {[...Array(15)].map((_, i) => (
+          <motion.div
+            key={i}
+            className="absolute w-1 h-1 bg-cyan-400 rounded-full"
+            initial={{
+              x: "50%",
+              y: "50%",
+              scale: 0,
+            }}
+            animate={{
+              x: `${50 + (Math.random() - 0.5) * 100}%`,
+              y: `${50 + (Math.random() - 0.5) * 100}%`,
+              scale: [0, 1, 0],
+              opacity: [0, 1, 0],
+            }}
+            transition={{
+              duration: 2,
+              repeat: Infinity,
+              delay: i * 0.15,
+            }}
+          />
+        ))}
+      </div>
+    </div>
   );
-};
-
-export default LogoSpinner;
+}

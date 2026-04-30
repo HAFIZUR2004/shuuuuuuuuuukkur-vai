@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import Portfolio from '@/app/models/Portfolio';
-import { dbConnect } from '@/app/lib/dbConnect';
+import { dbConnect } from '@/lib/dbConnect';
 
 // ✅ GET: সব পোর্টফোলিও ডাটা fetch করা
 export async function GET() {

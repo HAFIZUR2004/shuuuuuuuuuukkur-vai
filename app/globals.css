@@ -1,5 +1,6 @@
+/* সব @import একদম শুরুতে থাকবে */
+@import url('https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@300;400;500;600;700&display=swap');
 @import "tailwindcss";
-/* Swiper CSS - শুধুমাত্র যদি swiper ইন্সটল করা থাকে */
 @import "swiper/css";
 @import "swiper/css/navigation";
 @import "swiper/css/pagination";
@@ -14,6 +15,12 @@
   /* ডার্ক মোড ব্যাকগ্রাউন্ড */
   --background: #0b0c18;
   --foreground: #ededed;
+  
+  /* Vision Page Colors */
+  --purple-primary: #6c5ce7;
+  --teal-primary: #00cec9;
+  --purple-glow: rgba(108, 92, 231, 0.3);
+  --teal-glow: rgba(0, 206, 201, 0.2);
 }
 
 @theme inline {
@@ -72,7 +79,428 @@
   background: var(--color-secondary);
 }
 
+/* ============================================ */
+/* ========== 1. FADE UP ANIMATION (Scroll) ========== */
+/* ============================================ */
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fade-up {
+  animation: fadeUp 0.8s ease forwards;
+}
+
+.fade-up-delay-1 {
+  animation: fadeUp 0.8s ease 0.2s forwards;
+  opacity: 0;
+}
+
+.fade-up-delay-2 {
+  animation: fadeUp 0.8s ease 0.4s forwards;
+  opacity: 0;
+}
+
+.fade-up-delay-3 {
+  animation: fadeUp 0.8s ease 0.6s forwards;
+  opacity: 0;
+}
+
+/* Scroll Reveal (needs JS to add .revealed class) */
+.scroll-reveal {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.8s ease, transform 0.8s ease;
+}
+
+.scroll-reveal.revealed {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ============================================ */
+/* ========== 2. SCALE ANIMATION (on scroll) ========== */
+/* ============================================ */
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.scale-on-scroll {
+  animation: scaleIn 0.6s ease forwards;
+}
+
+.scale-on-scroll-delay-1 {
+  animation: scaleIn 0.6s ease 0.2s forwards;
+  opacity: 0;
+}
+
+/* ============================================ */
+/* ========== 3. ROTATE ON HOVER ========== */
+/* ============================================ */
+.rotate-on-hover {
+  transition: transform 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+.rotate-on-hover:hover {
+  transform: rotate(360deg);
+}
+
+/* 3D Rotate on Hover */
+.rotate-3d-on-hover {
+  transition: transform 0.5s ease;
+}
+
+.rotate-3d-on-hover:hover {
+  transform: rotateY(180deg);
+}
+
+/* ============================================ */
+/* ========== 4. SCALE ON HOVER ========== */
+/* ============================================ */
+.scale-on-hover {
+  transition: transform 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+.scale-on-hover:hover {
+  transform: scale(1.05);
+}
+
+.scale-on-hover-lg:hover {
+  transform: scale(1.1);
+}
+
+/* Card Hover Effect */
+.card-hover {
+  transition: all 0.3s ease;
+}
+
+.card-hover:hover {
+  transform: translateY(-8px) scale(1.02);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+}
+
+/* ============================================ */
+/* ========== 5. GLOW PULSE ANIMATION ========== */
+/* ============================================ */
+@keyframes glowPulse {
+  0%, 100% {
+    opacity: 0.3;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.6;
+    transform: scale(1.2);
+  }
+}
+
+.glow-pulse {
+  animation: glowPulse 4s ease-in-out infinite;
+}
+
+.glow-pulse-delayed {
+  animation: glowPulse 5s ease-in-out infinite 1s;
+}
+
+/* Blur Glow Animation */
+@keyframes blurGlow {
+  0%, 100% {
+    filter: blur(80px);
+    opacity: 0.3;
+  }
+  50% {
+    filter: blur(120px);
+    opacity: 0.5;
+  }
+}
+
+.blur-glow {
+  animation: blurGlow 6s ease-in-out infinite;
+}
+
+/* ============================================ */
+/* ========== 6. Y-AXIS FLOAT ========== */
+/* ============================================ */
+@keyframes floatY {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+.float-y {
+  animation: floatY 2s ease-in-out infinite;
+}
+
+.float-y-slow {
+  animation: floatY 3s ease-in-out infinite;
+}
+
+.float-y-fast {
+  animation: floatY 1.5s ease-in-out infinite;
+}
+
+/* X-Axis Float */
+@keyframes floatX {
+  0%, 100% {
+    transform: translateX(0px);
+  }
+  50% {
+    transform: translateX(-8px);
+  }
+}
+
+.float-x {
+  animation: floatX 2s ease-in-out infinite;
+}
+
+/* ============================================ */
+/* ========== 7. HEART BEAT ANIMATION ========== */
+/* ============================================ */
+@keyframes heartBeat {
+  0%, 100% {
+    transform: scale(1);
+  }
+  14% {
+    transform: scale(1.3);
+  }
+  28% {
+    transform: scale(1);
+  }
+  42% {
+    transform: scale(1.15);
+  }
+  70% {
+    transform: scale(1);
+  }
+}
+
+.heart-beat {
+  animation: heartBeat 1s ease-in-out infinite;
+  transform-origin: center;
+}
+
+/* Pulse Beat (for buttons) */
+@keyframes pulseBeat {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(108, 92, 231, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 0 15px rgba(108, 92, 231, 0);
+  }
+}
+
+.pulse-beat {
+  animation: pulseBeat 1.5s ease-in-out infinite;
+}
+
+/* ============================================ */
+/* ========== 8. PARALLAX SCROLL ========== */
+/* ============================================ */
+.parallax-section {
+  transform-style: preserve-3d;
+}
+
+.parallax-bg {
+  transform: translateZ(-10px) scale(2);
+}
+
+.parallax-content {
+  transform: translateZ(0);
+}
+
+/* ============================================ */
+/* ========== 9. GRADIENT ANIMATION ========== */
+/* ============================================ */
+@keyframes gradientShift {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+  25% {
+    background-position: 50% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  75% {
+    background-position: 50% 50%;
+  }
+}
+
+.animate-gradient-text {
+  background-size: 200% auto;
+  animation: gradientShift 4s ease infinite;
+}
+
+/* Fast Gradient */
+.animate-gradient-fast {
+  background-size: 200% auto;
+  animation: gradientShift 2s ease infinite;
+}
+
+/* Slow Gradient */
+.animate-gradient-slow {
+  background-size: 200% auto;
+  animation: gradientShift 6s ease infinite;
+}
+
+/* Border Gradient Animation */
+@keyframes borderGradient {
+  0%, 100% {
+    border-image: linear-gradient(135deg, #6c5ce7, #00cec9) 1;
+  }
+  50% {
+    border-image: linear-gradient(135deg, #00cec9, #6c5ce7) 1;
+  }
+}
+
+.animate-border-gradient {
+  border: 2px solid;
+  border-image-slice: 1;
+  animation: borderGradient 3s ease infinite;
+}
+
+/* ============================================ */
+/* ========== 10. DASH OFFSET ANIMATION ========== */
+/* ============================================ */
+@keyframes dashMove {
+  to {
+    stroke-dashoffset: -100;
+  }
+}
+
+.dash-animation {
+  stroke-dasharray: 5 10;
+  animation: dashMove 2s linear infinite;
+}
+
+.dash-animation-reverse {
+  stroke-dasharray: 5 10;
+  animation: dashMove 2s linear infinite reverse;
+}
+
+/* Connecting Line Animation */
+@keyframes lineGrow {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+.line-grow {
+  animation: lineGrow 0.6s ease-out forwards;
+  transform-origin: left;
+}
+
+/* ============================================ */
+/* ========== ADDITIONAL PREMIUM ANIMATIONS ========== */
+/* ============================================ */
+
+/* Spin Slow */
+@keyframes spinSlow {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.spin-slow {
+  animation: spinSlow 8s linear infinite;
+}
+
+.spin-medium {
+  animation: spinSlow 4s linear infinite;
+}
+
+/* Morphing Shape */
+@keyframes morphShape {
+  0%, 100% {
+    border-radius: 60% 40% 70% 30% / 50% 60% 40% 70%;
+    transform: rotate(0deg);
+  }
+  25% {
+    border-radius: 30% 70% 40% 60% / 60% 40% 70% 30%;
+    transform: rotate(90deg);
+  }
+  50% {
+    border-radius: 50% 50% 30% 70% / 40% 60% 50% 50%;
+    transform: rotate(180deg);
+  }
+  75% {
+    border-radius: 70% 30% 60% 40% / 70% 50% 30% 60%;
+    transform: rotate(270deg);
+  }
+}
+
+.morph-shape {
+  animation: morphShape 8s ease-in-out infinite;
+}
+
+/* Shimmer Effect */
+@keyframes shimmer {
+  0% {
+    background-position: -1000px 0;
+  }
+  100% {
+    background-position: 1000px 0;
+  }
+}
+
+.shimmer {
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+  background-size: 1000px 100%;
+  animation: shimmer 2s infinite;
+}
+
+/* Text Reveal */
+@keyframes textReveal {
+  from {
+    clip-path: inset(0 100% 0 0);
+  }
+  to {
+    clip-path: inset(0 0 0 0);
+  }
+}
+
+.text-reveal {
+  animation: textReveal 0.8s cubic-bezier(0.77, 0, 0.18, 1) forwards;
+}
+
+/* Blink Animation */
+@keyframes blink {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.3;
+  }
+}
+
+.blink {
+  animation: blink 1s step-end infinite;
+}
+
+/* ============================================ */
 /* ========== TEAM CAROUSEL STYLES ========== */
+/* ============================================ */
 .team-carousel {
   padding: 20px 0 40px 0;
 }
@@ -116,24 +544,11 @@
   box-shadow: 0 0 10px #22d3ee;
 }
 
-/* ========== CUSTOM NAVIGATION BUTTONS ========== */
-.swiper-button-prev-custom,
-.swiper-button-next-custom {
-  font-size: 20px;
-  font-weight: bold;
-}
-
-.swiper-button-prev-custom:hover,
-.swiper-button-next-custom:hover {
-  transform: scale(1.1);
-}
-
+/* ============================================ */
 /* ========== NODE LIGHT ANIMATIONS ========== */
-
-/* Node Light Main Animation */
+/* ============================================ */
 @keyframes nodePulse {
-  0%,
-  100% {
+  0%, 100% {
     transform: translate(-50%, 0) scale(1);
     opacity: 1;
   }
@@ -148,16 +563,13 @@
   transition: all 0.3s ease;
 }
 
-/* Hover Effect for Node Light */
 .group:hover .node-light {
   animation: nodePulse 0.5s ease-in-out infinite;
   transform: translate(-50%, -5px) scale(1.3);
 }
 
-/* Inner Dot Pulse */
 @keyframes innerDotPulse {
-  0%,
-  100% {
+  0%, 100% {
     transform: scale(1);
     opacity: 0.8;
   }
@@ -171,7 +583,9 @@
   animation: innerDotPulse 1.5s ease-in-out infinite;
 }
 
+/* ============================================ */
 /* ========== CONNECTING LINE ANIMATION ========== */
+/* ============================================ */
 .connecting-line {
   transition: all 0.3s ease;
 }
@@ -181,10 +595,11 @@
   background: linear-gradient(to bottom, currentColor, transparent);
 }
 
+/* ============================================ */
 /* ========== CARD NUMBER BADGE ========== */
+/* ============================================ */
 @keyframes badgeGlow {
-  0%,
-  100% {
+  0%, 100% {
     opacity: 0.6;
     text-shadow: none;
   }
@@ -202,10 +617,11 @@
   animation: badgeGlow 0.8s ease-in-out infinite;
 }
 
+/* ============================================ */
 /* ========== FLIP TEXT BOUNCE ========== */
+/* ============================================ */
 @keyframes bounce {
-  0%,
-  100% {
+  0%, 100% {
     transform: translateY(0);
   }
   50% {
@@ -217,18 +633,25 @@
   animation: bounce 1s ease-in-out infinite;
 }
 
-/* ========== FLOATING ANIMATION (পুরনো) ========== */
+/* ============================================ */
+/* ========== FLOATING ANIMATION ========== */
+/* ============================================ */
 @keyframes float {
-  0%,
-  100% {
+  0%, 100% {
     transform: translateY(0px);
   }
   50% {
-    transform: translateY(-5px);
+    transform: translateY(-10px);
   }
 }
 
+.float-animation {
+  animation: float 3s ease-in-out infinite;
+}
+
+/* ============================================ */
 /* ========== LINE CLAMP UTILITIES ========== */
+/* ============================================ */
 .line-clamp-1 {
   display: -webkit-box;
   -webkit-line-clamp: 1;
@@ -248,4 +671,28 @@
   -webkit-line-clamp: 4;
   -webkit-box-orient: vertical;
   overflow: hidden;
+}
+
+/* বাংলা সেকশনের জন্য ক্লাস */
+.bangla-section {
+  font-family: 'Hind Siliguri', 'Inter', sans-serif;
+}
+
+/* হিন্দ সিলিগুড়ি ফন্টের জন্য ইউটিলিটি ক্লাস */
+.font-hind {
+  font-family: 'Hind Siliguri', 'Inter', sans-serif;
+}
+
+/* ============================================ */
+/* ========== CUSTOM NAVIGATION BUTTONS ========== */
+/* ============================================ */
+.swiper-button-prev-custom,
+.swiper-button-next-custom {
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.swiper-button-prev-custom:hover,
+.swiper-button-next-custom:hover {
+  transform: scale(1.1);
 }

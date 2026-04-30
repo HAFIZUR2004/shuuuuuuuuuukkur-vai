@@ -72,81 +72,157 @@ export const translations = {
     successBadge: "MILESTONES",
     successTitle: "Success in",
     successTitleGradient: "Motion.",
+    successDescription:
+      "Delivering excellence through measurable results and client satisfaction",
     stats: [
       {
-        title: "8+ Years",
+        title: "Years",
         desc: "Of dedicated craft in digital architecture.",
       },
       {
-        title: "20+ Projects",
+        title: "Projects",
         desc: "High-impact solutions delivered globally.",
       },
       {
-        title: "100% Client",
+        title: "Client Satisfaction",
         desc: "Satisfaction rate across all partnerships.",
       },
     ],
+    trustBadges: {
+      projectsCompleted: "8+ Projects Completed",
+      fiveStarRating: "5 Star Rating",
+      onTimeDelivery: "On-Time Delivery",
+      premiumQuality: "Premium Quality",
+    },
+
     // Team Section
-    teamBadge: "System Link Established",
-    teamTitle: "The",
-    teamTitleGradient: "Team",
-    teamMembers: [
-      {
-        name: "Hafizur Rahman",
-        role: "Founder & Lead Developer",
-        description:
-          "Architecting high-performance digital ecosystems with MERN stack expertise.",
-        image: "/team/hafizur.jpg",
-        social: {
-          email: "hafizur@growbusiness.solutions",
-          linkedin: "https://linkedin.com/in/hafizur",
-          github: "https://github.com/hafizur",
-          twitter: "https://twitter.com/hafizur",
-          facebook: "https://facebook.com/hafizur",
+    teamHorizontal: {
+      badge: "MEET THE COLLECTIVE",
+      title: "Our Creative",
+      titleGradient: "Collective",
+      description:
+        "System sovereign operators tasked with the orchestration of planetary-scale technical infrastructure and quantum computational frameworks.",
+      prevButton: "Previous",
+      nextButton: "Next",
+      systemStatus: "SYSTEM STATUS: OPERATIONAL",
+      allNodesActive: "ALL NODES ACTIVE",
+      members: [
+        {
+          name: "Hafizur Rahman",
+          role: "Lead Systems Architect",
+          company: "Tech Nova",
+          image: "/team/hafizur.jpg",
+          social: {
+            twitter: "https://twitter.com/hafizur",
+            github: "https://github.com/hafizur",
+            linkedin: "https://linkedin.com/in/hafizur",
+            instagram: "https://instagram.com/hafizur",
+          },
         },
-      },
-      {
-        name: "Elena Vance",
-        role: "Head of Strategy",
-        description: "Transforming complex market data into elegant roadmaps.",
-        image: "/team/Elena.jpg",
-        social: {
-          email: "hafizur@growbusiness.solutions",
-          linkedin: "https://linkedin.com/in/hafizur",
-          github: "https://github.com/hafizur",
-          twitter: "https://twitter.com/hafizur",
-          facebook: "https://facebook.com/hafizur",
+        {
+          name: "Shukur Mahmud",
+          role: "Quantum Security Lead",
+          company: "Cyberdyne Systems",
+          image: "/team/shukur.png",
+          social: {
+            twitter: "https://twitter.com/shukur",
+            github: "https://github.com/shukur",
+            linkedin: "https://linkedin.com/in/shukur",
+            instagram: "https://instagram.com/shukur",
+          },
         },
-      },
-      {
-        name: "Julian Kross",
-        role: "Lead Systems Architect",
-        description:
-          "Building invisible foundations with zero-latency precision.",
-        image: "/team/Julian.jpg",
-        social: {
-          email: "hafizur@growbusiness.solutions",
-          linkedin: "https://linkedin.com/in/hafizur",
-          github: "https://github.com/hafizur",
-          twitter: "https://twitter.com/hafizur",
-          facebook: "https://facebook.com/hafizur",
+        {
+          name: "Sarah Chen",
+          role: "Product Owner",
+          company: "Zilla Themes",
+          image: "/team/sarah.jpg",
+          social: {
+            twitter: "https://twitter.com/sarah",
+            github: "https://github.com/sarah",
+            linkedin: "https://linkedin.com/in/sarah",
+            instagram: "https://instagram.com/sarah",
+          },
         },
-      },
-      {
-        name: "Md. Shukur Mahmud",
-        role: "Founder & Developer",
-        description:
-          "Building invisible foundations with zero-latency precision.",
-        image: "/team/Shukur.png",
-        social: {
-          email: "hafizur@growbusiness.solutions",
-          linkedin: "https://linkedin.com/in/hafizur",
-          github: "https://github.com/hafizur",
-          twitter: "https://twitter.com/hafizur",
-          facebook: "https://facebook.com/hafizur",
+        {
+          name: "Julian Kross",
+          role: "Lead Architect",
+          company: "Moon Studios",
+          image: "/team/julian.jpg",
+          social: {
+            twitter: "https://twitter.com/julian",
+            github: "https://github.com/julian",
+            linkedin: "https://linkedin.com/in/julian",
+            instagram: "https://instagram.com/julian",
+          },
         },
+        {
+          name: "Elena Vance",
+          role: "AI Engineer",
+          company: "Neural Dynamics",
+          image: "/team/elena.jpg",
+          social: {
+            twitter: "https://twitter.com/elena",
+            github: "https://github.com/elena",
+            linkedin: "https://linkedin.com/in/elena",
+            instagram: "https://instagram.com/elena",
+          },
+        },
+      ],
+    },
+    // premiumReviews
+    premiumReviews: {
+      badge: "Social Proof",
+      title: "Trusted by",
+      titleGradient: "Industry Leaders",
+      description:
+        "Don't just take our word for it — hear from our amazing clients around the world",
+      prevButton: "Previous review",
+      nextButton: "Next review",
+      swipeHint: "← Swipe to navigate →",
+      trustBadges: {
+        rating: "4.9/5 Average Rating",
+        happyClients: "200+ Happy Clients",
+        projectsDelivered: "50+ Projects Delivered",
+        support: "24/7 Support",
       },
-    ],
+      testimonials: [
+        {
+          name: "Alex Rivera",
+          role: "CEO",
+          comment:
+            "The level of professionalism and technical depth provided was exceptional. Our conversion rate increased by 200% after the redesign.",
+          company: "TechVibe",
+        },
+        {
+          name: "Sophia Chen",
+          role: "Founder",
+          comment:
+            "Working with this team was a game-changer. Their understanding of MERN stack and eye for premium animations is unmatched in the industry.",
+          company: "GreenLeaf",
+        },
+        {
+          name: "Marcus Thorne",
+          role: "Product Manager",
+          comment:
+            "Fast, reliable, and incredibly creative. The custom dashboard they built for us is now our core competitive advantage.",
+          company: "CloudScale",
+        },
+        {
+          name: "Isabella Martinez",
+          role: "CTO",
+          comment:
+            "Absolutely outstanding! The attention to detail and commitment to excellence is rare to find. They delivered ahead of schedule.",
+          company: "InnovateHub",
+        },
+        {
+          name: "David Kim",
+          role: "Technical Director",
+          comment:
+            "The best investment we've made this year. The team's expertise in modern web technologies transformed our digital presence completely.",
+          company: "DevOps Pro",
+        },
+      ],
+    },
 
     //contact Us
     secureChannel: "DIRECT ADVISORY GATEWAY",
@@ -202,13 +278,48 @@ export const translations = {
       prevButton: "Previous",
       nextButton: "Next",
     },
+    // Projects
+    portfolioPage: {
+      badge: "Our Portfolio",
+      title: "All",
+      titleGradient: "Projects",
+      description:
+        "Explore our complete collection of digital masterpieces — each project represents a unique challenge solved with creativity and technical excellence.",
+      stats: {
+        totalProjects: "Total Projects",
+        clientSatisfaction: "Client Satisfaction",
+        support: "Support",
+      },
+      noProjects: "No projects found.",
+      noProjectsDesc:
+        "Add some projects from the admin dashboard to see them here.",
+      showing: "Showing",
+      project: "project",
+      projects: "projects",
+    },
+
     // portfolio
+
     portfolio: {
       badge: "Selected Works",
       title: "Digital",
       titleGradient: "Artifacts.",
       exploreBtn: "Explore All Artifacts",
       loading: "Loading amazing projects...",
+    },
+    // homePortfolioPage
+    homePage: {
+      badge: "Featured Work",
+      title: "Creative",
+      titleGradient: "Artifacts",
+      description:
+        "Explore our collection of digital masterpieces — each project represents a unique challenge solved with creativity and technical excellence.",
+      viewAll: "View All Projects",
+      stats: {
+        featuredProjects: "Featured Projects",
+        clientSatisfaction: "Client Satisfaction",
+        support: "Support",
+      },
     },
   },
   BN: {
@@ -278,79 +389,117 @@ export const translations = {
     successBadge: "সাফল্যের মাইলফলক",
     successTitle: "গতিশীল",
     successTitleGradient: "সাফল্য",
+    successDescription:
+      "পরিমাপযোগ্য ফলাফল এবং ক্লায়েন্ট সন্তুষ্টির মাধ্যমে শ্রেষ্ঠত্ব প্রদান",
     stats: [
       {
-        title: "৮+ বছর",
+        title: "বছর",
         desc: "ডিজিটাল আর্কিটেকচার বা স্থাপত্যে নিবেদিত শিল্পশৈলী।",
       },
       {
-        title: "২০+ প্রজেক্ট",
+        title: "প্রজেক্ট",
         desc: "বিশ্বজুড়ে ডেলিভারি করা হাই-ইমপ্যাক্ট সলিউশন।",
       },
       {
-        title: "১০০% ক্লায়েন্ট",
+        title: "ক্লায়েন্ট সন্তুষ্টি",
         desc: "প্রতিটি পার্টনারশিপে পূর্ণ সন্তুষ্টির হার।",
       },
     ],
+    trustBadges: {
+      projectsCompleted: "৮+ প্রজেক্ট সম্পন্ন",
+      fiveStarRating: "৫ স্টার রেটিং",
+      onTimeDelivery: "সময়ে ডেলিভারি",
+      premiumQuality: "প্রিমিয়াম কোয়ালিটি",
+    },
+
+    homePage: {
+      badge: "বৈশিষ্ট্যযুক্ত কাজ",
+      title: "ক্রিয়েটিভ",
+      titleGradient: "আর্টিফ্যাক্টস",
+      description:
+        "আমাদের ডিজিটাল মাস্টারপিসের সংগ্রহ অন্বেষণ করুন — প্রতিটি প্রকল্প সৃজনশীলতা এবং প্রযুক্তিগত উৎকর্ষের সাথে সমাধান করা একটি অনন্য চ্যালেঞ্জকে প্রতিনিধিত্ব করে।",
+      viewAll: "সব প্রকল্প দেখুন",
+      stats: {
+        featuredProjects: "বৈশিষ্ট্যযুক্ত প্রকল্প",
+        clientSatisfaction: "ক্লায়েন্ট সন্তুষ্টি",
+        support: "সাপোর্ট",
+      },
+    },
+
     // Team Section
-    teamBadge: "সিস্টেম সংযোগ স্থাপিত",
-    teamTitle: "আমাদের",
-    teamTitleGradient: "দল",
-    teamMembers: [
-      {
-        name: "হাফিজুর রহমান",
-        role: "প্রতিষ্ঠাতা ও লিড ডেভেলপার",
-        description:
-          "MERN স্ট্যাক দক্ষতায় উচ্চ-ক্ষমতাসম্পন্ন ডিজিটাল ইকোসিস্টেম স্থাপত্যবিদ।",
-        image: "/team/hafizur.jpg",
-        social: {
-          email: "hafizur@growbusiness.solutions",
-          linkedin: "https://linkedin.com/in/hafizur",
-          github: "https://github.com/hafizur",
-          twitter: "https://twitter.com/hafizur",
-          facebook: "https://facebook.com/hafizur",
+    teamHorizontal: {
+      badge: "দলের সাথে সাক্ষাৎ",
+      title: "আমাদের ক্রিয়েটিভ",
+      titleGradient: "দল",
+      description:
+        "পৃথিবী-মানের টেকনিক্যাল ইনফ্রাস্ট্রাকচার এবং কোয়ান্টাম কম্পিউটেশনাল ফ্রেমওয়ার্কের অর্কেস্ট্রেশনের জন্য নিযুক্ত সিস্টেম সার্বভৌম অপারেটররা।",
+      prevButton: "পূর্ববর্তী",
+      nextButton: "পরবর্তী",
+      systemStatus: "সিস্টেম স্ট্যাটাস: সক্রিয়",
+      allNodesActive: "সকল নোড সক্রিয়",
+      members: [
+        {
+          name: "হাফিজুর রহমান",
+          role: "লিড সিস্টেম আর্কিটেক্ট",
+          company: "টেক নোভা",
+          image: "/team/hafizur.jpg",
+          social: {
+            twitter: "https://twitter.com/hafizur",
+            github: "https://github.com/hafizur",
+            linkedin: "https://linkedin.com/in/hafizur",
+            instagram: "https://instagram.com/hafizur",
+          },
         },
-      },
-      {
-        name: "এলেনা ভ্যান্স",
-        role: "কৌশল প্রধান",
-        description: "জটিল মার্কেট ডেটাকে সুশৃঙ্খল রোডম্যাপে রূপান্তরিত করছেন।",
-        image: "/team/Elena.jpg",
-        social: {
-          email: "hafizur@growbusiness.solutions",
-          linkedin: "https://linkedin.com/in/hafizur",
-          github: "https://github.com/hafizur",
-          twitter: "https://twitter.com/hafizur",
-          facebook: "https://facebook.com/hafizur",
+        {
+          name: " শুকুর মাহমুদ",
+          role: "কোয়ান্টাম সিকিউরিটি লিড",
+          company: "সাইবারডাইন সিস্টেমস",
+          image: "/team/shukur.png",
+          social: {
+            twitter: "https://twitter.com/shukur",
+            github: "https://github.com/shukur",
+            linkedin: "https://linkedin.com/in/shukur",
+            instagram: "https://instagram.com/shukur",
+          },
         },
-      },
-      {
-        name: "জুলিয়ান ক্রস",
-        role: "লিড সিস্টেম আর্কিটেক্ট",
-        description: "শূন্য লেটেন্সি নির্ভুলতায় অদৃশ্য ভিত্তি নির্মাণ করছেন।",
-        image: "/team/Julian.jpg",
-        social: {
-          email: "hafizur@growbusiness.solutions",
-          linkedin: "https://linkedin.com/in/hafizur",
-          github: "https://github.com/hafizur",
-          twitter: "https://twitter.com/hafizur",
-          facebook: "https://facebook.com/hafizur",
+        {
+          name: "সারা চেন",
+          role: "প্রোডাক্ট মালিক",
+          company: "জিলা থিমস",
+          image: "/team/sarah.jpg",
+          social: {
+            twitter: "https://twitter.com/sarah",
+            github: "https://github.com/sarah",
+            linkedin: "https://linkedin.com/in/sarah",
+            instagram: "https://instagram.com/sarah",
+          },
         },
-      },
-      {
-        name: "মোঃ শুকুর মাহমুদ",
-        role: "প্রতিষ্ঠাতা ও ডেভেলপার",
-        description: "শূন্য লেটেন্সি নির্ভুলতায় অদৃশ্য ভিত্তি নির্মাণ করছেন।",
-        image: "/team/Shukur.png",
-        social: {
-          email: "hafizur@growbusiness.solutions",
-          linkedin: "https://linkedin.com/in/hafizur",
-          github: "https://github.com/hafizur",
-          twitter: "https://twitter.com/hafizur",
-          facebook: "https://facebook.com/hafizur",
+        {
+          name: "জুলিয়ান ক্রস",
+          role: "লিড আর্কিটেক্ট",
+          company: "মুন স্টুডিওস",
+          image: "/team/julian.jpg",
+          social: {
+            twitter: "https://twitter.com/julian",
+            github: "https://github.com/julian",
+            linkedin: "https://linkedin.com/in/julian",
+            instagram: "https://instagram.com/julian",
+          },
         },
-      },
-    ],
+        {
+          name: "এলেনা ভ্যান্স",
+          role: "এআই ইঞ্জিনিয়ার",
+          company: "নিউরাল ডায়নামিক্স",
+          image: "/team/elena.jpg",
+          social: {
+            twitter: "https://twitter.com/elena",
+            github: "https://github.com/elena",
+            linkedin: "https://linkedin.com/in/elena",
+            instagram: "https://instagram.com/elena",
+          },
+        },
+      ],
+    },
 
     // Tech Stack Section
     techStack: {
@@ -387,6 +536,81 @@ export const translations = {
       prevButton: "পূর্ববর্তী",
       nextButton: "পরবর্তী",
     },
+    // Projects
+    portfolioPage: {
+      badge: "আমাদের পোর্টফোলিও",
+      title: "সমস্ত",
+      titleGradient: "প্রজেক্ট",
+      description:
+        "আমাদের ডিজিটাল মাস্টারপিসের সম্পূর্ণ সংগ্রহ অন্বেষণ করুন — প্রতিটি প্রজেক্ট সৃজনশীলতা এবং প্রযুক্তিগত শ্রেষ্ঠত্বের সাথে সমাধান করা একটি অনন্য চ্যালেঞ্জকে প্রতিনিধিত্ব করে।",
+      stats: {
+        totalProjects: "মোট প্রজেক্ট",
+        clientSatisfaction: "ক্লায়েন্ট সন্তুষ্টি",
+        support: "সাপোর্ট",
+      },
+      noProjects: "কোনো প্রজেক্ট পাওয়া যায়নি।",
+      noProjectsDesc:
+        "এখানে প্রজেক্ট দেখতে অ্যাডমিন ড্যাশবোর্ড থেকে কিছু প্রজেক্ট যোগ করুন।",
+      showing: "দেখানো হচ্ছে",
+      project: "প্রজেক্ট",
+      projects: "প্রজেক্ট",
+    },
+
+    // premiumReviews
+    premiumReviews: {
+      badge: "সামাজিক প্রমাণ",
+      title: "যাদের আস্থা অর্জন করেছি",
+      titleGradient: "শিল্প নেতারা",
+      description:
+        "শুধু আমাদের কথায় বিশ্বাস করবেন না — বিশ্বজুড়ে আমাদের আশ্চর্যজনক ক্লায়েন্টদের কাছ থেকে শুনুন",
+      prevButton: "পূর্ববর্তী পর্যালোচনা",
+      nextButton: "পরবর্তী পর্যালোচনা",
+      swipeHint: "← স্লাইড করুন →",
+      trustBadges: {
+        rating: "৪.৯/৫ গড় রেটিং",
+        happyClients: "২০০+ সন্তুষ্ট ক্লায়েন্ট",
+        projectsDelivered: "৫০+ প্রজেক্ট ডেলিভারি",
+        support: "২৪/৭ সাপোর্ট",
+      },
+      testimonials: [
+        {
+          name: "আলেক্স রিভেরা",
+          role: "সিইও",
+          comment:
+            "প্রদত্ত পেশাদারিত্ব এবং প্রযুক্তিগত গভীরতা অসাধারণ ছিল। রিডিজাইনের পরে আমাদের কনভার্সন রেট ২০০% বৃদ্ধি পেয়েছে।",
+          company: "টেকভাইব",
+        },
+        {
+          name: "সোফিয়া চেন",
+          role: "প্রতিষ্ঠাতা",
+          comment:
+            "এই টিমের সাথে কাজ করা একটি গেম-চেঞ্জার ছিল। MERN স্ট্যাক এবং প্রিমিয়াম অ্যানিমেশনের প্রতি তাদের বোঝাপড়া শিল্পে অতুলনীয়।",
+          company: "গ্রিনলিফ",
+        },
+        {
+          name: "মার্কাস থর্ন",
+          role: "প্রোডাক্ট ম্যানেজার",
+          comment:
+            "দ্রুত, নির্ভরযোগ্য এবং অবিশ্বাস্যভাবে সৃজনশীল। তারা আমাদের জন্য যে কাস্টম ড্যাশবোর্ড তৈরি করেছে তা এখন আমাদের মূল প্রতিযোগিতামূলক সুবিধা।",
+          company: "ক্লাউডস্কেল",
+        },
+        {
+          name: "ইসাবেলা মার্টিনেজ",
+          role: "সিটিও",
+          comment:
+            "একদম অসাধারণ! বিস্তারিত মনোযোগ এবং শ্রেষ্ঠত্বের প্রতিশ্রুতি পাওয়া দুর্লভ। তারা সময়ের আগেই ডেলিভারি করেছে।",
+          company: "ইনোভেটহাব",
+        },
+        {
+          name: "ডেভিড কিম",
+          role: "টেকনিক্যাল ডিরেক্টর",
+          comment:
+            "এই বছর আমাদের করা সেরা বিনিয়োগ। আধুনিক ওয়েব প্রযুক্তিতে টিমের দক্ষতা আমাদের ডিজিটাল উপস্থিতি সম্পূর্ণরূপে রূপান্তরিত করেছে।",
+          company: "ডেভঅপস প্রো",
+        },
+      ],
+    },
+
     // portfolio
     portfolio: {
       badge: "নির্বাচিত কাজ",
@@ -395,6 +619,22 @@ export const translations = {
       exploreBtn: "সব আর্টিফ্যাক্ট দেখুন",
       loading: "প্রকল্প লোড হচ্ছে...",
     },
+    // dynamicPortfolioPage
+    dynamicPortfolioPage: {
+      badge: "আমাদের পোর্টফোলিও",
+      title: "ক্রিয়েটিভ",
+      titleGradient: "আর্টিফ্যাক্টস",
+      description:
+        "আমাদের ডিজিটাল মাস্টারপিসের সংগ্রহ অন্বেষণ করুন — প্রতিটি প্রকল্প সৃজনশীলতা এবং প্রযুক্তিগত উৎকর্ষের সাথে সমাধান করা একটি অনন্য চ্যালেঞ্জকে প্রতিনিধিত্ব করে।",
+      viewProject: "প্রকল্প দেখুন",
+      loadMore: "আরও প্রকল্প লোড করুন",
+      stats: {
+        totalProjects: "প্রকল্প ডেলিভারি",
+        clientSatisfaction: "ক্লায়েন্ট সন্তুষ্টি",
+        support: "সাপোর্ট",
+      },
+    },
+
     // contact us
     secureChannel: "সরাসরি পরামর্শ গেটওয়ে",
     initiate: "আপনার ব্র্যান্ডকে",

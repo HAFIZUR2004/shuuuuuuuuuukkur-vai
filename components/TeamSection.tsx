@@ -3,10 +3,26 @@
 import React, { useRef, useEffect } from "react";
 import Image from "next/image";
 import { motion, useScroll, useTransform } from "framer-motion";
-import { FiArrowRight, FiGithub, FiTwitter, FiInstagram, FiLinkedin } from "react-icons/fi";
+import {
+  FiArrowRight,
+  FiGithub,
+  FiTwitter,
+  FiInstagram,
+  FiLinkedin,
+} from "react-icons/fi";
+import { useLanguage } from "@/constants/LanguageContext";
+import { translations } from "@/constants/translations";
 
-const SocialLink = ({ href, icon, bgColor }: { href: string; icon: React.ReactNode; bgColor: string }) => (
-  <a 
+const SocialLink = ({
+  href,
+  icon,
+  bgColor,
+}: {
+  href: string;
+  icon: React.ReactNode;
+  bgColor: string;
+}) => (
+  <a
     href={href}
     target="_blank"
     rel="noopener noreferrer"
@@ -21,13 +37,26 @@ const TeamSection = () => {
   const containerRef = useRef<HTMLElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
+  const { lang } = useLanguage();
+  const t = translations[lang];
+  const teamData = t.teamHorizontal;
+  const members = teamData.members;
+
   const { scrollYProgress } = useScroll({
     target: containerRef,
     offset: ["start end", "end start"],
   });
-  
-  const opacity = useTransform(scrollYProgress, [0, 0.3, 0.7, 1], [0.3, 1, 1, 0.3]);
-  const scale = useTransform(scrollYProgress, [0, 0.3, 0.7, 1], [0.95, 1, 1, 0.95]);
+
+  const opacity = useTransform(
+    scrollYProgress,
+    [0, 0.3, 0.7, 1],
+    [0.3, 1, 1, 0.3],
+  );
+  const scale = useTransform(
+    scrollYProgress,
+    [0, 0.3, 0.7, 1],
+    [0.95, 1, 1, 0.95],
+  );
 
   const scrollNext = () => {
     if (scrollRef.current) {
@@ -40,44 +69,6 @@ const TeamSection = () => {
       scrollRef.current.scrollBy({ left: -350, behavior: "smooth" });
     }
   };
-
-  const members = [
-    { 
-      name: "Hafizur Rahman", 
-      role: "Lead Systems Architect", 
-      company: "Tech Nova", 
-      image: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=400&h=500&fit=crop",
-      social: { twitter: "#", github: "#", linkedin: "#", instagram: "#" }
-    },
-    { 
-      name: "Shukkur Ali", 
-      role: "Quantum Security Lead", 
-      company: "Cyberdyne Systems", 
-      image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=400&h=500&fit=crop",
-      social: { twitter: "#", github: "#", linkedin: "#", instagram: "#" }
-    },
-    { 
-      name: "Sarah Chen", 
-      role: "Product Owner", 
-      company: "Zilla Themes", 
-      image: "https://images.unsplash.com/photo-1580489944761-15a19d654956?q=80&w=400&h=500&fit=crop",
-      social: { twitter: "#", github: "#", linkedin: "#", instagram: "#" }
-    },
-    { 
-      name: "Julian Kross", 
-      role: "Lead Architect", 
-      company: "Moon Studios", 
-      image: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?q=80&w=400&h=500&fit=crop",
-      social: { twitter: "#", github: "#", linkedin: "#", instagram: "#" }
-    },
-    { 
-      name: "Elena Vance", 
-      role: "AI Engineer", 
-      company: "Neural Dynamics", 
-      image: "https://images.unsplash.com/photo-1573497019236-17f8177b81e8?q=80&w=400&h=500&fit=crop",
-      social: { twitter: "#", github: "#", linkedin: "#", instagram: "#" }
-    },
-  ];
 
   // Particle Network Canvas Effect
   useEffect(() => {
@@ -107,9 +98,12 @@ const TeamSection = () => {
         canvas.height = window.innerHeight;
       }
 
-      const nodeCount = Math.min(60, Math.floor((canvas.width * canvas.height) / 20000));
+      const nodeCount = Math.min(
+        60,
+        Math.floor((canvas.width * canvas.height) / 20000),
+      );
       nodes = [];
-      
+
       for (let i = 0; i < nodeCount; i++) {
         nodes.push({
           x: Math.random() * canvas.width,
@@ -117,19 +111,20 @@ const TeamSection = () => {
           vx: (Math.random() - 0.5) * 0.3,
           vy: (Math.random() - 0.5) * 0.3,
           r: Math.random() * 2.5 + 1,
-          color: Math.random() > 0.5 
-            ? `rgba(196, 181, 253, ${Math.random() * 0.5 + 0.3})`
-            : `rgba(165, 243, 252, ${Math.random() * 0.5 + 0.2})`,
+          color:
+            Math.random() > 0.5
+              ? `rgba(196, 181, 253, ${Math.random() * 0.5 + 0.3})`
+              : `rgba(165, 243, 252, ${Math.random() * 0.5 + 0.2})`,
           pulse: Math.random() * Math.PI * 2,
         });
       }
     };
 
-    canvas.style.position = 'absolute';
-    canvas.style.top = '0';
-    canvas.style.left = '0';
-    canvas.style.width = '100%';
-    canvas.style.height = '100%';
+    canvas.style.position = "absolute";
+    canvas.style.top = "0";
+    canvas.style.left = "0";
+    canvas.style.width = "100%";
+    canvas.style.height = "100%";
 
     resize();
     window.addEventListener("resize", resize);
@@ -137,7 +132,7 @@ const TeamSection = () => {
     const draw = () => {
       if (!ctx || !canvas) return;
       ctx.clearRect(0, 0, canvas.width, canvas.height);
-      
+
       if (nodes.length === 0) return;
 
       for (let i = 0; i < nodes.length; i++) {
@@ -145,20 +140,22 @@ const TeamSection = () => {
           const dx = nodes[i].x - nodes[j].x;
           const dy = nodes[i].y - nodes[j].y;
           const distance = Math.sqrt(dx * dx + dy * dy);
-          
+
           if (distance < 170) {
             ctx.beginPath();
             ctx.moveTo(nodes[i].x, nodes[i].y);
             ctx.lineTo(nodes[j].x, nodes[j].y);
-            
+
             const op = 0.1 * (1 - distance / 170);
             const gradient = ctx.createLinearGradient(
-              nodes[i].x, nodes[i].y,
-              nodes[j].x, nodes[j].y
+              nodes[i].x,
+              nodes[i].y,
+              nodes[j].x,
+              nodes[j].y,
             );
             gradient.addColorStop(0, `rgba(196, 181, 253, ${op})`);
             gradient.addColorStop(1, `rgba(165, 243, 252, ${op})`);
-            
+
             ctx.strokeStyle = gradient;
             ctx.lineWidth = 0.7;
             ctx.stroke();
@@ -169,36 +166,36 @@ const TeamSection = () => {
       nodes.forEach((node) => {
         const pulseRadius = node.r + Math.sin(node.pulse) * 0.4;
         node.pulse += 0.02;
-        
+
         ctx.beginPath();
         ctx.arc(node.x, node.y, pulseRadius, 0, Math.PI * 2);
         ctx.fillStyle = node.color;
         ctx.fill();
-        
+
         if (node.r > 1.5) {
           ctx.beginPath();
           ctx.arc(node.x, node.y, pulseRadius + 2, 0, Math.PI * 2);
           ctx.fillStyle = `rgba(196, 181, 253, 0.06)`;
           ctx.fill();
         }
-        
+
         node.x += node.vx;
         node.y += node.vy;
-        
+
         if (node.x < -50) node.x = canvas.width + 50;
         if (node.x > canvas.width + 50) node.x = -50;
         if (node.y < -50) node.y = canvas.height + 50;
         if (node.y > canvas.height + 50) node.y = -50;
       });
-      
+
       animId = requestAnimationFrame(draw);
     };
-    
+
     setTimeout(() => {
       resize();
       draw();
     }, 100);
-    
+
     return () => {
       cancelAnimationFrame(animId);
       window.removeEventListener("resize", resize);
@@ -206,7 +203,7 @@ const TeamSection = () => {
   }, []);
 
   return (
-    <section 
+    <section
       ref={containerRef}
       className="relative bg-gradient-to-br from-[#0b0c18] via-[#0f0f1a] to-[#0b0c18] py-24 px-6 md:px-10 overflow-hidden"
     >
@@ -217,17 +214,23 @@ const TeamSection = () => {
       />
 
       <div className="absolute top-0 left-0 w-[500px] h-[500px] bg-purple-600/10 blur-[120px] rounded-full -translate-x-1/2 -translate-y-1/2 pointer-events-none z-0 animate-pulse" />
-      <div className="absolute bottom-0 right-0 w-[500px] h-[500px] bg-cyan-500/10 blur-[120px] rounded-full translate-x-1/2 translate-y-1/2 pointer-events-none z-0 animate-pulse" style={{ animationDelay: '2s' }} />
+      <div
+        className="absolute bottom-0 right-0 w-[500px] h-[500px] bg-cyan-500/10 blur-[120px] rounded-full translate-x-1/2 translate-y-1/2 pointer-events-none z-0 animate-pulse"
+        style={{ animationDelay: "2s" }}
+      />
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-gradient-to-r from-purple-500/5 to-cyan-500/5 blur-[100px] rounded-full pointer-events-none z-0" />
 
       <div className="absolute inset-0 pointer-events-none z-0 opacity-[0.03]">
-        <div className="absolute inset-0" style={{
-          backgroundImage: `radial-gradient(circle at 1px 1px, white 1px, transparent 1px)`,
-          backgroundSize: '40px 40px'
-        }} />
+        <div
+          className="absolute inset-0"
+          style={{
+            backgroundImage: `radial-gradient(circle at 1px 1px, white 1px, transparent 1px)`,
+            backgroundSize: "40px 40px",
+          }}
+        />
       </div>
-      
-      <motion.div 
+
+      <motion.div
         style={{ opacity, scale }}
         className="max-w-7xl mx-auto relative z-10"
       >
@@ -241,7 +244,7 @@ const TeamSection = () => {
           >
             <div className="h-px w-8 bg-gradient-to-r from-transparent to-cyan-500" />
             <p className="text-cyan-400 font-mono text-xs uppercase tracking-[0.3em] font-semibold">
-              MEET THE COLLECTIVE
+              {teamData.badge}
             </p>
             <div className="h-px w-8 bg-gradient-to-l from-transparent to-cyan-500" />
           </motion.div>
@@ -255,13 +258,13 @@ const TeamSection = () => {
           >
             <h2 className="text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-black tracking-tighter leading-tight">
               <span className="bg-gradient-to-r from-white via-white to-white/70 bg-clip-text text-transparent">
-                Our Creative
+                {teamData.title}
               </span>
               <br />
               <span className="relative inline-block mt-2">
                 <span className="absolute -inset-2 bg-gradient-to-r from-purple-600/20 to-cyan-500/20 blur-2xl" />
                 <span className="relative text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-purple-500 to-cyan-400">
-                  Collective
+                  {teamData.titleGradient}
                 </span>
               </span>
             </h2>
@@ -274,34 +277,39 @@ const TeamSection = () => {
             viewport={{ once: true }}
             className="text-white/40 text-base md:text-lg max-w-2xl mx-auto mt-6 leading-relaxed"
           >
-            System sovereign operators tasked with the orchestration of
-            planetary-scale technical infrastructure and quantum computational frameworks.
+            {teamData.description}
           </motion.p>
         </div>
 
         <div className="flex justify-center gap-3 mb-8">
-          <button 
+          <button
             onClick={scrollPrev}
             className="group flex items-center justify-center w-12 h-12 bg-white/[0.05] border border-white/10 rounded-full shadow-sm hover:bg-cyan-500/20 hover:text-white hover:border-cyan-500/50 transition-all duration-300"
           >
-            <FiArrowRight size={20} className="rotate-180 text-white/60 group-hover:text-cyan-400 group-hover:-translate-x-1 transition-transform" />
+            <FiArrowRight
+              size={20}
+              className="rotate-180 text-white/60 group-hover:text-cyan-400 group-hover:-translate-x-1 transition-transform"
+            />
           </button>
-          
-          <button 
+
+          <button
             onClick={scrollNext}
             className="group flex items-center justify-center w-12 h-12 bg-gradient-to-r from-purple-600/20 to-cyan-500/20 border border-purple-500/30 rounded-full shadow-sm hover:bg-gradient-to-r hover:from-purple-600/40 hover:to-cyan-500/40 transition-all duration-300"
           >
-            <FiArrowRight size={20} className="text-white/80 group-hover:text-cyan-400 group-hover:translate-x-1 transition-transform" />
+            <FiArrowRight
+              size={20}
+              className="text-white/80 group-hover:text-cyan-400 group-hover:translate-x-1 transition-transform"
+            />
           </button>
         </div>
 
-        <div 
+        <div
           ref={scrollRef}
           className="flex gap-8 overflow-x-auto pb-10 hide-scrollbar"
-          style={{ 
+          style={{
             scrollSnapType: "x mandatory",
             scrollbarWidth: "none",
-            msOverflowStyle: "none"
+            msOverflowStyle: "none",
           }}
         >
           {members.map((member, idx) => (
@@ -326,25 +334,44 @@ const TeamSection = () => {
 
               <div className="p-6 bg-transparent">
                 <h3 className="text-2xl font-semibold text-white leading-tight">
-                  {member.name.split(' ')[0]} <span className="font-light text-white/50">{member.name.split(' ').slice(1).join(' ')}</span>
+                  {member.name.split(" ")[0]}{" "}
+                  <span className="font-light text-white/50">
+                    {member.name.split(" ").slice(1).join(" ")}
+                  </span>
                 </h3>
                 <p className="text-cyan-400 mt-2 text-sm font-medium">
                   {member.role}
                 </p>
-                <p className="text-white/30 text-xs mt-1">
-                  {member.company}
-                </p>
+                <p className="text-white/30 text-xs mt-1">{member.company}</p>
               </div>
 
               <div className="absolute top-0 left-0 w-full h-14 bg-gradient-to-r from-gray-900/95 to-gray-800/95 backdrop-blur-sm -translate-y-full group-hover:translate-y-0 transition-transform duration-400 ease-out flex z-20">
-                <SocialLink href={member.social.twitter} icon={<FiTwitter />} bgColor="hover:bg-[#1DA1F2]" />
-                <SocialLink href={member.social.github} icon={<FiGithub />} bgColor="hover:bg-[#333]" />
-                <SocialLink href={member.social.linkedin} icon={<FiLinkedin />} bgColor="hover:bg-[#0077B5]" />
-                <SocialLink href={member.social.instagram} icon={<FiInstagram />} bgColor="hover:bg-gradient-to-r from-[#833AB4] via-[#E4405F] to-[#F56040]" />
+                <SocialLink
+                  href={member.social.twitter}
+                  icon={<FiTwitter />}
+                  bgColor="hover:bg-[#1DA1F2]"
+                />
+                <SocialLink
+                  href={member.social.github}
+                  icon={<FiGithub />}
+                  bgColor="hover:bg-[#333]"
+                />
+                <SocialLink
+                  href={member.social.linkedin}
+                  icon={<FiLinkedin />}
+                  bgColor="hover:bg-[#0077B5]"
+                />
+                <SocialLink
+                  href={member.social.instagram}
+                  icon={<FiInstagram />}
+                  bgColor="hover:bg-gradient-to-r from-[#833AB4] via-[#E4405F] to-[#F56040]"
+                />
               </div>
 
               <div className="absolute top-4 right-4 w-8 h-8 rounded-full bg-black/50 backdrop-blur-sm border border-white/10 flex items-center justify-center z-10">
-                <span className="text-cyan-400 text-xs font-mono">0{idx + 1}</span>
+                <span className="text-cyan-400 text-xs font-mono">
+                  0{idx + 1}
+                </span>
               </div>
 
               <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none">
@@ -354,7 +381,7 @@ const TeamSection = () => {
           ))}
         </div>
 
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
           transition={{ delay: 0.5 }}
@@ -362,12 +389,15 @@ const TeamSection = () => {
         >
           <div className="flex gap-2">
             {members.map((_, idx) => (
-              <div 
+              <div
                 key={idx}
                 className="w-1.5 h-1.5 rounded-full bg-white/20 transition-all duration-300 hover:bg-cyan-400 hover:w-3 cursor-pointer"
                 onClick={() => {
                   if (scrollRef.current) {
-                    scrollRef.current.scrollTo({ left: idx * 368, behavior: "smooth" });
+                    scrollRef.current.scrollTo({
+                      left: idx * 368,
+                      behavior: "smooth",
+                    });
                   }
                 }}
               />
@@ -385,13 +415,13 @@ const TeamSection = () => {
           <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-white/[0.02] border border-white/5">
             <div className="w-1.5 h-1.5 rounded-full bg-cyan-500 animate-pulse" />
             <span className="text-white/40 text-[10px] font-mono uppercase tracking-wider">
-              SYSTEM STATUS: OPERATIONAL
+              {teamData.systemStatus}
             </span>
           </div>
           <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-white/[0.02] border border-white/5">
             <div className="w-1.5 h-1.5 rounded-full bg-purple-500 animate-pulse" />
             <span className="text-white/40 text-[10px] font-mono uppercase tracking-wider">
-              ALL NODES ACTIVE
+              {teamData.allNodesActive}
             </span>
           </div>
         </motion.div>

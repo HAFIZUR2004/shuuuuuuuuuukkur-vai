@@ -14,8 +14,8 @@ export default function Home() {
       <SuccessSection />
       <TeamSection />
       <TechStack />
-      <PremiumReviews/>
-      <DynamicPortfolioPage/>
+      <PremiumReviews />
+      <DynamicPortfolioPage />
     </main>
   );
 }

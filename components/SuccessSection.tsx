@@ -4,44 +4,53 @@ import { useLanguage } from "@/constants/LanguageContext";
 import { translations } from "@/constants/translations";
 import React, { useEffect, useRef, useState } from "react";
 import { useInView } from "react-intersection-observer";
-import { motion, useScroll, useTransform } from "framer-motion";
-import { 
-  Star, 
-  Rocket, 
-  CheckCircle, 
-  Trophy, 
-  Briefcase, 
+import { motion, useScroll, useTransform, Variants } from "framer-motion";
+import {
+  Star,
+  Rocket,
+  Trophy,
+  Briefcase,
   Clock,
   Users,
-  Award
+  Award,
 } from "lucide-react";
 
-const stats = [
+// ✅ টার্গেট ভ্যালু সহ stats কনফিগ (শুধু icon, targetValue, suffix)
+const statsConfig = [
   {
-    title: "2+ Years",
-    desc: "Of dedicated craft in digital architecture.",
     icon: Clock,
     isCounter: true,
-    targetValue: 2,
+    targetValue: 8,
     suffix: "+",
   },
   {
-    title: "2 Projects",
-    desc: "High-impact solutions delivered globally.",
     icon: Briefcase,
     isCounter: true,
-    targetValue: 2,
+    targetValue: 20,
     suffix: "+",
   },
   {
-    title: "100% Client",
-    desc: "Satisfaction rate across all partnerships.",
     icon: Users,
     isCounter: true,
     targetValue: 100,
     suffix: "%",
   },
 ];
+
+// ✅ সঠিক টাইপ সহ variants
+const cardVariants: Variants = {
+  hidden: { opacity: 0, y: 50 },
+  visible: (i: number) => ({
+    opacity: 1,
+    y: 0,
+    transition: {
+      delay: i * 0.15,
+      duration: 0.6,
+      type: "spring" as const, // ← 'as const' যোগ করুন
+      stiffness: 100,
+    },
+  }),
+};
 
 const SuccessSection = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -54,6 +63,7 @@ const SuccessSection = () => {
 
   const { lang } = useLanguage();
   const t = translations[lang];
+  const statsData = t.stats;
 
   // Scroll animation
   const { scrollYProgress } = useScroll({
@@ -66,7 +76,7 @@ const SuccessSection = () => {
   // কাউন্টার অ্যানিমেশন
   useEffect(() => {
     if (inView) {
-      stats.forEach((stat, idx) => {
+      statsConfig.forEach((stat, idx) => {
         if (stat.isCounter) {
           let start = 0;
           const end = stat.targetValue;
@@ -125,9 +135,12 @@ const SuccessSection = () => {
         canvas.height = window.innerHeight;
       }
 
-      const nodeCount = Math.min(60, Math.floor((canvas.width * canvas.height) / 20000));
+      const nodeCount = Math.min(
+        60,
+        Math.floor((canvas.width * canvas.height) / 20000),
+      );
       nodes = [];
-      
+
       for (let i = 0; i < nodeCount; i++) {
         nodes.push({
           x: Math.random() * canvas.width,
@@ -135,19 +148,20 @@ const SuccessSection = () => {
           vx: (Math.random() - 0.5) * 0.3,
           vy: (Math.random() - 0.5) * 0.3,
           r: Math.random() * 2.5 + 1,
-          color: Math.random() > 0.5 
-            ? `rgba(196, 181, 253, ${Math.random() * 0.5 + 0.3})`
-            : `rgba(165, 243, 252, ${Math.random() * 0.5 + 0.2})`,
+          color:
+            Math.random() > 0.5
+              ? `rgba(196, 181, 253, ${Math.random() * 0.5 + 0.3})`
+              : `rgba(165, 243, 252, ${Math.random() * 0.5 + 0.2})`,
           pulse: Math.random() * Math.PI * 2,
         });
       }
     };
 
-    canvas.style.position = 'absolute';
-    canvas.style.top = '0';
-    canvas.style.left = '0';
-    canvas.style.width = '100%';
-    canvas.style.height = '100%';
+    canvas.style.position = "absolute";
+    canvas.style.top = "0";
+    canvas.style.left = "0";
+    canvas.style.width = "100%";
+    canvas.style.height = "100%";
 
     resize();
     window.addEventListener("resize", resize);
@@ -155,29 +169,30 @@ const SuccessSection = () => {
     const draw = () => {
       if (!ctx || !canvas) return;
       ctx.clearRect(0, 0, canvas.width, canvas.height);
-      
+
       if (nodes.length === 0) return;
 
-      // Draw connecting lines
       for (let i = 0; i < nodes.length; i++) {
         for (let j = i + 1; j < nodes.length; j++) {
           const dx = nodes[i].x - nodes[j].x;
           const dy = nodes[i].y - nodes[j].y;
           const distance = Math.sqrt(dx * dx + dy * dy);
-          
+
           if (distance < 170) {
             ctx.beginPath();
             ctx.moveTo(nodes[i].x, nodes[i].y);
             ctx.lineTo(nodes[j].x, nodes[j].y);
-            
+
             const opacity = 0.1 * (1 - distance / 170);
             const gradient = ctx.createLinearGradient(
-              nodes[i].x, nodes[i].y,
-              nodes[j].x, nodes[j].y
+              nodes[i].x,
+              nodes[i].y,
+              nodes[j].x,
+              nodes[j].y,
             );
             gradient.addColorStop(0, `rgba(196, 181, 253, ${opacity})`);
             gradient.addColorStop(1, `rgba(165, 243, 252, ${opacity})`);
-            
+
             ctx.strokeStyle = gradient;
             ctx.lineWidth = 0.7;
             ctx.stroke();
@@ -185,61 +200,55 @@ const SuccessSection = () => {
         }
       }
 
-      // Draw nodes with pulse effect
       nodes.forEach((node) => {
         const pulseRadius = node.r + Math.sin(node.pulse) * 0.4;
         node.pulse += 0.02;
-        
+
         ctx.beginPath();
         ctx.arc(node.x, node.y, pulseRadius, 0, Math.PI * 2);
         ctx.fillStyle = node.color;
         ctx.fill();
-        
-        // Glow effect
+
         if (node.r > 1.5) {
           ctx.beginPath();
           ctx.arc(node.x, node.y, pulseRadius + 2, 0, Math.PI * 2);
           ctx.fillStyle = `rgba(196, 181, 253, 0.06)`;
           ctx.fill();
         }
-        
+
         node.x += node.vx;
         node.y += node.vy;
-        
-        // Wrap around edges
+
         if (node.x < -50) node.x = canvas.width + 50;
         if (node.x > canvas.width + 50) node.x = -50;
         if (node.y < -50) node.y = canvas.height + 50;
         if (node.y > canvas.height + 50) node.y = -50;
       });
-      
+
       animId = requestAnimationFrame(draw);
     };
-    
+
     setTimeout(() => {
       resize();
       draw();
     }, 100);
-    
+
     return () => {
       cancelAnimationFrame(animId);
       window.removeEventListener("resize", resize);
     };
   }, []);
 
-  const cardVariants = {
-    hidden: { opacity: 0, y: 50 },
-    visible: (i: number) => ({
-      opacity: 1,
-      y: 0,
-      transition: {
-        delay: i * 0.15,
-        duration: 0.6,
-        type: "spring",
-        stiffness: 100,
-      },
-    }),
-  };
+  // Trust badges from translation
+  const trustBadges = [
+    {
+      icon: Trophy,
+      text: t.trustBadges?.projectsCompleted || "8+ Projects Completed",
+    },
+    { icon: Star, text: t.trustBadges?.fiveStarRating || "5 Star Rating" },
+    { icon: Rocket, text: t.trustBadges?.onTimeDelivery || "On-Time Delivery" },
+    { icon: Award, text: t.trustBadges?.premiumQuality || "Premium Quality" },
+  ];
 
   return (
     <section
@@ -260,18 +269,24 @@ const SuccessSection = () => {
 
       {/* Enhanced Glow Effects */}
       <div className="absolute top-0 left-0 w-[500px] h-[500px] bg-purple-600/10 blur-[120px] rounded-full -translate-x-1/2 -translate-y-1/2 pointer-events-none z-0 animate-pulse" />
-      <div className="absolute bottom-0 right-0 w-[500px] h-[500px] bg-cyan-500/10 blur-[120px] rounded-full translate-x-1/2 translate-y-1/2 pointer-events-none z-0 animate-pulse" style={{ animationDelay: '2s' }} />
+      <div
+        className="absolute bottom-0 right-0 w-[500px] h-[500px] bg-cyan-500/10 blur-[120px] rounded-full translate-x-1/2 translate-y-1/2 pointer-events-none z-0 animate-pulse"
+        style={{ animationDelay: "2s" }}
+      />
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-gradient-to-r from-purple-500/5 to-cyan-500/5 blur-[100px] rounded-full pointer-events-none z-0" />
 
       {/* Subtle Grid Pattern */}
       <div className="absolute inset-0 pointer-events-none z-0 opacity-[0.03]">
-        <div className="absolute inset-0" style={{
-          backgroundImage: `radial-gradient(circle at 1px 1px, white 1px, transparent 1px)`,
-          backgroundSize: '40px 40px'
-        }} />
+        <div
+          className="absolute inset-0"
+          style={{
+            backgroundImage: `radial-gradient(circle at 1px 1px, white 1px, transparent 1px)`,
+            backgroundSize: "40px 40px",
+          }}
+        />
       </div>
 
-      <motion.div 
+      <motion.div
         style={{ opacity, scale }}
         className="max-w-7xl mx-auto relative z-10"
       >
@@ -286,7 +301,7 @@ const SuccessSection = () => {
           >
             <div className="h-px w-8 bg-gradient-to-r from-transparent to-cyan-500" />
             <p className="text-cyan-400 font-mono text-xs uppercase tracking-[0.3em] font-semibold">
-              {t.successBadge || "Our Achievements"}
+              {t.successBadge}
             </p>
             <div className="h-px w-8 bg-gradient-to-l from-transparent to-cyan-500" />
           </motion.div>
@@ -300,13 +315,13 @@ const SuccessSection = () => {
           >
             <h2 className="text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-black tracking-tighter leading-tight">
               <span className="bg-gradient-to-r from-white via-white to-white/70 bg-clip-text text-transparent">
-                Success in
+                {t.successTitle}
               </span>
               <br />
               <span className="relative inline-block mt-2">
                 <span className="absolute -inset-2 bg-gradient-to-r from-purple-600/20 to-cyan-500/20 blur-2xl" />
                 <span className="relative text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-purple-500 to-cyan-400">
-                  Numbers
+                  {t.successTitleGradient}
                 </span>
               </span>
             </h2>
@@ -319,16 +334,17 @@ const SuccessSection = () => {
             viewport={{ once: true }}
             className="text-white/40 text-base md:text-lg max-w-2xl mx-auto mt-6 leading-relaxed"
           >
-            Delivering excellence through measurable results and client satisfaction
+            {t.successDescription}
           </motion.p>
         </div>
 
-        {/* Stats Cards with Animated Counters & Lucide Icons */}
+        {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
-          {stats.map((config, i) => {
+          {statsConfig.map((config, i) => {
             const IconComponent = config.icon;
             const counterValue = counters[i];
-            
+            const statInfo = statsData[i];
+
             return (
               <motion.div
                 key={i}
@@ -340,28 +356,27 @@ const SuccessSection = () => {
                 whileHover={{ y: -10 }}
                 className="group relative rounded-3xl bg-white/[0.02] backdrop-blur-sm border border-white/5 overflow-hidden transition-all duration-500 hover:border-purple-500/30 hover:shadow-2xl"
               >
-                {/* Animated Gradient Background */}
                 <div className="absolute inset-0 bg-gradient-to-br from-purple-600/5 via-transparent to-cyan-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
-                
-                {/* Glow on Hover */}
                 <div className="absolute -inset-1 bg-gradient-to-r from-purple-600/20 to-cyan-500/20 blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
 
                 <div className="relative p-8 md:p-10 text-center">
-                  {/* Lucide Icon with Animation */}
                   <motion.div
                     initial={{ scale: 0, rotate: -180 }}
                     whileInView={{ scale: 1, rotate: 0 }}
-                    transition={{ delay: i * 0.1 + 0.3, type: "spring", stiffness: 200 }}
+                    transition={{
+                      delay: i * 0.1 + 0.3,
+                      type: "spring" as const,
+                      stiffness: 200,
+                    }}
                     viewport={{ once: true }}
                     className="w-16 h-16 mx-auto mb-6 flex items-center justify-center rounded-2xl bg-gradient-to-br from-purple-500/10 to-cyan-500/10 border border-white/10 group-hover:scale-110 transition-transform duration-300"
                   >
-                    <IconComponent 
+                    <IconComponent
                       className="w-8 h-8 text-white/80 group-hover:text-cyan-400 transition-colors duration-300"
                       strokeWidth={1.5}
                     />
                   </motion.div>
 
-                  {/* Counter Value */}
                   <motion.h3
                     initial={{ opacity: 0, y: 20 }}
                     whileInView={{ opacity: 1, y: 0 }}
@@ -375,7 +390,6 @@ const SuccessSection = () => {
                     </span>
                   </motion.h3>
 
-                  {/* Title */}
                   <motion.p
                     initial={{ opacity: 0 }}
                     whileInView={{ opacity: 1 }}
@@ -383,10 +397,9 @@ const SuccessSection = () => {
                     viewport={{ once: true }}
                     className="text-white/60 text-sm font-semibold mb-2"
                   >
-                    {config.title}
+                    {statInfo?.title}
                   </motion.p>
 
-                  {/* Description */}
                   <motion.p
                     initial={{ opacity: 0 }}
                     whileInView={{ opacity: 1 }}
@@ -394,10 +407,9 @@ const SuccessSection = () => {
                     viewport={{ once: true }}
                     className="text-white/40 text-xs leading-relaxed max-w-[200px] mx-auto"
                   >
-                    {config.desc}
+                    {statInfo?.desc}
                   </motion.p>
 
-                  {/* Animated Underline */}
                   <motion.div
                     initial={{ width: 0 }}
                     whileInView={{ width: 60 }}
@@ -411,7 +423,7 @@ const SuccessSection = () => {
           })}
         </div>
 
-        {/* Trust Badges with Lucide Icons */}
+        {/* Trust Badges */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -419,12 +431,7 @@ const SuccessSection = () => {
           viewport={{ once: true }}
           className="flex flex-wrap justify-center gap-6 md:gap-10 mt-16 pt-8 border-t border-white/5"
         >
-          {[
-            { icon: Trophy, text: "2 Projects Completed" },
-            { icon: Star, text: "5 Star Rating" },
-            { icon: Rocket, text: "On-Time Delivery" },
-            { icon: Award, text: "Premium Quality" }
-          ].map((badge, idx) => {
+          {trustBadges.map((badge, idx) => {
             const BadgeIcon = badge.icon;
             return (
               <motion.div
@@ -432,7 +439,10 @@ const SuccessSection = () => {
                 whileHover={{ scale: 1.05 }}
                 className="flex items-center gap-2 px-4 py-2 rounded-full bg-white/[0.02] border border-white/5 hover:border-purple-500/30 transition-all duration-300"
               >
-                <BadgeIcon className="w-4 h-4 text-cyan-400" strokeWidth={1.5} />
+                <BadgeIcon
+                  className="w-4 h-4 text-cyan-400"
+                  strokeWidth={1.5}
+                />
                 <span className="text-white/40 text-[10px] md:text-xs font-mono uppercase tracking-wider whitespace-nowrap">
                   {badge.text}
                 </span>

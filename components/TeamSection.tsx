@@ -332,7 +332,6 @@ const TeamSection = () => {
             msOverflowStyle: "none",
           }}
         >
-          {/* ✅ any সরিয়ে TeamMember টাইপ ব্যবহার করা হয়েছে */}
           {members.map((member: TeamMember, idx: number) => (
             <motion.div
               key={idx}

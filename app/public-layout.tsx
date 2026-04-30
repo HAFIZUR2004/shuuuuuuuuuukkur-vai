@@ -1,7 +1,6 @@
 "use client";
 
 import { ReactNode, useEffect, useState } from "react";
-import { usePathname } from "next/navigation";
 import Footer from "@/components/Footer";
 
 interface PublicLayoutProps {
@@ -9,7 +8,10 @@ interface PublicLayoutProps {
   showFooter?: boolean;
 }
 
-export function PublicLayout({ children, showFooter = true }: PublicLayoutProps) {
+export function PublicLayout({
+  children,
+  showFooter = true,
+}: PublicLayoutProps) {
   const [isPageReady, setIsPageReady] = useState(false);
 
   useEffect(() => {

@@ -13,7 +13,6 @@ import {
   FaShieldAlt,
   FaFacebookF,
 } from "react-icons/fa";
-import { FiArrowUpRight } from "react-icons/fi";
 import { FaInstagram, FaXTwitter } from "react-icons/fa6";
 import { useLanguage } from "@/constants/LanguageContext";
 
@@ -67,7 +66,10 @@ export default function Footer() {
       // Draw connection lines (wireframe)
       for (let i = 0; i < nodes.length; i++) {
         for (let j = i + 1; j < nodes.length; j++) {
-          const d = Math.hypot(nodes[i].x - nodes[j].x, nodes[i].y - nodes[j].y);
+          const d = Math.hypot(
+            nodes[i].x - nodes[j].x,
+            nodes[i].y - nodes[j].y,
+          );
           if (d < 100) {
             ctx.beginPath();
             ctx.moveTo(nodes[i].x, nodes[i].y);
@@ -86,7 +88,7 @@ export default function Footer() {
         ctx.arc(n.x, n.y, n.r, 0, Math.PI * 2);
         ctx.fillStyle = "rgba(16, 185, 129, 0.4)";
         ctx.fill();
-        
+
         ctx.beginPath();
         ctx.arc(n.x, n.y, n.r * 0.4, 0, Math.PI * 2);
         ctx.fillStyle = "rgba(16, 185, 129, 0.8)";
@@ -145,16 +147,17 @@ export default function Footer() {
       ref={footerRef}
       className="relative text-white pt-20 pb-10 px-6 md:px-12 overflow-hidden border-t border-white/10"
       style={{
-        background: 'linear-gradient(135deg, #03050b 0%, #0a0c18 50%, #02040a 100%)'
+        background:
+          "linear-gradient(135deg, #03050b 0%, #0a0c18 50%, #02040a 100%)",
       }}
     >
       {/* Subtle Grid Pattern */}
-      <div 
+      <div
         className="absolute inset-0 pointer-events-none z-0 opacity-[0.03]"
         style={{
           backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fillRule='evenodd'%3E%3Cg fill='%2310b981' fillOpacity='0.4'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
-          backgroundRepeat: 'repeat',
-          backgroundSize: '30px 30px'
+          backgroundRepeat: "repeat",
+          backgroundSize: "30px 30px",
         }}
       />
 
@@ -172,7 +175,7 @@ export default function Footer() {
           {/* Brand */}
           <div className="lg:col-span-5 space-y-6 reveal-item">
             <div className="flex items-center gap-4">
-              <div className="relative w-12 h-12 bg-gradient-to-br from-emerald-500/20 to-emerald-700/20 rounded-xl p-1 border border-emerald-500/30">
+              <div className="relative w-12 h-12 bg-white rounded-xl p-1 border border-emerald-500/30">
                 <Image
                   src="https://i.postimg.cc/yYds37Q3/logo-preview.png"
                   alt="Logo"
@@ -191,12 +194,15 @@ export default function Footer() {
               </div>
             </div>
             <p className="text-base text-white/50 leading-relaxed max-w-sm">
-              {t.footerDesc || "Enterprise-grade web solutions for the modern era. Trusted by government projects and global businesses."}
+              {t.footerDesc ||
+                "Enterprise-grade web solutions for the modern era. Trusted by government projects and global businesses."}
             </p>
             {/* Trust Badge */}
             <div className="flex items-center gap-2 pt-1">
               <div className="w-1 h-1 rounded-full bg-emerald-400 animate-pulse" />
-              <span className="text-[9px] font-mono text-emerald-400/50 tracking-[0.2em]">OPERATIONAL_READINESS</span>
+              <span className="text-[9px] font-mono text-emerald-400/50 tracking-[0.2em]">
+                OPERATIONAL_READINESS
+              </span>
             </div>
           </div>
 
@@ -208,15 +214,17 @@ export default function Footer() {
               </h4>
               <ul className="space-y-3 text-sm font-medium text-white/40">
                 {[
-                  t.development || "Development", 
-                  t.strategy || "Strategy", 
-                  t.security || "Security"
+                  t.development || "Development",
+                  t.strategy || "Strategy",
+                  t.security || "Security",
                 ].map((item, idx) => (
                   <li
                     key={idx}
                     className="hover:text-emerald-400 transition-all duration-300 cursor-pointer flex items-center gap-2 group"
                   >
-                    <span className="text-emerald-500 opacity-0 group-hover:opacity-100 transition-opacity">✦</span>
+                    <span className="text-emerald-500 opacity-0 group-hover:opacity-100 transition-opacity">
+                      ✦
+                    </span>
                     <span>{item}</span>
                   </li>
                 ))}
@@ -228,15 +236,17 @@ export default function Footer() {
               </h4>
               <ul className="space-y-3 text-sm font-medium text-white/40">
                 {[
-                  t.corev3 || "Core v3.0", 
-                  t.uptime || "99.99% Uptime", 
-                  t.nodes || "Global Nodes"
+                  t.corev3 || "Core v3.0",
+                  t.uptime || "99.99% Uptime",
+                  t.nodes || "Global Nodes",
                 ].map((item, idx) => (
                   <li
                     key={idx}
                     className="hover:text-emerald-400 transition-all duration-300 cursor-pointer flex items-center gap-2 group"
                   >
-                    <span className="text-emerald-500 opacity-0 group-hover:opacity-100 transition-opacity">✦</span>
+                    <span className="text-emerald-500 opacity-0 group-hover:opacity-100 transition-opacity">
+                      ✦
+                    </span>
                     <span>{item}</span>
                   </li>
                 ))}
@@ -261,11 +271,23 @@ export default function Footer() {
               </p>
               <div className="flex gap-3 lg:justify-end">
                 {[
-                  { Icon: FaFacebookF, url: "https://www.facebook.com/growbusinesssolutionsbd" },
-                  { Icon: FaGithub, url: "https://github.com/Grow-Businesssolutionsbd" },
+                  {
+                    Icon: FaFacebookF,
+                    url: "https://www.facebook.com/growbusinesssolutionsbd",
+                  },
+                  {
+                    Icon: FaGithub,
+                    url: "https://github.com/Grow-Businesssolutionsbd",
+                  },
                   { Icon: FaXTwitter, url: "https://x.com/GrowBS_BD" },
-                  { Icon: FaInstagram, url: "https://www.instagram.com/growbusinesssolutions/" },
-                  { Icon: FaLinkedinIn, url: "https://www.linkedin.com/company/grow-business-solutionsbd/" },
+                  {
+                    Icon: FaInstagram,
+                    url: "https://www.instagram.com/growbusinesssolutions/",
+                  },
+                  {
+                    Icon: FaLinkedinIn,
+                    url: "https://www.linkedin.com/company/grow-business-solutionsbd/",
+                  },
                 ].map((social, i) => (
                   <a
                     key={i}
@@ -274,7 +296,10 @@ export default function Footer() {
                     rel="noopener noreferrer"
                     className="w-9 h-9 flex items-center justify-center rounded-lg bg-white/5 border border-white/10 hover:bg-emerald-500 hover:border-emerald-500 hover:text-black transition-all duration-300 group"
                   >
-                    <social.Icon size={14} className="transition-transform group-hover:scale-110" />
+                    <social.Icon
+                      size={14}
+                      className="transition-transform group-hover:scale-110"
+                    />
                   </a>
                 ))}
               </div>
@@ -307,7 +332,10 @@ export default function Footer() {
           >
             <span>{t.returnTop || "BACK TO TOP"}</span>
             <div className="w-7 h-7 rounded-full border border-white/10 flex items-center justify-center group-hover:bg-emerald-500 group-hover:border-emerald-500 group-hover:text-black transition-all duration-300">
-              <FaChevronUp size={11} className="group-hover:-translate-y-0.5 transition-transform" />
+              <FaChevronUp
+                size={11}
+                className="group-hover:-translate-y-0.5 transition-transform"
+              />
             </div>
           </button>
         </div>

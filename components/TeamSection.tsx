@@ -13,6 +13,22 @@ import {
 import { useLanguage } from "@/constants/LanguageContext";
 import { translations } from "@/constants/translations";
 
+// ✅ টাইপ ডিফাইন করুন
+interface SocialLinks {
+  twitter: string;
+  github: string;
+  linkedin: string;
+  instagram: string;
+}
+
+interface TeamMember {
+  name: string;
+  role: string;
+  company: string;
+  image: string;
+  social: SocialLinks;
+}
+
 const SocialLink = ({
   href,
   icon,
@@ -41,7 +57,7 @@ const TeamSection = () => {
   const t = translations[lang];
 
   const teamData = t.teamHorizontal;
-  const members = teamData.members;
+  const members: TeamMember[] = teamData.members;
 
   const { scrollYProgress } = useScroll({
     target: containerRef,
@@ -79,7 +95,8 @@ const TeamSection = () => {
     if (!ctx) return;
 
     let animId: number;
-    let nodes: Array<{
+
+    interface ParticleNode {
       x: number;
       y: number;
       vx: number;
@@ -87,7 +104,9 @@ const TeamSection = () => {
       r: number;
       color: string;
       pulse: number;
-    }> = [];
+    }
+
+    let nodes: ParticleNode[] = [];
 
     const resize = () => {
       const rect = canvas.parentElement?.getBoundingClientRect();
@@ -313,7 +332,8 @@ const TeamSection = () => {
             msOverflowStyle: "none",
           }}
         >
-          {members.map((member: any, idx: number) => (
+          {/* ✅ any সরিয়ে TeamMember টাইপ ব্যবহার করা হয়েছে */}
+          {members.map((member: TeamMember, idx: number) => (
             <motion.div
               key={idx}
               initial={{ opacity: 0, x: 50 }}
@@ -329,6 +349,10 @@ const TeamSection = () => {
                   alt={member.name}
                   fill
                   className="object-cover transition-transform duration-700 group-hover:scale-110"
+                  onError={(e) => {
+                    const target = e.target as HTMLImageElement;
+                    target.src = "/team/placeholder.jpg";
+                  }}
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-[#0b0c18] via-[#0b0c18]/40 to-transparent opacity-60" />
               </div>

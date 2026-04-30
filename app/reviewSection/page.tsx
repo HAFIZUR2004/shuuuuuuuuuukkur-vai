@@ -124,7 +124,7 @@ const PremiumReviews = () => {
     loadTestimonials();
   }, [t]);
 
-  // Particle Network Canvas Effect (আগের মতোই)
+  // Particle Network Canvas Effect
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -133,7 +133,6 @@ const PremiumReviews = () => {
     if (!ctx) return;
 
     let animId: number;
-    let timeoutId: NodeJS.Timeout;
     let nodes: Array<{
       x: number;
       y: number;
@@ -247,13 +246,9 @@ const PremiumReviews = () => {
       animId = requestAnimationFrame(draw);
     };
 
-    timeoutId = setTimeout(() => {
-      resize();
-      draw();
-    }, 100);
+    draw();
 
     return () => {
-      clearTimeout(timeoutId);
       if (animId) cancelAnimationFrame(animId);
       window.removeEventListener("resize", resize);
     };
@@ -303,12 +298,13 @@ const PremiumReviews = () => {
     if (touchStart - touchEnd < -75) handlePrev();
   };
 
+  // ✅ PremiumSpinner props match
   if (loading) {
     return (
       <PremiumSpinner
-        text={t?.premiumReviews?.loadingText || "Loading Reviews"}
-        subText={t?.premiumReviews?.loadingSubText || "Please wait"}
-        showProgress={true}
+        loadingTexts={[t?.premiumReviews?.loadingText || "Loading Reviews"]}
+        pleaseWait={t?.premiumReviews?.loadingSubText || "Please wait"}
+        complete="Complete"
       />
     );
   }
@@ -442,7 +438,6 @@ const PremiumReviews = () => {
                     <div className="relative group">
                       <div className="absolute inset-0 rounded-full bg-gradient-to-r from-purple-500 to-cyan-500 blur-md opacity-60 group-hover:opacity-100 transition-opacity duration-500" />
                       <div className="relative w-16 h-16 md:w-20 md:h-20 rounded-full overflow-hidden border-2 border-white/20 shadow-xl bg-[#0b0c18]">
-                        {/* ✅ Fixed: Image src with fallback */}
                         {currentReview.image &&
                         currentReview.image.trim() !== "" ? (
                           <Image

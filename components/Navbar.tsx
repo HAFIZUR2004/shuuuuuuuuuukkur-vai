@@ -9,6 +9,18 @@ import { motion, AnimatePresence } from "framer-motion";
 import { translations } from "@/constants/translations";
 import { useLanguage } from "@/constants/LanguageContext";
 
+// ✅ টাইপ ডিফাইন করুন
+interface NavItem {
+  name: string;
+  path: string;
+}
+
+interface LanguageOption {
+  code: string;
+  name: string;
+  flag: string;
+}
+
 export default function Navbar() {
   const pathname = usePathname();
   const router = useRouter();
@@ -19,30 +31,16 @@ export default function Navbar() {
 
   const t = translations[lang];
 
-  const navItems = [
-    { 
-      name: typeof t.services === 'string' ? t.services : (t.services as any)?.title || "Services", 
-      path: "/services" 
-    },
-    { 
-      name: typeof t.projects === 'string' ? t.projects : (t.projects as any)?.title || "Projects", 
-      path: "/projects" 
-    },
-    { 
-      name: typeof t.about === 'string' ? t.about : (t.about as any)?.title || "About", 
-      path: "/about" 
-    },
-    { 
-      name: typeof t.career === 'string' ? t.career : (t.career as any)?.title || "Career", 
-      path: "/CareerPage" 
-    },
-    { 
-      name: typeof t.contact === 'string' ? t.contact : (t.contact as any)?.title || "Contact", 
-      path: "/ContactUs" 
-    },
+  // ✅ সঠিক টাইপিং সহ navItems (কোনো any নেই)
+  const navItems: NavItem[] = [
+    { name: String(t.services || "Services"), path: "/services" },
+    { name: String(t.projects || "Projects"), path: "/projects" },
+    { name: String(t.about || "About"), path: "/about" },
+    { name: String(t.career || "Career"), path: "/CareerPage" },
+    { name: String(t.contact || "Contact"), path: "/ContactUs" },
   ];
 
-  const languages = [
+  const languages: LanguageOption[] = [
     { code: "EN", name: "English", flag: "https://flagcdn.com/w20/us.png" },
     { code: "BN", name: "বাংলা", flag: "https://flagcdn.com/w20/bd.png" },
   ];
@@ -65,7 +63,8 @@ export default function Navbar() {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  const currentLang = languages.find((l) => l.code === (lang as string)) || languages[0];
+  const currentLang =
+    languages.find((l) => l.code === (lang as string)) || languages[0];
 
   const handleStartProject = () => {
     router.push("/ContactUs");
@@ -73,23 +72,26 @@ export default function Navbar() {
   };
 
   return (
-    <nav className={`fixed top-0 w-full transition-all duration-500 z-[999] ${
-      scrolled 
-        ? 'bg-[#0b0c18]/95 backdrop-blur-xl border-b border-white/10 shadow-2xl' 
-        : 'bg-transparent'
-    } ${lang === 'BN' ? 'font-hind' : ''}`}>
+    <nav
+      className={`fixed top-0 w-full transition-all duration-500 z-[999] ${
+        scrolled
+          ? "bg-[#0b0c18]/95 backdrop-blur-xl border-b border-white/10 shadow-2xl"
+          : "bg-transparent"
+      } ${lang === "BN" ? "font-hind" : ""}`}
+    >
       <div className="flex justify-between items-center py-3 md:py-4 px-4 md:px-10 max-w-screen-2xl mx-auto">
-        
-        {/* Logo Section - Premium Design without White BG */}
-        <Link href="/" className="flex items-center gap-3 relative z-[1001] group">
-          {/* Animated Gradient Border Circle */}
+        {/* Logo Section */}
+        <Link
+          href="/"
+          className="flex items-center gap-3 relative z-[1001] group"
+        >
           <div className="relative">
-            <motion.div 
+            <motion.div
               className="absolute -inset-1 rounded-full bg-gradient-to-r from-[#6c5ce7] via-[#a29bfe] to-[#00cec9] opacity-75 blur-md"
               animate={{ opacity: [0.5, 1, 0.5] }}
               transition={{ duration: 2, repeat: Infinity }}
             />
-            <div className="relative w-10 h-10 md:w-12 md:h-12 rounded-full bg-gradient-to-br from-[#0a0c0f] to-[#05070a] border border-white/10 flex items-center justify-center overflow-hidden">
+            <div className="relative w-10 h-10 md:w-12 md:h-12 rounded-full bg-white border border-white/10 flex items-center justify-center overflow-hidden">
               <Image
                 src="https://i.postimg.cc/yYds37Q3/logo-preview.png"
                 alt="Logo"
@@ -101,15 +103,18 @@ export default function Navbar() {
               <div className="absolute inset-0 rounded-full bg-gradient-to-tr from-[#6c5ce7]/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
             </div>
           </div>
-          
-          {/* Text Logo */}
+
           <div className="hidden md:flex flex-col">
-            <span className={`text-xl md:text-2xl font-black tracking-tighter leading-none bg-gradient-to-r from-white via-white to-white/70 bg-clip-text text-transparent ${lang === 'BN' ? 'font-hind' : ''}`}>
+            <span
+              className={`text-xl md:text-2xl font-black tracking-tighter leading-none bg-gradient-to-r from-white via-white to-white/70 bg-clip-text text-transparent ${lang === "BN" ? "font-hind" : ""}`}
+            >
               GROW
             </span>
             <div className="flex items-center gap-1">
-              <span className={`text-[8px] md:text-[9px] font-mono text-[#a29bfe] font-bold uppercase tracking-[0.2em] ${lang === 'BN' ? 'font-hind' : ''}`}>
-                {t.businessSolutions || "Business Solutions"}
+              <span
+                className={`text-[8px] md:text-[9px] font-mono text-[#a29bfe] font-bold uppercase tracking-[0.2em] ${lang === "BN" ? "font-hind" : ""}`}
+              >
+                {String(t.businessSolutions || "Business Solutions")}
               </span>
               <Sparkles size={8} className="text-[#00cec9]" />
             </div>
@@ -126,9 +131,9 @@ export default function Navbar() {
                 pathname === item.path
                   ? "text-[#a29bfe]"
                   : "text-white/60 hover:text-white"
-              } ${lang === 'BN' ? 'font-hind' : ''}`}
+              } ${lang === "BN" ? "font-hind" : ""}`}
             >
-              {String(item.name)}
+              {item.name}
               {pathname === item.path && (
                 <motion.div
                   layoutId="navbar-indicator"
@@ -141,13 +146,14 @@ export default function Navbar() {
         </div>
 
         {/* Actions Section */}
-        <div className={`flex items-center gap-2 md:gap-4 z-[1001] transition-opacity duration-300 ${isOpen ? "opacity-0 pointer-events-none lg:opacity-100 lg:pointer-events-auto" : "opacity-100"}`}>
-          
+        <div
+          className={`flex items-center gap-2 md:gap-4 z-[1001] transition-opacity duration-300 ${isOpen ? "opacity-0 pointer-events-none lg:opacity-100 lg:pointer-events-auto" : "opacity-100"}`}
+        >
           {/* Language Selector */}
           <div className="relative">
             <button
               onClick={() => setIsLangOpen(!isLangOpen)}
-              className={`flex items-center gap-2 bg-white/5 backdrop-blur-sm border border-white/10 px-3 py-2 rounded-xl hover:bg-white/10 hover:border-white/20 transition-all duration-300 ${lang === 'BN' ? 'font-hind' : ''}`}
+              className={`flex items-center gap-2 bg-white/5 backdrop-blur-sm border border-white/10 px-3 py-2 rounded-xl hover:bg-white/10 hover:border-white/20 transition-all duration-300 ${lang === "BN" ? "font-hind" : ""}`}
             >
               <div className="relative w-5 h-3.5 rounded-sm overflow-hidden">
                 <Image
@@ -171,8 +177,11 @@ export default function Navbar() {
             <AnimatePresence>
               {isLangOpen && (
                 <>
-                  <div className="fixed inset-0 z-[1001]" onClick={() => setIsLangOpen(false)} />
-                  <motion.div 
+                  <div
+                    className="fixed inset-0 z-[1001]"
+                    onClick={() => setIsLangOpen(false)}
+                  />
+                  <motion.div
                     initial={{ opacity: 0, y: -10, scale: 0.95 }}
                     animate={{ opacity: 1, y: 0, scale: 1 }}
                     exit={{ opacity: 0, y: -10, scale: 0.95 }}
@@ -186,7 +195,7 @@ export default function Navbar() {
                           setLang(l.code as "EN" | "BN");
                           setIsLangOpen(false);
                         }}
-                        className={`flex items-center gap-3 w-full px-4 py-3 hover:bg-gradient-to-r hover:from-[#6c5ce7]/20 hover:to-transparent transition-all duration-300 text-xs text-white/80 hover:text-white font-medium ${lang === 'BN' ? 'font-hind' : ''}`}
+                        className={`flex items-center gap-3 w-full px-4 py-3 hover:bg-gradient-to-r hover:from-[#6c5ce7]/20 hover:to-transparent transition-all duration-300 text-xs text-white/80 hover:text-white font-medium ${lang === "BN" ? "font-hind" : ""}`}
                       >
                         <Image
                           src={l.flag}
@@ -205,8 +214,8 @@ export default function Navbar() {
             </AnimatePresence>
           </div>
 
-          {/* Start Project Button - Premium Design */}
-          <motion.button 
+          {/* Start Project Button */}
+          <motion.button
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             onClick={handleStartProject}
@@ -214,9 +223,12 @@ export default function Navbar() {
           >
             <span className="relative z-10 flex items-center gap-2 text-xs uppercase tracking-wider">
               <span className="hidden sm:inline">
-                {typeof t.startProject === 'string' ? t.startProject : (t.startProject as any)?.title || "Start Project"}
+                {String(t.startProject || "Start Project")}
               </span>
-              <Rocket size={16} className="group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform duration-300" />
+              <Rocket
+                size={16}
+                className="group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform duration-300"
+              />
             </span>
             <div className="absolute inset-0 bg-gradient-to-r from-[#00cec9] to-[#6c5ce7] opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
           </motion.button>
@@ -231,10 +243,10 @@ export default function Navbar() {
         </div>
       </div>
 
-      {/* Mobile Side Drawer - Premium Design */}
+      {/* Mobile Side Drawer */}
       <AnimatePresence>
         {isOpen && (
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -244,7 +256,7 @@ export default function Navbar() {
               className="absolute inset-0 bg-[#0b0c18]/90 backdrop-blur-md"
               onClick={() => setIsOpen(false)}
             />
-            <motion.div 
+            <motion.div
               initial={{ x: "100%" }}
               animate={{ x: 0 }}
               exit={{ x: "100%" }}
@@ -266,7 +278,9 @@ export default function Navbar() {
                         />
                       </div>
                     </div>
-                    <span className="text-white/60 font-black uppercase tracking-widest text-[10px]">{t.menu || "MENU"}</span>
+                    <span className="text-white/60 font-black uppercase tracking-widest text-[10px]">
+                      {String(t.menu || "MENU")}
+                    </span>
                   </div>
                   <button
                     onClick={() => setIsOpen(false)}
@@ -288,13 +302,13 @@ export default function Navbar() {
                         href={item.path}
                         onClick={() => setIsOpen(false)}
                         className={`flex items-center justify-between w-full py-4 px-4 rounded-xl transition-all duration-300 ${
-                          pathname === item.path 
-                            ? "bg-gradient-to-r from-[#6c5ce7]/20 to-transparent border-l-2 border-[#6c5ce7] text-[#a29bfe]" 
+                          pathname === item.path
+                            ? "bg-gradient-to-r from-[#6c5ce7]/20 to-transparent border-l-2 border-[#6c5ce7] text-[#a29bfe]"
                             : "bg-white/5 hover:bg-white/10 text-white/70 hover:text-white"
-                        } ${lang === 'BN' ? 'font-hind' : ''}`}
+                        } ${lang === "BN" ? "font-hind" : ""}`}
                       >
                         <span className="text-sm font-semibold tracking-tight">
-                          {String(item.name)}
+                          {item.name}
                         </span>
                         {pathname === item.path && (
                           <div className="flex gap-1">
@@ -306,9 +320,9 @@ export default function Navbar() {
                     </motion.div>
                   ))}
                 </div>
-                
+
                 {/* Mobile Start Project Button */}
-                <motion.div 
+                <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.3 }}
@@ -320,7 +334,7 @@ export default function Navbar() {
                   >
                     <Rocket size={18} />
                     <span className="text-sm uppercase tracking-wider">
-                      {typeof t.startProject === 'string' ? t.startProject : (t.startProject as any)?.title || "Start Project"}
+                      {String(t.startProject || "Start Project")}
                     </span>
                   </button>
                 </motion.div>

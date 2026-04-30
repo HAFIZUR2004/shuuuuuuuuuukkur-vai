@@ -39,21 +39,6 @@ interface ProjectType {
   colorKey?: string;
 }
 
-// লোকালাইজেশন টাইপ
-interface PortfolioTranslation {
-  badge: string;
-  title: string;
-  titleGradient: string;
-  desc?: string;
-  exploreBtn?: string;
-  loading?: string;
-  noProjects?: string;
-  noProjectsDesc?: string;
-  loadingTexts?: string[];
-  pleaseWait?: string;
-  complete?: string;
-}
-
 // কালার ম্যাপিং
 const colorMap: Record<string, string> = {
   purple: "#b5a7ff",
@@ -65,7 +50,7 @@ const colorMap: Record<string, string> = {
 
 export default function HomePage() {
   const { lang } = useLanguage();
-  const t = translations[lang] as any;
+  const t = translations[lang];
 
   const [projects, setProjects] = useState<ProjectType[]>([]);
   const [loading, setLoading] = useState(true);
@@ -82,7 +67,6 @@ export default function HomePage() {
         if (!response.ok) throw new Error("Failed to fetch");
         const data: PortfolioItem[] = await response.json();
 
-        // ডাটাকে হোম পেজের ফরম্যাটে কনভার্ট করুন
         const formattedProjects: ProjectType[] = data.map(
           (item: PortfolioItem) => ({
             _id: item._id,
@@ -271,16 +255,14 @@ export default function HomePage() {
     return () => ctx.revert();
   }, [loading, projects]);
 
-  // Loading State - Fixed version
+  // Loading State
   if (loading) {
     return (
       <section className="relative bg-[#0b0c18] px-6 overflow-hidden py-20 min-h-screen flex items-center justify-center">
         <div className="text-center">
           <div className="w-16 h-16 border-4 border-purple-500/30 border-t-purple-500 rounded-full animate-spin mx-auto mb-4"></div>
           <p className="text-white/60">
-            {t?.portfolio?.loading || 
-             t?.portfolio?.loadingTexts?.[0] || 
-             "Loading amazing projects..."}
+            {t?.portfolio?.loading || "Loading amazing projects..."}
           </p>
         </div>
       </section>

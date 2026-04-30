@@ -179,14 +179,15 @@ export const translations = {
         "Don't just take our word for it — hear from our amazing clients around the world",
       prevButton: "Previous review",
       nextButton: "Next review",
+      loadingText: "Loading Reviews",
+      loadingSubText: "Please wait",
+      noData: "No testimonials available",
       swipeHint: "← Swipe to navigate →",
       trustBadges: {
         rating: "4.9/5 Average Rating",
         happyClients: "200+ Happy Clients",
         projectsDelivered: "50+ Projects Delivered",
         support: "24/7 Support",
-        loadingText: "Loading Reviews",
-        loadingSubText: "Please wait",
       },
       testimonials: [
         {
@@ -523,13 +524,14 @@ export const translations = {
       prevButton: "পূর্ববর্তী পর্যালোচনা",
       nextButton: "পরবর্তী পর্যালোচনা",
       swipeHint: "← স্লাইড করুন →",
+      loadingText: "পর্যালোচনা লোড হচ্ছে",
+      noData: "কোনো পর্যালোচনা পাওয়া যায়নি",
+      loadingSubText: "অনুগ্রহ করে অপেক্ষা করুন",
       trustBadges: {
         rating: "৪.৯/৫ গড় রেটিং",
         happyClients: "২০০+ সন্তুষ্ট ক্লায়েন্ট",
         projectsDelivered: "৫০+ প্রজেক্ট ডেলিভারি",
         support: "২৪/৭ সাপোর্ট",
-        loadingText: "পর্যালোচনা লোড হচ্ছে",
-        loadingSubText: "অনুগ্রহ করে অপেক্ষা করুন",
       },
       testimonials: [
         {

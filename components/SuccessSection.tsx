@@ -2,7 +2,7 @@
 
 import { useLanguage } from "@/constants/LanguageContext";
 import { translations } from "@/constants/translations";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState, useMemo } from "react";
 import { useInView } from "react-intersection-observer";
 import { motion, useScroll, useTransform, Variants } from "framer-motion";
 import {
@@ -13,7 +13,18 @@ import {
   Clock,
   Users,
   Award,
+  LucideIcon,
 } from "lucide-react";
+
+// ✅ টাইপ ডিফাইন করুন
+interface StatInfo {
+  title: string;
+  desc: string;
+  icon: LucideIcon;
+  isCounter: boolean;
+  targetValue: number;
+  suffix: string;
+}
 
 // Helper function for formatted counter
 const getFormattedCounter = (value: number, suffix: string) => {
@@ -69,34 +80,36 @@ const SuccessSection = () => {
   const { lang } = useLanguage();
   const t = translations[lang];
 
-  // ✅ FIXED: Remove duplicate declaration - use a different name for the function result
-  const dynamicStatsData = React.useMemo(() => {
-    if (lang === "BN" && t.stats) {
-      return t.stats.map((stat: any, idx: number) => ({
-        title: stat.title,
-        desc: stat.desc,
-        icon: [Clock, Briefcase, Users][idx] || Clock,
-        isCounter: true,
-        targetValue: idx === 2 ? 100 : 2,
-        suffix: idx === 2 ? "%" : "+",
-      }));
+  // ✅ FIXED: No any type - proper typing
+  const dynamicStatsData: StatInfo[] = useMemo(() => {
+    if (lang === "BN" && t.stats && Array.isArray(t.stats)) {
+      return t.stats.map(
+        (stat: { title: string; desc: string }, idx: number) => ({
+          title: stat.title,
+          desc: stat.desc,
+          icon: [Clock, Briefcase, Users][idx] || Clock,
+          isCounter: true,
+          targetValue: idx === 2 ? 100 : 8,
+          suffix: idx === 2 ? "%" : "+",
+        }),
+      );
     }
     // Default data for English
     return [
       {
-        title: "2+ Years",
+        title: "8+ Years",
         desc: "Of dedicated craft in digital architecture.",
         icon: Clock,
         isCounter: true,
-        targetValue: 2,
+        targetValue: 8,
         suffix: "+",
       },
       {
-        title: "2 Projects",
+        title: "20+ Projects",
         desc: "High-impact solutions delivered globally.",
         icon: Briefcase,
         isCounter: true,
-        targetValue: 2,
+        targetValue: 20,
         suffix: "+",
       },
       {
@@ -160,7 +173,8 @@ const SuccessSection = () => {
     if (!ctx) return;
 
     let animId: number;
-    let nodes: Array<{
+
+    interface ParticleNode {
       x: number;
       y: number;
       vx: number;
@@ -168,7 +182,9 @@ const SuccessSection = () => {
       r: number;
       color: string;
       pulse: number;
-    }> = [];
+    }
+
+    let nodes: ParticleNode[] = [];
 
     const resize = () => {
       const rect = canvas.parentElement?.getBoundingClientRect();

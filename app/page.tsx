@@ -11,7 +11,7 @@ import { PublicLayout } from "./public-layout";
 
 export default function Home() {
   return (
-    <main>
+    <PublicLayout showFooter={true}>
       <Hero />
       <EngineeringProtocol />
       <SuccessSection />
@@ -19,6 +19,6 @@ export default function Home() {
       <TechStack />
       <PremiumReviews />
       <DynamicPortfolioPage />
-    </main>
+    </PublicLayout>
   );
 }

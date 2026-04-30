@@ -184,6 +184,7 @@ export default function DynamicPortfolioPage() {
   const [projects, setProjects] = useState<PortfolioItem[]>([]);
   const [loading, setLoading] = useState(true);
   const headerRef = useRef<HTMLDivElement>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
 
   const [scrollProgress, setScrollProgress] = useState(0);
 

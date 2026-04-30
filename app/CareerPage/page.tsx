@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { useRouter } from "next/navigation";
 import ParticleNetwork from "@/components/ParticleNetwork";
+import { PublicLayout } from "../public-layout";
 
 /* ─── tiny helpers ─── */
 const Tag = ({ children }: { children: React.ReactNode }) => (
@@ -13,7 +14,7 @@ const Tag = ({ children }: { children: React.ReactNode }) => (
 );
 
 const SectionLabel = ({ children }: { children: React.ReactNode }) => (
-  <motion.p 
+  <motion.p
     initial={{ opacity: 0, x: -20 }}
     whileInView={{ opacity: 1, x: 0 }}
     transition={{ duration: 0.5 }}
@@ -57,7 +58,7 @@ function CareerHero() {
   const heroScale = useTransform(scrollYProgress, [0, 0.3], [1, 0.95]);
 
   return (
-    <motion.section 
+    <motion.section
       style={{ opacity: heroOpacity, scale: heroScale }}
       className="relative min-h-screen w-full flex items-center justify-center overflow-hidden px-4 sm:px-6 md:px-10"
     >
@@ -92,7 +93,7 @@ function CareerHero() {
           </span>
         </motion.div>
 
-        <motion.h1 
+        <motion.h1
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           className="font-black leading-tight tracking-tight text-white text-[2.2rem] sm:text-[3rem] md:text-[4rem] lg:text-[5.5rem] mb-5"
@@ -104,28 +105,29 @@ function CareerHero() {
           </span>
         </motion.h1>
 
-        <motion.p 
+        <motion.p
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           className="max-w-xl mx-auto md:mx-0 text-sm sm:text-base md:text-lg text-white/60 leading-relaxed mb-8"
         >
-          Architecting high-performance digital ecosystems for a data-driven future.
-          Harness AI to transform complex processes into elegant automated solutions.
+          Architecting high-performance digital ecosystems for a data-driven
+          future. Harness AI to transform complex processes into elegant
+          automated solutions.
         </motion.p>
 
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center md:justify-start"
         >
-          <motion.button 
+          <motion.button
             whileHover={{ scale: 1.05 }}
             className="w-full sm:w-auto bg-gradient-to-r from-[#6c5ce7] to-[#a29bfe] px-6 py-3 rounded-full text-xs sm:text-sm font-black uppercase"
           >
             Explore Open Roles
           </motion.button>
 
-          <motion.button 
+          <motion.button
             whileHover={{ scale: 1.05 }}
             className="w-full sm:w-auto border border-white/20 px-6 py-3 rounded-full text-xs sm:text-sm font-black uppercase"
           >
@@ -133,7 +135,7 @@ function CareerHero() {
           </motion.button>
         </motion.div>
 
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           className="absolute bottom-4 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2"
@@ -163,35 +165,51 @@ function Manifesto() {
           <h2 className="text-4xl md:text-5xl font-black leading-tight text-white mb-6">
             PRECISION OVER
             <br />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#6c5ce7] to-[#a29bfe]">CONVENIENCE.</span>
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#6c5ce7] to-[#a29bfe]">
+              CONVENIENCE.
+            </span>
           </h2>
           <p className="text-sm text-white/40 leading-relaxed mb-10 max-w-sm">
-            We don&apos;t just build software. We forge digital environments where
-            data flows with architectural elegance. Our culture is rooted in deep
-            focus, radical autonomy, and a relentless pursuit of engineering
-            prestige.
+            We don&apos;t just build software. We forge digital environments
+            where data flows with architectural elegance. Our culture is rooted
+            in deep focus, radical autonomy, and a relentless pursuit of
+            engineering prestige.
           </p>
           <div className="grid grid-cols-2 gap-6">
             {[
-              { num: "01.", title: "Async Native", desc: "Designed for deep work. No useless stand-ups." },
-              { num: "02.", title: "Tech Sovereign", desc: "We own the stack. No technical debt compromises." },
+              {
+                num: "01.",
+                title: "Async Native",
+                desc: "Designed for deep work. No useless stand-ups.",
+              },
+              {
+                num: "02.",
+                title: "Tech Sovereign",
+                desc: "We own the stack. No technical debt compromises.",
+              },
             ].map((item, idx) => (
-              <motion.div 
+              <motion.div
                 key={item.num}
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ delay: idx * 0.1 }}
                 viewport={{ once: true }}
               >
-                <p className="text-[#6c5ce7] font-black text-lg mb-1">{item.num}</p>
-                <p className="text-white text-xs font-bold tracking-widest uppercase mb-1">{item.title}</p>
-                <p className="text-white/35 text-xs leading-relaxed">{item.desc}</p>
+                <p className="text-[#6c5ce7] font-black text-lg mb-1">
+                  {item.num}
+                </p>
+                <p className="text-white text-xs font-bold tracking-widest uppercase mb-1">
+                  {item.title}
+                </p>
+                <p className="text-white/35 text-xs leading-relaxed">
+                  {item.desc}
+                </p>
               </motion.div>
             ))}
           </div>
         </motion.div>
 
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, scale: 0.9 }}
           whileInView={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.6 }}
@@ -227,23 +245,23 @@ function Vacancies() {
   const [modalOpen, setModalOpen] = useState(false);
   const [editingVacancy, setEditingVacancy] = useState<Vacancy | null>(null);
   const [formData, setFormData] = useState({
-    tags: '',
-    title: '',
-    desc: '',
-    stack: '',
-    salary: '',
+    tags: "",
+    title: "",
+    desc: "",
+    stack: "",
+    salary: "",
     featured: false,
-    color: '#6c5ce7',
-    department: 'Engineering',
+    color: "#6c5ce7",
+    department: "Engineering",
   });
 
   const fetchVacancies = async () => {
     try {
-      const res = await fetch('/api/vacancies');
+      const res = await fetch("/api/vacancies");
       const data = await res.json();
       setVacancies(data);
     } catch (error) {
-      console.error('Error fetching vacancies:', error);
+      console.error("Error fetching vacancies:", error);
     } finally {
       setLoading(false);
     }
@@ -252,8 +270,8 @@ function Vacancies() {
   useEffect(() => {
     fetchVacancies();
     const checkAdmin = () => {
-      const user = localStorage.getItem('user');
-      setIsAdmin(user === 'admin');
+      const user = localStorage.getItem("user");
+      setIsAdmin(user === "admin");
     };
     checkAdmin();
   }, []);
@@ -262,11 +280,11 @@ function Vacancies() {
     if (vacancy) {
       setEditingVacancy(vacancy);
       setFormData({
-        tags: vacancy.tags.join(', '),
+        tags: vacancy.tags.join(", "),
         title: vacancy.title,
         desc: vacancy.desc,
-        stack: vacancy.stack.join(', '),
-        salary: vacancy.salary || '',
+        stack: vacancy.stack.join(", "),
+        salary: vacancy.salary || "",
         featured: vacancy.featured,
         color: vacancy.color,
         department: vacancy.department,
@@ -274,14 +292,14 @@ function Vacancies() {
     } else {
       setEditingVacancy(null);
       setFormData({
-        tags: '',
-        title: '',
-        desc: '',
-        stack: '',
-        salary: '',
+        tags: "",
+        title: "",
+        desc: "",
+        stack: "",
+        salary: "",
         featured: false,
-        color: '#6c5ce7',
-        department: 'Engineering',
+        color: "#6c5ce7",
+        department: "Engineering",
       });
     }
     setModalOpen(true);
@@ -289,12 +307,12 @@ function Vacancies() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     const payload = {
-      tags: formData.tags.split(',').map(t => t.trim()),
+      tags: formData.tags.split(",").map((t) => t.trim()),
       title: formData.title,
       desc: formData.desc,
-      stack: formData.stack.split(',').map(s => s.trim()),
+      stack: formData.stack.split(",").map((s) => s.trim()),
       salary: formData.salary,
       featured: formData.featured,
       color: formData.color,
@@ -305,14 +323,14 @@ function Vacancies() {
       let response;
       if (editingVacancy) {
         response = await fetch(`/api/vacancies/${editingVacancy.id}`, {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ ...payload, id: editingVacancy.id }),
         });
       } else {
-        response = await fetch('/api/vacancies', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+        response = await fetch("/api/vacancies", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify(payload),
         });
       }
@@ -320,47 +338,53 @@ function Vacancies() {
       if (response.ok) {
         setModalOpen(false);
         fetchVacancies();
-        alert(editingVacancy ? 'Vacancy updated!' : 'Vacancy created!');
+        alert(editingVacancy ? "Vacancy updated!" : "Vacancy created!");
       } else {
-        throw new Error('Failed to save');
+        throw new Error("Failed to save");
       }
     } catch (error) {
-      console.error('Submit error:', error);
-      alert('Failed to save vacancy');
+      console.error("Submit error:", error);
+      alert("Failed to save vacancy");
     }
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm('Are you sure you want to delete this vacancy?')) return;
-    
+    if (!confirm("Are you sure you want to delete this vacancy?")) return;
+
     try {
-      const response = await fetch(`/api/vacancies/${id}`, { method: 'DELETE' });
+      const response = await fetch(`/api/vacancies/${id}`, {
+        method: "DELETE",
+      });
       if (response.ok) {
         fetchVacancies();
-        alert('Vacancy deleted!');
+        alert("Vacancy deleted!");
       } else {
-        throw new Error('Failed to delete');
+        throw new Error("Failed to delete");
       }
     } catch (error) {
-      console.error('Delete error:', error);
-      alert('Failed to delete vacancy');
+      console.error("Delete error:", error);
+      alert("Failed to delete vacancy");
     }
   };
 
-  const engineeringCount = vacancies.filter(v => v.department === 'Engineering').length;
-  const designCount = vacancies.filter(v => v.department === 'Design').length;
+  const engineeringCount = vacancies.filter(
+    (v) => v.department === "Engineering",
+  ).length;
+  const designCount = vacancies.filter((v) => v.department === "Design").length;
 
   const VacancyCard = ({ role }: { role: Vacancy }) => {
     if (role.icon) {
       return (
-        <motion.div 
+        <motion.div
           whileHover={{ y: -5, borderColor: "#6c5ce7" }}
           className="border border-white/10 bg-[#11111e]/80 backdrop-blur-sm rounded-xl p-8 flex flex-col items-center justify-center text-center gap-4 min-h-[220px] group cursor-pointer transition-all duration-300"
         >
           <div className="w-12 h-12 rounded-full border border-white/20 flex items-center justify-center text-white/50 text-2xl group-hover:scale-110 transition-transform">
             +
           </div>
-          <p className="text-white font-bold text-base tracking-wide uppercase">{role.title}</p>
+          <p className="text-white font-bold text-base tracking-wide uppercase">
+            {role.title}
+          </p>
           <p className="text-white/35 text-xs leading-relaxed">{role.desc}</p>
           <button className="mt-2 text-[10px] tracking-[0.18em] uppercase text-[#6c5ce7] hover:text-white transition-colors">
             Submit Pitch →
@@ -380,18 +404,24 @@ function Vacancies() {
       >
         {role.tags.length > 0 && (
           <div className="flex flex-wrap gap-2">
-            {role.tags.map((t) => (<Tag key={t}>{t}</Tag>))}
+            {role.tags.map((t) => (
+              <Tag key={t}>{t}</Tag>
+            ))}
           </div>
         )}
 
-        <h3 className={`font-black text-white leading-tight ${role.featured ? "text-2xl md:text-3xl" : "text-xl"}`}>
+        <h3
+          className={`font-black text-white leading-tight ${role.featured ? "text-2xl md:text-3xl" : "text-xl"}`}
+        >
           {role.title}
         </h3>
         <p className="text-white/40 text-xs leading-relaxed">{role.desc}</p>
 
         {role.stack && (
           <div className="flex flex-wrap gap-2">
-            {role.stack.map((s) => (<Tag key={s}>{s}</Tag>))}
+            {role.stack.map((s) => (
+              <Tag key={s}>{s}</Tag>
+            ))}
           </div>
         )}
 
@@ -418,7 +448,7 @@ function Vacancies() {
                 </button>
               </>
             )}
-           
+
             <button
               onClick={() => {
                 const vacancyId = role._id || role.id;
@@ -451,16 +481,32 @@ function Vacancies() {
           <h2 className="text-5xl md:text-6xl font-black text-white leading-none">
             AVAILABLE
             <br />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#6c5ce7] to-[#00cec9]">VACANCIES</span>
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#6c5ce7] to-[#00cec9]">
+              VACANCIES
+            </span>
           </h2>
           <div className="flex gap-8">
             <div>
-              <p className="text-[9px] tracking-[0.2em] text-white/40 uppercase mb-1">Engineering</p>
-              <p className="text-white font-black text-lg" style={{ color: "#6c5ce7" }}>{engineeringCount} Roles</p>
+              <p className="text-[9px] tracking-[0.2em] text-white/40 uppercase mb-1">
+                Engineering
+              </p>
+              <p
+                className="text-white font-black text-lg"
+                style={{ color: "#6c5ce7" }}
+              >
+                {engineeringCount} Roles
+              </p>
             </div>
             <div>
-              <p className="text-[9px] tracking-[0.2em] text-white/40 uppercase mb-1">Design</p>
-              <p className="text-white font-black text-lg" style={{ color: "#00cec9" }}>{designCount} Roles</p>
+              <p className="text-[9px] tracking-[0.2em] text-white/40 uppercase mb-1">
+                Design
+              </p>
+              <p
+                className="text-white font-black text-lg"
+                style={{ color: "#00cec9" }}
+              >
+                {designCount} Roles
+              </p>
             </div>
           </div>
         </div>
@@ -477,53 +523,122 @@ function Vacancies() {
         )}
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-          {vacancies.map((vacancy) => (<VacancyCard key={vacancy.id} role={vacancy} />))}
+          {vacancies.map((vacancy) => (
+            <VacancyCard key={vacancy.id} role={vacancy} />
+          ))}
         </div>
       </section>
 
       {/* Modal */}
       {modalOpen && (
-        <div 
+        <div
           className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4"
-          onClick={(e) => { if (e.target === e.currentTarget) setModalOpen(false); }}
+          onClick={(e) => {
+            if (e.target === e.currentTarget) setModalOpen(false);
+          }}
         >
           <div className="bg-[#11111e] border border-white/20 rounded-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
             <div className="sticky top-0 bg-[#1a1a2e] p-6 border-b border-white/10 flex justify-between items-center">
-              <h2 className="text-xl font-bold text-white">{editingVacancy ? 'Edit Vacancy' : 'Create New Vacancy'}</h2>
-              <button onClick={() => setModalOpen(false)} className="text-white/60 hover:text-white">✕</button>
+              <h2 className="text-xl font-bold text-white">
+                {editingVacancy ? "Edit Vacancy" : "Create New Vacancy"}
+              </h2>
+              <button
+                onClick={() => setModalOpen(false)}
+                className="text-white/60 hover:text-white"
+              >
+                ✕
+              </button>
             </div>
-            
+
             <div className="p-6">
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-white/80 mb-1">Title *</label>
-                  <input type="text" className="w-full px-4 py-2 bg-black/50 border border-white/20 rounded-lg text-white focus:border-[#6c5ce7] focus:outline-none" value={formData.title} onChange={(e) => setFormData({ ...formData, title: e.target.value })} required />
+                  <label className="block text-sm font-medium text-white/80 mb-1">
+                    Title *
+                  </label>
+                  <input
+                    type="text"
+                    className="w-full px-4 py-2 bg-black/50 border border-white/20 rounded-lg text-white focus:border-[#6c5ce7] focus:outline-none"
+                    value={formData.title}
+                    onChange={(e) =>
+                      setFormData({ ...formData, title: e.target.value })
+                    }
+                    required
+                  />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-white/80 mb-1">Description *</label>
-                  <textarea rows={3} className="w-full px-4 py-2 bg-black/50 border border-white/20 rounded-lg text-white focus:border-[#6c5ce7] focus:outline-none" value={formData.desc} onChange={(e) => setFormData({ ...formData, desc: e.target.value })} required />
+                  <label className="block text-sm font-medium text-white/80 mb-1">
+                    Description *
+                  </label>
+                  <textarea
+                    rows={3}
+                    className="w-full px-4 py-2 bg-black/50 border border-white/20 rounded-lg text-white focus:border-[#6c5ce7] focus:outline-none"
+                    value={formData.desc}
+                    onChange={(e) =>
+                      setFormData({ ...formData, desc: e.target.value })
+                    }
+                    required
+                  />
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-medium text-white/80 mb-1">Tags (comma separated)</label>
-                    <input type="text" className="w-full px-4 py-2 bg-black/50 border border-white/20 rounded-lg text-white focus:border-[#6c5ce7] focus:outline-none" value={formData.tags} onChange={(e) => setFormData({ ...formData, tags: e.target.value })} placeholder="System Architecture, Full-Time" />
+                    <label className="block text-sm font-medium text-white/80 mb-1">
+                      Tags (comma separated)
+                    </label>
+                    <input
+                      type="text"
+                      className="w-full px-4 py-2 bg-black/50 border border-white/20 rounded-lg text-white focus:border-[#6c5ce7] focus:outline-none"
+                      value={formData.tags}
+                      onChange={(e) =>
+                        setFormData({ ...formData, tags: e.target.value })
+                      }
+                      placeholder="System Architecture, Full-Time"
+                    />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-white/80 mb-1">Tech Stack (comma separated)</label>
-                    <input type="text" className="w-full px-4 py-2 bg-black/50 border border-white/20 rounded-lg text-white focus:border-[#6c5ce7] focus:outline-none" value={formData.stack} onChange={(e) => setFormData({ ...formData, stack: e.target.value })} placeholder="Go, Rust, Kubernetes" />
+                    <label className="block text-sm font-medium text-white/80 mb-1">
+                      Tech Stack (comma separated)
+                    </label>
+                    <input
+                      type="text"
+                      className="w-full px-4 py-2 bg-black/50 border border-white/20 rounded-lg text-white focus:border-[#6c5ce7] focus:outline-none"
+                      value={formData.stack}
+                      onChange={(e) =>
+                        setFormData({ ...formData, stack: e.target.value })
+                      }
+                      placeholder="Go, Rust, Kubernetes"
+                    />
                   </div>
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-medium text-white/80 mb-1">Salary Range</label>
-                    <input type="text" className="w-full px-4 py-2 bg-black/50 border border-white/20 rounded-lg text-white focus:border-[#6c5ce7] focus:outline-none" value={formData.salary} onChange={(e) => setFormData({ ...formData, salary: e.target.value })} placeholder="$160k – $220k" />
+                    <label className="block text-sm font-medium text-white/80 mb-1">
+                      Salary Range
+                    </label>
+                    <input
+                      type="text"
+                      className="w-full px-4 py-2 bg-black/50 border border-white/20 rounded-lg text-white focus:border-[#6c5ce7] focus:outline-none"
+                      value={formData.salary}
+                      onChange={(e) =>
+                        setFormData({ ...formData, salary: e.target.value })
+                      }
+                      placeholder="$160k – $220k"
+                    />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-white/80 mb-1">Department</label>
-                    <select className="w-full px-4 py-2 bg-black/50 border border-white/20 rounded-lg text-white focus:border-[#6c5ce7] focus:outline-none" value={formData.department} onChange={(e) => setFormData({ ...formData, department: e.target.value })}>
+                    <label className="block text-sm font-medium text-white/80 mb-1">
+                      Department
+                    </label>
+                    <select
+                      className="w-full px-4 py-2 bg-black/50 border border-white/20 rounded-lg text-white focus:border-[#6c5ce7] focus:outline-none"
+                      value={formData.department}
+                      onChange={(e) =>
+                        setFormData({ ...formData, department: e.target.value })
+                      }
+                    >
                       <option value="Engineering">Engineering</option>
                       <option value="Design">Design</option>
                     </select>
@@ -532,20 +647,52 @@ function Vacancies() {
 
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-medium text-white/80 mb-1">Color</label>
-                    <input type="color" className="w-full h-10 bg-black/50 border border-white/20 rounded-lg cursor-pointer" value={formData.color} onChange={(e) => setFormData({ ...formData, color: e.target.value })} />
+                    <label className="block text-sm font-medium text-white/80 mb-1">
+                      Color
+                    </label>
+                    <input
+                      type="color"
+                      className="w-full h-10 bg-black/50 border border-white/20 rounded-lg cursor-pointer"
+                      value={formData.color}
+                      onChange={(e) =>
+                        setFormData({ ...formData, color: e.target.value })
+                      }
+                    />
                   </div>
                   <div className="flex items-center">
                     <label className="flex items-center gap-2">
-                      <input type="checkbox" className="w-4 h-4" checked={formData.featured} onChange={(e) => setFormData({ ...formData, featured: e.target.checked })} />
-                      <span className="text-sm text-white/80">Featured Position</span>
+                      <input
+                        type="checkbox"
+                        className="w-4 h-4"
+                        checked={formData.featured}
+                        onChange={(e) =>
+                          setFormData({
+                            ...formData,
+                            featured: e.target.checked,
+                          })
+                        }
+                      />
+                      <span className="text-sm text-white/80">
+                        Featured Position
+                      </span>
                     </label>
                   </div>
                 </div>
 
                 <div className="flex gap-3 pt-4">
-                  <button type="button" onClick={() => setModalOpen(false)} className="flex-1 px-6 py-2 border border-white/20 rounded-lg text-white/80 hover:bg-white/10 transition">Cancel</button>
-                  <button type="submit" className="flex-1 px-6 py-2 bg-gradient-to-r from-[#6c5ce7] to-[#a29bfe] rounded-lg text-white font-bold hover:shadow-lg transition">{editingVacancy ? 'Update' : 'Create'}</button>
+                  <button
+                    type="button"
+                    onClick={() => setModalOpen(false)}
+                    className="flex-1 px-6 py-2 border border-white/20 rounded-lg text-white/80 hover:bg-white/10 transition"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    className="flex-1 px-6 py-2 bg-gradient-to-r from-[#6c5ce7] to-[#a29bfe] rounded-lg text-white font-bold hover:shadow-lg transition"
+                  >
+                    {editingVacancy ? "Update" : "Create"}
+                  </button>
                 </div>
               </form>
             </div>
@@ -560,60 +707,132 @@ function Vacancies() {
 const perks = [
   {
     icon: (
-      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M12 2L15 8.5L22 9.5L17 14L18.5 21L12 17.5L5.5 21L7 14L2 9.5L9 8.5L12 2Z" 
-          fill="currentColor" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-        <path d="M12 6V12L15 15" stroke="white" strokeWidth="1.5" strokeLinecap="round"/>
+      <svg
+        width="32"
+        height="32"
+        viewBox="0 0 24 24"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M12 2L15 8.5L22 9.5L17 14L18.5 21L12 17.5L5.5 21L7 14L2 9.5L9 8.5L12 2Z"
+          fill="currentColor"
+          stroke="currentColor"
+          strokeWidth="1.5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+        <path
+          d="M12 6V12L15 15"
+          stroke="white"
+          strokeWidth="1.5"
+          strokeLinecap="round"
+        />
       </svg>
     ),
     title: "Equity & Ownership",
     desc: "Generous stock options. You are not an employee; you are a primary stakeholder in the ecosystem's growth.",
     color: "#6c5ce7",
-    gradient: "from-[#6c5ce7]/20 to-[#6c5ce7]/5"
+    gradient: "from-[#6c5ce7]/20 to-[#6c5ce7]/5",
   },
   {
     icon: (
-      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <circle cx="12" cy="12" r="3" stroke="currentColor" strokeWidth="1.5"/>
-        <path d="M3 9L12 3L21 9L12 15L3 9Z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round"/>
-        <path d="M5 12V17L12 21L19 17V12" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round"/>
-        <path d="M12 15V21" stroke="currentColor" strokeWidth="1.5"/>
+      <svg
+        width="32"
+        height="32"
+        viewBox="0 0 24 24"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <circle cx="12" cy="12" r="3" stroke="currentColor" strokeWidth="1.5" />
+        <path
+          d="M3 9L12 3L21 9L12 15L3 9Z"
+          stroke="currentColor"
+          strokeWidth="1.5"
+          strokeLinejoin="round"
+        />
+        <path
+          d="M5 12V17L12 21L19 17V12"
+          stroke="currentColor"
+          strokeWidth="1.5"
+          strokeLinejoin="round"
+        />
+        <path d="M12 15V21" stroke="currentColor" strokeWidth="1.5" />
       </svg>
     ),
     title: "Remote Autonomous",
     desc: "Work from any node in the world. We focus on output quality, not clock-in timestamps.",
     color: "#00cec9",
-    gradient: "from-[#00cec9]/20 to-[#00cec9]/5"
+    gradient: "from-[#00cec9]/20 to-[#00cec9]/5",
   },
   {
     icon: (
-      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12" 
-          stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
-        <path d="M12 6V12L16 14" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
-        <circle cx="17" cy="17" r="3" stroke="currentColor" strokeWidth="1.5"/>
-        <path d="M19 19L22 22" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+      <svg
+        width="32"
+        height="32"
+        viewBox="0 0 24 24"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12"
+          stroke="currentColor"
+          strokeWidth="1.5"
+          strokeLinecap="round"
+        />
+        <path
+          d="M12 6V12L16 14"
+          stroke="currentColor"
+          strokeWidth="1.5"
+          strokeLinecap="round"
+        />
+        <circle cx="17" cy="17" r="3" stroke="currentColor" strokeWidth="1.5" />
+        <path
+          d="M19 19L22 22"
+          stroke="currentColor"
+          strokeWidth="1.5"
+          strokeLinecap="round"
+        />
       </svg>
     ),
     title: "Health Protocol",
     desc: "Premium global health coverage and a mandatory 4-week 'Deep Sabbath' sabbatical every year.",
     color: "#a29bfe",
-    gradient: "from-[#a29bfe]/20 to-[#a29bfe]/5"
+    gradient: "from-[#a29bfe]/20 to-[#a29bfe]/5",
   },
   {
     icon: (
-      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M12 2V4M12 20V22M4 12H2M6.5 6.5L5 5M17.5 6.5L19 5M22 12H20M18 18L19 19" 
-          stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
-        <circle cx="12" cy="12" r="4" stroke="currentColor" strokeWidth="1.5"/>
-        <path d="M12 8V12L14 14" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
-        <path d="M18 12C18 15.3137 15.3137 18 12 18" stroke="currentColor" strokeWidth="1.5"/>
+      <svg
+        width="32"
+        height="32"
+        viewBox="0 0 24 24"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M12 2V4M12 20V22M4 12H2M6.5 6.5L5 5M17.5 6.5L19 5M22 12H20M18 18L19 19"
+          stroke="currentColor"
+          strokeWidth="1.5"
+          strokeLinecap="round"
+        />
+        <circle cx="12" cy="12" r="4" stroke="currentColor" strokeWidth="1.5" />
+        <path
+          d="M12 8V12L14 14"
+          stroke="currentColor"
+          strokeWidth="1.5"
+          strokeLinecap="round"
+        />
+        <path
+          d="M18 12C18 15.3137 15.3137 18 12 18"
+          stroke="currentColor"
+          strokeWidth="1.5"
+        />
       </svg>
     ),
     title: "Learning Budget",
     desc: "$5,000 annual budget for conferences, courses, and cutting-edge certifications.",
     color: "#fdcb6e",
-    gradient: "from-[#fdcb6e]/20 to-[#fdcb6e]/5"
+    gradient: "from-[#fdcb6e]/20 to-[#fdcb6e]/5",
   },
 ];
 
@@ -622,15 +841,18 @@ function WhyBuild() {
     <section className="relative bg-transparent py-24 px-6 md:px-16 max-w-7xl mx-auto z-10">
       <div className="text-center mb-14">
         <SectionLabel>Protocol · Rewards</SectionLabel>
-        <motion.h2 
+        <motion.h2
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
           className="text-4xl md:text-5xl font-black text-white"
         >
-          WHY BUILD <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#6c5ce7] via-[#a29bfe] to-[#00cec9]">WITH US</span>
+          WHY BUILD{" "}
+          <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#6c5ce7] via-[#a29bfe] to-[#00cec9]">
+            WITH US
+          </span>
         </motion.h2>
-        <motion.p 
+        <motion.p
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.1 }}
@@ -639,7 +861,7 @@ function WhyBuild() {
           Join a collective that values your growth as much as your contribution
         </motion.p>
       </div>
-      
+
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {perks.map((p, idx) => (
           <motion.div
@@ -651,19 +873,19 @@ function WhyBuild() {
             whileHover={{ y: -8, borderColor: p.color, scale: 1.02 }}
             className={`group relative border border-white/10 bg-gradient-to-br ${p.gradient} bg-[#11111e]/80 backdrop-blur-sm rounded-2xl p-7 flex flex-col gap-4 transition-all duration-500 cursor-pointer overflow-hidden`}
           >
-            <motion.div 
+            <motion.div
               className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
               style={{
-                background: `radial-gradient(circle at 50% 0%, ${p.color}20, transparent 70%)`
+                background: `radial-gradient(circle at 50% 0%, ${p.color}20, transparent 70%)`,
               }}
             />
-            
-            <motion.div 
+
+            <motion.div
               className="relative w-14 h-14 rounded-xl flex items-center justify-center transition-all duration-300 group-hover:scale-110 group-hover:rotate-3"
               style={{
                 background: `linear-gradient(135deg, ${p.color}20, ${p.color}05)`,
                 color: p.color,
-                border: `1px solid ${p.color}30`
+                border: `1px solid ${p.color}30`,
               }}
               whileHover={{ rotate: [0, -5, 5, 0] }}
               transition={{ duration: 0.3 }}
@@ -675,7 +897,7 @@ function WhyBuild() {
               <h3 className="text-white font-black text-sm tracking-[0.1em] uppercase mb-2">
                 {p.title}
               </h3>
-              <motion.div 
+              <motion.div
                 className="h-px w-8 group-hover:w-12 transition-all duration-300"
                 style={{ background: p.color }}
               />
@@ -686,15 +908,26 @@ function WhyBuild() {
             </p>
 
             <div className="absolute bottom-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={p.color} strokeWidth="1.5">
-                <path d="M5 12H19M19 12L12 5M19 12L12 19" strokeLinecap="round" strokeLinejoin="round"/>
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke={p.color}
+                strokeWidth="1.5"
+              >
+                <path
+                  d="M5 12H19M19 12L12 5M19 12L12 19"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
               </svg>
             </div>
           </motion.div>
         ))}
       </div>
 
-      <motion.div 
+      <motion.div
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.4 }}
@@ -707,10 +940,15 @@ function WhyBuild() {
           { value: "4.9★", label: "Glassdoor Rating", color: "#fdcb6e" },
         ].map((stat, i) => (
           <div key={i} className="text-center group cursor-pointer">
-            <p className="text-2xl md:text-3xl font-black transition-all duration-300 group-hover:scale-110" style={{ color: stat.color }}>
+            <p
+              className="text-2xl md:text-3xl font-black transition-all duration-300 group-hover:scale-110"
+              style={{ color: stat.color }}
+            >
               {stat.value}
             </p>
-            <p className="text-[9px] tracking-[0.2em] text-white/40 uppercase mt-1">{stat.label}</p>
+            <p className="text-[9px] tracking-[0.2em] text-white/40 uppercase mt-1">
+              {stat.label}
+            </p>
           </div>
         ))}
       </motion.div>
@@ -722,7 +960,7 @@ function WhyBuild() {
 /* ─── CTA BANNER (Enhanced with Navigation) ─── */
 function CtaBanner() {
   const router = useRouter();
-  
+
   return (
     <section className="relative bg-transparent py-32 px-6 text-center overflow-hidden z-10">
       <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
@@ -753,10 +991,10 @@ function CtaBanner() {
             Join a team that values technical mastery over corporate tradition.
             Your best work starts here.
           </p>
-          <motion.button 
+          <motion.button
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.98 }}
-            onClick={() => router.push('/careers/apply')}
+            onClick={() => router.push("/careers/apply")}
             className="mt-10 bg-gradient-to-r from-[#6c5ce7] to-[#a29bfe] hover:shadow-[0_0_30px_rgba(108,92,231,0.5)] transition-all px-9 py-4 rounded-full text-xs font-bold tracking-[0.2em] uppercase cursor-pointer"
           >
             Initiate Application
@@ -813,7 +1051,10 @@ export default function CareersPage() {
 
       for (let i = 0; i < nodes.length; i++) {
         for (let j = i + 1; j < nodes.length; j++) {
-          const d = Math.hypot(nodes[i].x - nodes[j].x, nodes[i].y - nodes[j].y);
+          const d = Math.hypot(
+            nodes[i].x - nodes[j].x,
+            nodes[i].y - nodes[j].y,
+          );
           if (d < 160) {
             ctx.beginPath();
             ctx.moveTo(nodes[i].x, nodes[i].y);
@@ -865,23 +1106,25 @@ export default function CareersPage() {
   }, []);
 
   return (
-    <main className="relative min-h-screen bg-[#05070a] text-white overflow-x-hidden">
-      {/* Full Page Particle Network Canvas */}
-      <canvas
-        ref={canvasRef}
-        className="fixed inset-0 w-full h-full pointer-events-none opacity-30 z-0"
-      />
+    <PublicLayout>
+      <main className="relative min-h-screen bg-[#05070a] text-white overflow-x-hidden">
+        {/* Full Page Particle Network Canvas */}
+        <canvas
+          ref={canvasRef}
+          className="fixed inset-0 w-full h-full pointer-events-none opacity-30 z-0"
+        />
 
-      {/* Fixed Gradient Glows */}
-      <div className="fixed top-[-10%] left-[-10%] w-[60%] h-[60%] bg-[#6c5ce7]/10 blur-[140px] rounded-full pointer-events-none z-0" />
-      <div className="fixed bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-[#00cec9]/8 blur-[120px] rounded-full pointer-events-none z-0" />
+        {/* Fixed Gradient Glows */}
+        <div className="fixed top-[-10%] left-[-10%] w-[60%] h-[60%] bg-[#6c5ce7]/10 blur-[140px] rounded-full pointer-events-none z-0" />
+        <div className="fixed bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-[#00cec9]/8 blur-[120px] rounded-full pointer-events-none z-0" />
 
-      {/* Page Content */}
-      <CareerHero />
-      <Manifesto />
-      <Vacancies />
-      <WhyBuild />
-      <CtaBanner />
-    </main>
+        {/* Page Content */}
+        <CareerHero />
+        <Manifesto />
+        <Vacancies />
+        <WhyBuild />
+        <CtaBanner />
+      </main>
+    </PublicLayout>
   );
 }

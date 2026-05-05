@@ -123,7 +123,7 @@ export const translations = {
           name: "Shukur Mahmud",
           role: "Operations Lead",
           company: "",
-          image: "/team/shukur1.png",
+          image: "/team/Shukur1.png",
           social: {
             twitter: "https://twitter.com/shukur",
             github: "https://github.com/mahmud014",
@@ -479,12 +479,12 @@ export const translations = {
           name: "শুকুর মাহমুদ",
           role: "পরিচালনা প্রধান",
           company: "",
-          image: "/team/shukur1.png",
+         image: "/team/Shukur1.png",
           social: {
             twitter: "https://twitter.com/shukur",
-            github: "https://github.com/shukur",
-            linkedin: "https://linkedin.com/in/shukur",
-            instagram: "https://instagram.com/shukur",
+            github: "https://github.com/mahmud014",
+            linkedin: "in/shukurmahmud",
+            instagram: "smanik5588",
           },
         },
         {

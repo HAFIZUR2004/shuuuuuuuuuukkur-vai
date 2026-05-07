@@ -134,7 +134,7 @@ export const translations = {
         {
           name: "Bibek Bhowmick",
           role: "Senior Software Developer & System Architect",
-         company: "",
+          company: "",
           image: "/team/bibek.jpeg",
           social: {
             twitter: "https://twitter.com/shukur",
@@ -170,7 +170,7 @@ export const translations = {
         {
           name: "Habiba Sultana",
           role: "Mern Stack Developer",
-         company: "",
+          company: "",
           image: "/team/habiba.jpeg",
           social: {
             twitter: "https://twitter.com/elena",
@@ -360,6 +360,117 @@ export const translations = {
       pleaseWait: "Please wait",
       complete: "Complete",
     },
+
+    // service
+    servicesPage: {
+      heroBadge: "Trusted by 50+ Global Brands",
+      heroTitle: "FULL-STACK",
+      heroTitleGradient: "ECOSYSTEM",
+      heroDesc1:
+        "From custom web applications and WordPress to Shopify and AI-powered solutions — we build everything under one roof.",
+      heroDesc2:
+        "No matter the platform. No matter the complexity. Your vision, fully engineered.",
+      heroBtnPrimary: "Book a Strategy Call →",
+      heroBtnSecondary: "View Case Studies",
+      platformAgnostic: "PLATFORM_AGNOSTIC",
+      fullStack: "Full-Stack",
+      wordpress: "WordPress",
+      shopify: "Shopify",
+      ai: "AI",
+      customWebDev: "Custom Web App Dev",
+      enterpriseGrade: "Enterprise Grade",
+      wordpressWoo: "WordPress + WooCommerce",
+      scalable: "∞ Scalable",
+      shopifyHeadless: "Shopify + Headless Commerce",
+      globalReady: "Global Ready",
+      aiIntegration: "AI Integration & Automation",
+      nextGen: "Next-Gen",
+      whatWeEngineer: "What We Engineer",
+      whatWeEngineerDesc:
+        "Platforms, custom code, and AI — three layers of expertise.",
+      journeyText:
+        "Empowering businesses with future-ready digital solutions — where innovation meets execution, and every line of code drives growth.",
+      methodology: "Methodology",
+      blueprint: "THE BLUEPRINT TO SCALE",
+      readyTitle: "READY TO",
+      readyTitleItalic: "DOMINATE?",
+      email: "growbusinesssolutionsbd@gmail.com",
+      globalDelivery: "Global Delivery Center",
+      phone: "+880 1884 369340",
+      formName: "Full Name",
+      formEmail: "Work Email",
+      formRequirements: "Project Requirements...",
+      formSuccess: "Thank you! Our team will contact you within 24 hours.",
+      formError: "Something went wrong. Please try again or email us directly.",
+      formButton: "Schedule Discovery Call",
+      formSending: "SENDING...",
+      //service list
+      servicesList: [
+        {
+          title: "High-Performance Ecommerce",
+          desc: "Headless Shopify Plus and custom storefronts for conversion-optimized global stores.",
+          value: "Shopify • Liquid • Hydrogen",
+          badge: "ECOMMERCE",
+          color: "#96bf48",
+          span: "md:col-span-2",
+        },
+        {
+          title: "Enterprise Content Hub",
+          desc: "WordPress and headless CMS solutions for scalable content architecture.",
+          value: "WordPress • Headless • GraphQL",
+          badge: "CMS",
+          color: "#21759b",
+          span: "md:col-span-1",
+        },
+        {
+          title: "Generative AI Integration",
+          desc: "LLMs, agents, and automation workflows bringing intelligence and personalization.",
+          value: "OpenAI • LangChain • Fine-tuning",
+          badge: "AI-FIRST",
+          color: "#10a37f",
+          span: "md:col-span-1",
+        },
+        {
+          title: "Global No-Code Orchestration",
+          desc: "Rapid MVP to enterprise-grade scaling with Webflow, Framer, and Bubble.",
+          value: "Webflow • Bubble • FlutterFlow",
+          badge: "RAPID-DEV",
+          color: "#4353ff",
+          span: "md:col-span-1",
+        },
+        {
+          title: "Intelligent Analytics & Ops",
+          desc: "Custom BI tools and automation systems for data-driven decisions.",
+          value: "BigQuery • Looker • n8n",
+          badge: "INSIGHTS",
+          color: "#f9ab00",
+          span: "md:col-span-1",
+        },
+      ],
+      // Timeline Data
+      timelineList: [
+        {
+          id: "01",
+          title: "Discovery & Audit",
+          desc: "Analyzing business goals, tech stack, and market position to build your roadmap.",
+        },
+        {
+          id: "02",
+          title: "Strategy & Blueprint",
+          desc: "Defining design systems, architecture, and performance metrics.",
+        },
+        {
+          id: "03",
+          title: "Agile Build & Test",
+          desc: "Transparent sprints with development, QA, and user testing.",
+        },
+        {
+          id: "04",
+          title: "Launch & Optimize",
+          desc: "Global deployment with 24/7 monitoring and continuous optimization.",
+        },
+      ],
+    },
   },
 
   BN: {
@@ -479,7 +590,7 @@ export const translations = {
           name: "শুকুর মাহমুদ",
           role: "পরিচালনা প্রধান",
           company: "",
-         image: "/team/Shukur1.png",
+          image: "/team/Shukur1.png",
           social: {
             twitter: "https://twitter.com/shukur",
             github: "https://github.com/mahmud014",
@@ -490,7 +601,7 @@ export const translations = {
         {
           name: "বিবেক ভৌমিক",
           role: "সিনিয়র সফটওয়্যার ডেভেলপার এবং সিস্টেম আর্কিটেক্ট",
-         company: "",
+          company: "",
           image: "/team/bibek.jpeg",
           social: {
             twitter: "https://twitter.com/sarah",
@@ -502,11 +613,11 @@ export const translations = {
         {
           name: "লাল মাহমুদ",
           role: "মার্ন স্ট্যাক ডেভেলপার",
-         company: "",
+          company: "",
           image: "/team/lalvai.jpeg",
           social: {
             twitter: "https://twitter.com/sarah",
-           github: "https://github.com/bibek-totol",
+            github: "https://github.com/bibek-totol",
             linkedin: "in/bibekbhowmick",
             instagram: "https://instagram.com/sarah",
           },
@@ -514,7 +625,7 @@ export const translations = {
         {
           name: "সুমাইয়া আফরোজা",
           role: "মার্ন স্ট্যাক ডেভেলপার",
-         company: "",
+          company: "",
           image: "/team/Sumaiya Afroza.jpeg",
           social: {
             twitter: "https://twitter.com",
@@ -716,6 +827,116 @@ export const translations = {
       ],
       pleaseWait: "অনুগ্রহ করে অপেক্ষা করুন",
       complete: "সম্পূর্ণ",
+    },
+    // service
+    servicesPage: {
+      heroBadge: "৫০+ গ্লোবাল ব্র্যান্ডের আস্থা",
+      heroTitle: "ফুল-স্ট্যাক",
+      heroTitleGradient: "ইকোসিস্টেম",
+      heroDesc1:
+        "কাস্টম ওয়েব অ্যাপ্লিকেশন থেকে ওয়ার্ডপ্রেস, শপিফাই এবং এআই-পাওয়ার্ড সলিউশন — সবকিছু আমরা এক ছাদের নিচে তৈরি করি।",
+      heroDesc2:
+        "প্ল্যাটফর্ম যাই হোক না কেন। জটিলতা যাই হোক না কেন। আপনার ভিশন, সম্পূর্ণরূপে ইঞ্জিনিয়ারড।",
+      heroBtnPrimary: "বুক এ স্ট্রাটেজি কল →",
+      heroBtnSecondary: "কেস স্টাডিজ দেখুন",
+      platformAgnostic: "প্ল্যাটফর্ম_এগনোস্টিক",
+      fullStack: "ফুল-স্ট্যাক",
+      wordpress: "ওয়ার্ডপ্রেস",
+      shopify: "শপিফাই",
+      ai: "এআই",
+      customWebDev: "কাস্টম ওয়েব অ্যাপ ডেভ",
+      enterpriseGrade: "এন্টারপ্রাইজ গ্রেড",
+      wordpressWoo: "ওয়ার্ডপ্রেস + উকমার্স",
+      scalable: "∞ স্কেলেবল",
+      shopifyHeadless: "শপিফাই + হেডলেস কমার্স",
+      globalReady: "গ্লোবাল রেডি",
+      aiIntegration: "এআই ইন্টিগ্রেশন ও অটোমেশন",
+      nextGen: "নেক্সট-জেন",
+      whatWeEngineer: "আমরা যা ইঞ্জিনিয়ার করি",
+      whatWeEngineerDesc:
+        "প্ল্যাটফর্ম, কাস্টম কোড এবং এআই — দক্ষতার তিনটি স্তর।",
+      journeyText:
+        "ব্যবসাগুলোকে ভবিষ্যৎ-প্রস্তুত ডিজিটাল সলিউশন দিয়ে সক্ষম করা — যেখানে উদ্ভাবন ও এক্সিকিউশন মিলিত হয়।",
+      methodology: "পদ্ধতি",
+      blueprint: "স্কেল করার ব্লুপ্রিন্ট",
+      readyTitle: "প্রস্তুত কি",
+      readyTitleItalic: "আধিপত্য বিস্তার করতে?",
+      email: "growbusinesssolutionsbd@gmail.com",
+      globalDelivery: "গ্লোবাল ডেলিভারি সেন্টার",
+      phone: "+৮৮০ ১৮৮৪ ৩৬৯৩৪০",
+      formName: "পূর্ণ নাম",
+      formEmail: "কাজের ইমেইল",
+      formRequirements: "প্রকল্পের প্রয়োজনীয়তা...",
+      formSuccess: "ধন্যবাদ! আমাদের টিম ২৪ ঘন্টার মধ্যে যোগাযোগ করবে।",
+      formError:
+        "কিছু ভুল হয়েছে। দয়া করে আবার চেষ্টা করুন অথবা সরাসরি ইমেইল করুন।",
+      formButton: "শিডিউল ডিসকভারি কল",
+      formSending: "পাঠানো হচ্ছে...",
+      servicesList: [
+        {
+          title: "হাই-পারফরম্যান্স ইকমার্স",
+          desc: "হেডলেস শপিফাই প্লাস এবং কনভার্সন-অপটিমাইজড গ্লোবাল স্টোরের জন্য কাস্টম স্টোরফ্রন্ট।",
+          value: "শপিফাই • লিকুইড • হাইড্রোজেন",
+          badge: "ইকমার্স",
+          color: "#96bf48",
+          span: "md:col-span-2",
+        },
+        {
+          title: "এন্টারপ্রাইজ কন্টেন্ট হাব",
+          desc: "স্কেলেবল কন্টেন্ট আর্কিটেকচারের জন্য ওয়ার্ডপ্রেস এবং হেডলেস সিএমএস সমাধান।",
+          value: "ওয়ার্ডপ্রেস • হেডলেস • গ্রাফকিউএল",
+          badge: "সিএমএস",
+          color: "#21759b",
+          span: "md:col-span-1",
+        },
+        {
+          title: "জেনারেটিভ এআই ইন্টিগ্রেশন",
+          desc: "এলএলএম, এজেন্ট এবং অটোমেশন ওয়ার্কফ্লো যা ইন্টেলিজেন্স এবং পার্সোনালাইজেশন নিয়ে আসে।",
+          value: "ওপেনএআই • ল্যাংচেইন • ফাইন-টিউনিং",
+          badge: "এআই-ফার্স্ট",
+          color: "#10a37f",
+          span: "md:col-span-1",
+        },
+        {
+          title: "গ্লোবাল নো-কোড অর্কেস্ট্রেশন",
+          desc: "ওয়েবফ্লো, ফ্রেমার এবং বাবল সহ দ্রুত এমভিপি থেকে এন্টারপ্রাইজ-গ্রেড স্কেলিং।",
+          value: "ওয়েবফ্লো • বাবল • ফ্লাটারফ্লো",
+          badge: "র্যাপিড-ডেভ",
+          color: "#4353ff",
+          span: "md:col-span-1",
+        },
+        {
+          title: "ইন্টেলিজেন্ট অ্যানালিটিক্স ও অপস",
+          desc: "ডেটা-চালিত সিদ্ধান্তের জন্য কাস্টম বিআই টুলস এবং অটোমেশন সিস্টেম।",
+          value: "বিগকোয়েরি • লুকার • এন৮এন",
+          badge: "ইনসাইটস",
+          color: "#f9ab00",
+          span: "md:col-span-1",
+        },
+      ],
+      // Timeline Data - বাংলা ভার্সন
+      timelineList: [
+        {
+          id: "০১",
+          title: "অনুসন্ধান ও অডিট",
+          desc: "আপনার রোডম্যাপ তৈরির জন্য ব্যবসায়িক লক্ষ্য, টেক স্ট্যাক এবং বাজারের অবস্থান বিশ্লেষণ।",
+        },
+        {
+          id: "০২",
+          title: "স্ট্র্যাটেজি ও ব্লুপ্রিন্ট",
+          desc: "ডিজাইন সিস্টেম, আর্কিটেকচার এবং পারফরম্যান্স মেট্রিক্স নির্ধারণ।",
+        },
+        {
+          id: "০৩",
+          title: "এজাইল বিল্ড ও টেস্ট",
+          desc: "ডেভেলপমেন্ট, কিউএ এবং ইউজার টেস্টিং সহ ট্রান্সপারেন্ট স্প্রিন্ট।",
+        },
+        {
+          id: "০৪",
+          title: "লঞ্চ ও অপটিমাইজ",
+          desc: "২৪/৭ মনিটরিং এবং অবিচ্ছিন্ন অপটিমাইজেশন সহ গ্লোবাল ডিপ্লয়মেন্ট।",
+        },
+      ],
     },
   },
 };

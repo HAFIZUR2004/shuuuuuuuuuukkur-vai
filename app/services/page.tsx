@@ -1,13 +1,12 @@
 "use client";
 
 import React, { useEffect, useRef, useState } from "react";
-import { motion, useScroll, useTransform } from "framer-motion";
+import { motion } from "framer-motion";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import {
   Code2,
   Layers,
-  Cpu,
   Globe,
   Search,
   Layout,
@@ -18,69 +17,55 @@ import {
   FileText,
   Brain,
   BarChart,
-  CheckCircle,
   Sparkles,
-  TrendingUp,
-  Users,
-  Zap,
-  Shield,
-  Award,
-  Clock,
-  MessageSquare,
   Phone,
   Mail,
-  Send,
   Loader2,
+  User,
+  User2,
+  MailIcon,
+  MessageSquareIcon,
 } from "lucide-react";
 import Link from "next/link";
 import PremiumSpinner from "@/components/PremiumSpinner";
 import ParticleNetwork from "@/components/ParticleNetwork";
 import { PublicLayout } from "../public-layout";
+import { useLanguage } from "@/constants/LanguageContext";
+import { translations } from "@/constants/translations";
 
 gsap.registerPlugin(ScrollTrigger);
 
-// --- Services Data ---
-const services = [
+const servicesConfig = [
   {
-    title: "High-Performance Ecommerce",
-    desc: "Headless Shopify Plus and custom storefronts for conversion-optimized global stores.",
-    value: "Shopify • Liquid • Hydrogen",
+    key: "ecommerce",
     icon: ShoppingCart,
     color: "#96bf48",
     span: "md:col-span-2",
     badge: "ECOMMERCE",
   },
   {
-    title: "Enterprise Content Hub",
-    desc: "WordPress and headless CMS solutions for scalable content architecture.",
-    value: "WordPress • Headless • GraphQL",
+    key: "content",
     icon: FileText,
     color: "#21759b",
     span: "md:col-span-1",
     badge: "CMS",
   },
   {
-    title: "Generative AI Integration",
-    desc: "LLMs, agents, and automation workflows bringing intelligence and personalization.",
-    value: "OpenAI • LangChain • Fine-tuning",
+    key: "ai",
     icon: Brain,
     color: "#10a37f",
     span: "md:col-span-1",
     badge: "AI-FIRST",
   },
   {
-    title: "Global No-Code Orchestration",
-    desc: "Rapid MVP to enterprise-grade scaling with Webflow, Framer, and Bubble.",
-    value: "Webflow • Bubble • FlutterFlow",
+    key: "nocode",
     icon: Layout,
     color: "#4353ff",
     span: "md:col-span-1",
     badge: "RAPID-DEV",
   },
   {
-    title: "Intelligent Analytics & Ops",
-    desc: "Custom BI tools and automation systems for data-driven decisions.",
-    value: "BigQuery • Looker • n8n",
+    key: "analytics",
     icon: BarChart,
     color: "#f9ab00",
     span: "md:col-span-1",
@@ -88,41 +73,44 @@ const services = [
   },
 ];
 
-// --- Timeline Data ---
-const timeline = [
-  {
-    id: "01",
-    title: "Discovery & Audit",
-    desc: "Analyzing business goals, tech stack, and market position to build your roadmap.",
-    icon: Search,
-  },
-  {
-    id: "02",
-    title: "Strategy & Blueprint",
-    desc: "Defining design systems, architecture, and performance metrics.",
-    icon: Layers,
-  },
-  {
-    id: "03",
-    title: "Agile Build & Test",
-    desc: "Transparent sprints with development, QA, and user testing.",
-    icon: Terminal,
-  },
-  {
-    id: "04",
-    title: "Launch & Optimize",
-    desc: "Global deployment with 24/7 monitoring and continuous optimization.",
-    icon: Rocket,
-  },
+// ✅ স্ট্যাটিক টাইমলাইন কনফিগ
+const timelineConfig = [
+  { key: "discovery", icon: Search },
+  { key: "strategy", icon: Layers },
+  { key: "agile", icon: Terminal },
+  { key: "launch", icon: Rocket },
 ];
 
 export default function ServicesPage() {
+  const { lang } = useLanguage();
+  const t = translations[lang];
+  const s = t.servicesPage;
+
+  // ✅ ট্রান্সলেশন থেকে টেক্সট ডাটা নেওয়া
+  const servicesList = s?.servicesList || [];
+  const timelineList = s?.timelineList || [];
+
+  // ✅ কনফিগ আর ট্রান্সলেশন ম্যাপ করে সার্ভিস তৈরি
+  const services = servicesConfig.map((config, idx) => ({
+    ...config,
+    title: servicesList[idx]?.title || "",
+    desc: servicesList[idx]?.desc || "",
+    value: servicesList[idx]?.value || "",
+  }));
+
+  // ✅ টাইমলাইন কনফিগ আর ট্রান্সলেশন ম্যাপ
+  const timeline = timelineConfig.map((config, idx) => ({
+    ...config,
+    id: timelineList[idx]?.id || `0${idx + 1}`,
+    title: timelineList[idx]?.title || "",
+    desc: timelineList[idx]?.desc || "",
+  }));
+
   const [loading, setLoading] = useState(true);
   const timelineLineRef = useRef<HTMLDivElement>(null);
   const timelineScrollRef = useRef<HTMLDivElement>(null);
   const contactFormRef = useRef<HTMLDivElement>(null);
 
-  // Contact Form State
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -134,7 +122,6 @@ export default function ServicesPage() {
     message: string;
   } | null>(null);
 
-  // সিমুলেটেড লোডিং - প্রিমিয়াম স্পিনার দেখানোর জন্য
   useEffect(() => {
     const timer = setTimeout(() => {
       setLoading(false);
@@ -142,14 +129,13 @@ export default function ServicesPage() {
     return () => clearTimeout(timer);
   }, []);
 
-  // Scroll to contact form function
   const scrollToContactForm = () => {
     contactFormRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
   // GSAP Timeline Animation
   useEffect(() => {
-    if (!loading) {
+    if (!loading && timeline.length > 0) {
       setTimeout(() => {
         if (timelineLineRef.current && timelineScrollRef.current) {
           gsap.fromTo(
@@ -194,7 +180,7 @@ export default function ServicesPage() {
     return () => {
       ScrollTrigger.getAll().forEach((trigger) => trigger.kill());
     };
-  }, [loading]);
+  }, [loading, timeline]);
 
   const handleFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -218,9 +204,10 @@ export default function ServicesPage() {
       if (result.success) {
         setSubmitStatus({
           type: "success",
-          message: "Thank you! Our team will contact you within 24 hours.",
+          message:
+            s?.formSuccess ||
+            "Thank you! Our team will contact you within 24 hours.",
         });
-
         setFormData({ name: "", email: "", requirements: "" });
         setTimeout(() => setSubmitStatus(null), 5000);
       } else {
@@ -230,7 +217,9 @@ export default function ServicesPage() {
       console.error("Form submission error:", error);
       setSubmitStatus({
         type: "error",
-        message: "Something went wrong. Please try again or email us directly.",
+        message:
+          s?.formError ||
+          "Something went wrong. Please try again or email us directly.",
       });
       setTimeout(() => setSubmitStatus(null), 5000);
     } finally {
@@ -238,7 +227,6 @@ export default function ServicesPage() {
     }
   };
 
-  // Loading state - Full screen overlay
   if (loading) {
     return (
       <div className="fixed inset-0 z-[9999] bg-[#05070a]">
@@ -255,11 +243,9 @@ export default function ServicesPage() {
     );
   }
 
-  // Content with PublicLayout (Footer will show only after loading is complete)
   return (
     <PublicLayout showFooter={true}>
       <main className="relative min-h-screen bg-[#05070a] text-white selection:bg-[#6c5ce7]/30 overflow-hidden">
-        {/* Particle Network BG */}
         <ParticleNetwork
           opacity={0.4}
           particleCount={60}
@@ -286,28 +272,25 @@ export default function ServicesPage() {
               <div className="inline-flex items-center gap-2 border border-[#a29bfe]/30 bg-[#6c5ce7]/10 backdrop-blur-xl px-4 py-2 rounded-full mb-8">
                 <span className="w-2 h-2 rounded-full bg-[#00cec9] animate-pulse" />
                 <span className="text-[10px] tracking-[0.3em] font-black uppercase">
-                  Trusted by 50+ Global Brands
+                  {s?.heroBadge || "Trusted by 50+ Global Brands"}
                 </span>
               </div>
 
               <h1 className="text-[clamp(3rem,8vw,6.5rem)] font-black leading-[0.85] tracking-tighter mb-8">
-                FULL-STACK <br />
+                {s?.heroTitle || "FULL-STACK"} <br />
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#6c5ce7] via-[#a29bfe] to-[#00cec9]">
-                  ECOSYSTEM
+                  {s?.heroTitleGradient || "ECOSYSTEM"}
                 </span>
               </h1>
 
               <p className="max-w-xl text-lg text-white/50 leading-relaxed mb-6 font-medium">
-                From <span className="text-white">custom web applications</span>{" "}
-                and <span className="text-white">WordPress</span> to
-                <span className="text-white"> Shopify</span> and{" "}
-                <span className="text-white">AI-powered solutions</span> — we
-                build everything under one roof.
+                {s?.heroDesc1 ||
+                  "From custom web applications and WordPress to Shopify and AI-powered solutions — we build everything under one roof."}
               </p>
 
               <p className="max-w-xl text-base text-white/40 leading-relaxed mb-10 font-medium">
-                No matter the platform. No matter the complexity. Your vision,
-                fully engineered.
+                {s?.heroDesc2 ||
+                  "No matter the platform. No matter the complexity. Your vision, fully engineered."}
               </p>
 
               <div className="flex flex-wrap gap-5">
@@ -315,11 +298,11 @@ export default function ServicesPage() {
                   onClick={scrollToContactForm}
                   className="px-10 py-5 bg-[#6c5ce7] rounded-2xl font-black text-xs tracking-widest uppercase shadow-[0_0_30px_rgba(108,92,231,0.4)] hover:scale-105 transition-all"
                 >
-                  Book a Strategy Call →
+                  {s?.heroBtnPrimary || "Book a Strategy Call →"}
                 </button>
                 <Link href="/projects">
                   <button className="px-10 py-5 border border-white/10 hover:bg-white/5 rounded-full transition-all duration-300">
-                    View Case Studies
+                    {s?.heroBtnSecondary || "View Case Studies"}
                   </button>
                 </Link>
               </div>
@@ -331,7 +314,7 @@ export default function ServicesPage() {
               <div className="relative bg-[#0a0c0f]/80 backdrop-blur-3xl border border-white/10 p-10 rounded-[2rem]">
                 <div className="flex items-center justify-between mb-10">
                   <div className="text-[10px] font-mono text-white/40 tracking-[0.2em]">
-                    PLATFORM_AGNOSTIC
+                    {s?.platformAgnostic || "PLATFORM_AGNOSTIC"}
                   </div>
                   <div className="flex gap-1.5">
                     <div className="w-2 h-2 rounded-full bg-red-500/50" />
@@ -340,14 +323,13 @@ export default function ServicesPage() {
                   </div>
                 </div>
 
-                {/* Platform Icons Row */}
                 <div className="flex justify-around mb-8 pb-6 border-b border-white/10">
                   <div className="text-center">
                     <div className="w-10 h-10 rounded-full bg-[#6c5ce7]/20 flex items-center justify-center mx-auto mb-2">
                       <Code2 size={18} className="text-[#6c5ce7]" />
                     </div>
                     <span className="text-[8px] font-mono text-white/40">
-                      Full-Stack
+                      {s?.fullStack || "Full-Stack"}
                     </span>
                   </div>
                   <div className="text-center">
@@ -355,7 +337,7 @@ export default function ServicesPage() {
                       <FileText size={18} className="text-[#21759b]" />
                     </div>
                     <span className="text-[8px] font-mono text-white/40">
-                      WordPress
+                      {s?.wordpress || "WordPress"}
                     </span>
                   </div>
                   <div className="text-center">
@@ -363,7 +345,7 @@ export default function ServicesPage() {
                       <ShoppingCart size={18} className="text-[#96bf48]" />
                     </div>
                     <span className="text-[8px] font-mono text-white/40">
-                      Shopify
+                      {s?.shopify || "Shopify"}
                     </span>
                   </div>
                   <div className="text-center">
@@ -371,7 +353,7 @@ export default function ServicesPage() {
                       <Brain size={18} className="text-[#10a37f]" />
                     </div>
                     <span className="text-[8px] font-mono text-white/40">
-                      AI
+                      {s?.ai || "AI"}
                     </span>
                   </div>
                 </div>
@@ -379,8 +361,8 @@ export default function ServicesPage() {
                 <div className="space-y-6">
                   <div className="space-y-2">
                     <div className="flex justify-between text-[10px] font-bold uppercase tracking-widest text-white/60">
-                      <span>Custom Web App Dev</span>
-                      <span>Enterprise Grade</span>
+                      <span>{s?.customWebDev || "Custom Web App Dev"}</span>
+                      <span>{s?.enterpriseGrade || "Enterprise Grade"}</span>
                     </div>
                     <div className="w-full h-1 bg-white/5 rounded-full overflow-hidden">
                       <motion.div
@@ -393,8 +375,10 @@ export default function ServicesPage() {
                   </div>
                   <div className="space-y-2">
                     <div className="flex justify-between text-[10px] font-bold uppercase tracking-widest text-white/60">
-                      <span>WordPress + WooCommerce</span>
-                      <span>∞ Scalable</span>
+                      <span>
+                        {s?.wordpressWoo || "WordPress + WooCommerce"}
+                      </span>
+                      <span>{s?.scalable || "∞ Scalable"}</span>
                     </div>
                     <div className="w-full h-1 bg-white/5 rounded-full overflow-hidden">
                       <motion.div
@@ -407,8 +391,10 @@ export default function ServicesPage() {
                   </div>
                   <div className="space-y-2">
                     <div className="flex justify-between text-[10px] font-bold uppercase tracking-widest text-white/60">
-                      <span>Shopify + Headless Commerce</span>
-                      <span>Global Ready</span>
+                      <span>
+                        {s?.shopifyHeadless || "Shopify + Headless Commerce"}
+                      </span>
+                      <span>{s?.globalReady || "Global Ready"}</span>
                     </div>
                     <div className="w-full h-1 bg-white/5 rounded-full overflow-hidden">
                       <motion.div
@@ -421,8 +407,10 @@ export default function ServicesPage() {
                   </div>
                   <div className="space-y-2">
                     <div className="flex justify-between text-[10px] font-bold uppercase tracking-widest text-white/60">
-                      <span>AI Integration & Automation</span>
-                      <span>Next-Gen</span>
+                      <span>
+                        {s?.aiIntegration || "AI Integration & Automation"}
+                      </span>
+                      <span>{s?.nextGen || "Next-Gen"}</span>
                     </div>
                     <div className="w-full h-1 bg-white/5 rounded-full overflow-hidden">
                       <motion.div
@@ -443,39 +431,40 @@ export default function ServicesPage() {
         <section className="relative z-10 max-w-7xl mx-auto px-6 py-32">
           <div className="mb-20 text-center md:text-left">
             <h2 className="text-4xl md:text-5xl font-black tracking-tighter mb-4 uppercase">
-              What We Engineer
+              {s?.whatWeEngineer || "What We Engineer"}
             </h2>
             <p className="text-white/40 max-w-xl font-medium">
-              Platforms, custom code, and AI — three layers of expertise.
+              {s?.whatWeEngineerDesc ||
+                "Platforms, custom code, and AI — three layers of expertise."}
             </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {services.map((s, i) => (
+            {services.map((service, i) => (
               <motion.div
                 key={i}
-                whileHover={{ y: -8, borderColor: `${s.color}40` }}
-                className={`${s.span} p-10 rounded-[2.5rem] bg-gradient-to-br from-white/[0.03] to-transparent border border-white/5 relative overflow-hidden group transition-all`}
+                whileHover={{ y: -8, borderColor: `${service.color}40` }}
+                className={`${service.span} p-10 rounded-[2.5rem] bg-gradient-to-br from-white/[0.03] to-transparent border border-white/5 relative overflow-hidden group transition-all`}
               >
                 <div className="absolute top-6 right-6 z-20">
                   <span className="text-[9px] font-mono font-black px-2 py-1 rounded-full bg-white/5 border border-white/10 text-white/40 tracking-wider">
-                    {s.badge}
+                    {service.badge}
                   </span>
                 </div>
                 <div
                   className="absolute top-0 right-0 w-32 h-32 blur-[80px] opacity-20 group-hover:opacity-40 transition-opacity"
-                  style={{ backgroundColor: s.color }}
+                  style={{ backgroundColor: service.color }}
                 />
-                <s.icon
+                <service.icon
                   className="mb-8 group-hover:scale-110 transition-transform"
-                  style={{ color: s.color }}
+                  style={{ color: service.color }}
                   size={36}
                 />
                 <h3 className="text-2xl font-black mb-4 tracking-tight">
-                  {s.title}
+                  {service.title}
                 </h3>
                 <p className="text-white/40 text-sm leading-relaxed mb-8 font-medium">
-                  {s.desc}
+                  {service.desc}
                 </p>
                 <div className="pt-6 border-t border-white/5 flex items-center justify-between">
                   <div>
@@ -484,9 +473,9 @@ export default function ServicesPage() {
                     </span>
                     <span
                       className="text-[11px] font-bold uppercase tracking-tighter"
-                      style={{ color: s.color }}
+                      style={{ color: service.color }}
                     >
-                      {s.value}
+                      {service.value}
                     </span>
                   </div>
                   <div className="w-8 h-8 rounded-full border border-white/10 flex items-center justify-center group-hover:bg-white/10 transition-colors">
@@ -498,7 +487,7 @@ export default function ServicesPage() {
           </div>
         </section>
 
-        {/* Enhanced "Our Journey" Counter Section */}
+        {/* Journey Section */}
         <section className="relative z-10 max-w-7xl mx-auto px-6 py-20">
           <motion.div
             initial={{ opacity: 0, scale: 0.98 }}
@@ -507,12 +496,8 @@ export default function ServicesPage() {
             className="mt-20 text-center max-w-4xl mx-auto p-10 rounded-3xl bg-gradient-to-r from-[#6c5ce7]/5 to-[#00cec9]/5 border border-white/10"
           >
             <p className="text-xl md:text-2xl font-medium text-white/70 italic leading-relaxed">
-              Empowering businesses with{" "}
-              <span className="text-white font-bold">
-                future-ready digital solutions
-              </span>{" "}
-              — where innovation meets execution, and every line of code drives
-              growth.
+              {s?.journeyText ||
+                "Empowering businesses with future-ready digital solutions — where innovation meets execution, and every line of code drives growth."}
             </p>
             <div className="mt-6 flex justify-center gap-2 text-[#00cec9]">
               <Sparkles size={16} />
@@ -522,7 +507,7 @@ export default function ServicesPage() {
           </motion.div>
         </section>
 
-        {/* Timeline Section with GSAP */}
+        {/* Timeline Section */}
         <section
           ref={timelineScrollRef}
           className="relative z-10 py-32 px-6 overflow-hidden"
@@ -533,10 +518,10 @@ export default function ServicesPage() {
           <div className="max-w-4xl mx-auto relative z-10">
             <div className="text-center mb-24">
               <h2 className="text-3xl font-black tracking-[0.3em] uppercase opacity-40 mb-2">
-                Methodology
+                {s?.methodology || "Methodology"}
               </h2>
               <h3 className="text-5xl font-black tracking-tighter">
-                THE BLUEPRINT TO SCALE
+                {s?.blueprint || "THE BLUEPRINT TO SCALE"}
               </h3>
             </div>
 
@@ -558,7 +543,6 @@ export default function ServicesPage() {
                     }`}
                   >
                     <div className="hidden md:block w-1/2" />
-
                     <div className="absolute left-[24px] md:left-1/2 -translate-x-1/2 z-10">
                       <div
                         className="w-12 h-12 rounded-full bg-[#05070a] border-2 border-white/10 flex items-center justify-center transition-all duration-300 hover:scale-150 cursor-pointer shadow-[0_0_20px_rgba(108,92,231,0.25)]"
@@ -574,7 +558,6 @@ export default function ServicesPage() {
                         />
                       </div>
                     </div>
-
                     <div
                       className={`w-full md:w-1/2 pl-16 md:pl-0 ${
                         idx % 2 === 0
@@ -611,8 +594,10 @@ export default function ServicesPage() {
             <div className="grid lg:grid-cols-2 gap-20 items-center relative z-10">
               <div>
                 <h2 className="text-5xl md:text-7xl font-black leading-[0.9] mb-10 tracking-tighter">
-                  READY TO <br />{" "}
-                  <span className="text-white/30 italic">DOMINATE?</span>
+                  {s?.readyTitle || "READY TO"} <br />{" "}
+                  <span className="text-white/30 italic">
+                    {s?.readyTitleItalic || "DOMINATE?"}
+                  </span>
                 </h2>
                 <div className="space-y-8">
                   <div className="flex items-start gap-6 group">
@@ -620,7 +605,7 @@ export default function ServicesPage() {
                       <Mail size={24} />
                     </div>
                     <span className="text-xl text-white/70 font-bold break-all md:break-normal">
-                      growbusinesssolutionsbd@gmail.com
+                      {s?.email || "growbusinesssolutionsbd@gmail.com"}
                     </span>
                   </div>
 
@@ -629,7 +614,7 @@ export default function ServicesPage() {
                       <Globe size={24} />
                     </div>
                     <span className="text-xl text-white/70 font-bold">
-                      Global Delivery Center
+                      {s?.globalDelivery || "Global Delivery Center"}
                     </span>
                   </div>
 
@@ -638,7 +623,7 @@ export default function ServicesPage() {
                       <Phone size={24} />
                     </div>
                     <span className="text-xl text-white/70 font-bold">
-                      +880 1884 369340
+                      {s?.phone || "+880 1884 369340"}
                     </span>
                   </div>
                 </div>
@@ -646,35 +631,49 @@ export default function ServicesPage() {
 
               <div className="space-y-6 bg-white/[0.02] p-8 md:p-12 rounded-[2rem] border border-white/10 shadow-inner">
                 <form onSubmit={handleFormSubmit} className="space-y-6">
-                  <input
-                    type="text"
-                    placeholder="Full Name"
-                    value={formData.name}
-                    onChange={(e) =>
-                      setFormData({ ...formData, name: e.target.value })
-                    }
-                    required
-                    className="w-full bg-transparent border-b border-white/10 py-5 focus:border-[#6c5ce7] outline-none transition-all font-bold text-sm"
-                  />
-                  <input
-                    type="email"
-                    placeholder="Work Email"
-                    value={formData.email}
-                    onChange={(e) =>
-                      setFormData({ ...formData, email: e.target.value })
-                    }
-                    required
-                    className="w-full bg-transparent border-b border-white/10 py-5 focus:border-[#6c5ce7] outline-none transition-all font-bold text-sm"
-                  />
-                  <textarea
-                    placeholder="Project Requirements..."
-                    value={formData.requirements}
-                    onChange={(e) =>
-                      setFormData({ ...formData, requirements: e.target.value })
-                    }
-                    required
-                    className="w-full bg-transparent border-b border-white/10 py-5 focus:border-[#6c5ce7] outline-none transition-all font-bold text-sm h-32 resize-none"
-                  />
+                  <div className="relative">
+                    <User2 className="absolute left-0 bottom-5 w-5 h-5 text-white/30" />
+                    <input
+                      type="text"
+                      placeholder={s?.formName || "Full Name"}
+                      value={formData.name}
+                      onChange={(e) =>
+                        setFormData({ ...formData, name: e.target.value })
+                      }
+                      required
+                      className="w-full bg-transparent border-b border-white/10 py-5 pl-8 focus:border-[#6c5ce7] outline-none transition-all font-bold text-sm"
+                    />
+                  </div>
+                  <div className="relative">
+                    <MailIcon className="absolute left-0 bottom-5 w-5 h-5 text-white/30" />
+                    <input
+                      type="email"
+                      placeholder={s?.formEmail || "Work Email"}
+                      value={formData.email}
+                      onChange={(e) =>
+                        setFormData({ ...formData, email: e.target.value })
+                      }
+                      required
+                      className="w-full bg-transparent border-b border-white/10 py-5 pl-8 focus:border-[#6c5ce7] outline-none transition-all font-bold text-sm"
+                    />
+                  </div>
+                  <div className="relative">
+                    <MessageSquareIcon className="absolute left-0 top-5 w-5 h-5 text-white/30" />
+                    <textarea
+                      placeholder={
+                        s?.formRequirements || "Project Requirements..."
+                      }
+                      value={formData.requirements}
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          requirements: e.target.value,
+                        })
+                      }
+                      required
+                      className="w-full bg-transparent border-b border-white/10 py-5 pl-8 focus:border-[#6c5ce7] outline-none transition-all font-bold text-sm h-32 resize-none"
+                    />
+                  </div>
 
                   {submitStatus && (
                     <div
@@ -696,10 +695,10 @@ export default function ServicesPage() {
                     {isSubmitting ? (
                       <>
                         <Loader2 size={16} className="animate-spin" />
-                        SENDING...
+                        {s?.formSending || "SENDING..."}
                       </>
                     ) : (
-                      "Schedule Discovery Call"
+                      s?.formButton || "Schedule Discovery Call"
                     )}
                   </button>
                 </form>

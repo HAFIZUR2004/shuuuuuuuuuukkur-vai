@@ -5,6 +5,8 @@ import { motion, useScroll, useTransform } from "framer-motion";
 import { useRouter } from "next/navigation";
 import ParticleNetwork from "@/components/ParticleNetwork";
 import { PublicLayout } from "../public-layout";
+import { useLanguage } from "@/constants/LanguageContext";
+import { translations } from "@/constants/translations";
 
 /* ─── tiny helpers ─── */
 const Tag = ({ children }: { children: React.ReactNode }) => (
@@ -29,7 +31,7 @@ function BlobVisual() {
   return (
     <div className="relative w-full h-full flex items-center justify-center overflow-hidden rounded-2xl bg-[#111]">
       <div
-        className="w-48 h-48 rounded-full animate-spin-slow"
+        className="w-48 h-48 rounded-full"
         style={{
           background:
             "radial-gradient(circle at 35% 35%, #b0a8ff 0%, #6c5ce7 40%, #1a1a2e 80%)",
@@ -53,6 +55,9 @@ function BlobVisual() {
 
 /* ─── HERO SECTION ─── */
 function CareerHero() {
+  const { lang } = useLanguage();
+  const t = translations[lang];
+  const c = t.careersPage;
   const { scrollYProgress } = useScroll();
   const heroOpacity = useTransform(scrollYProgress, [0, 0.3], [1, 0]);
   const heroScale = useTransform(scrollYProgress, [0, 0.3], [1, 0.95]);
@@ -62,9 +67,6 @@ function CareerHero() {
       style={{ opacity: heroOpacity, scale: heroScale }}
       className="relative min-h-screen w-full flex items-center justify-center overflow-hidden px-4 sm:px-6 md:px-10"
     >
-      <div className="fixed top-[-10%] left-[-10%] w-[70%] h-[70%] bg-[#6c5ce7]/10 blur-[120px] rounded-full pointer-events-none z-0" />
-      <div className="fixed bottom-[-10%] right-[-10%] w-[60%] h-[60%] bg-[#00cec9]/10 blur-[120px] rounded-full pointer-events-none z-0" />
-
       <svg
         className="absolute bottom-0 left-0 w-full h-[160px] sm:h-[200px] pointer-events-none z-1"
         viewBox="0 0 1440 220"
@@ -89,7 +91,7 @@ function CareerHero() {
         >
           <span className="w-2 h-2 rounded-full bg-[#00cec9] animate-pulse" />
           <span className="text-[9px] sm:text-[11px] tracking-[0.3em] text-white uppercase font-bold">
-            WE ARE HIRING
+            {c?.heroBadge || "WE ARE HIRING"}
           </span>
         </motion.div>
 
@@ -98,10 +100,10 @@ function CareerHero() {
           animate={{ opacity: 1, y: 0 }}
           className="font-black leading-tight tracking-tight text-white text-[2.2rem] sm:text-[3rem] md:text-[4rem] lg:text-[5.5rem] mb-5"
         >
-          JOIN THE DIGITAL
+          {c?.heroTitle || "JOIN THE DIGITAL"}
           <br className="hidden sm:block" />
           <span className="block text-transparent bg-clip-text bg-gradient-to-r from-[#6c5ce7] via-[#a29bfe] to-[#00cec9]">
-            PROTOCOL
+            {c?.heroTitleGradient || "PROTOCOL"}
           </span>
         </motion.h1>
 
@@ -110,9 +112,8 @@ function CareerHero() {
           animate={{ opacity: 1, y: 0 }}
           className="max-w-xl mx-auto md:mx-0 text-sm sm:text-base md:text-lg text-white/60 leading-relaxed mb-8"
         >
-          Architecting high-performance digital ecosystems for a data-driven
-          future. Harness AI to transform complex processes into elegant
-          automated solutions.
+          {c?.heroDesc ||
+            "Architecting high-performance digital ecosystems for a data-driven future. Harness AI to transform complex processes into elegant automated solutions."}
         </motion.p>
 
         <motion.div
@@ -124,14 +125,14 @@ function CareerHero() {
             whileHover={{ scale: 1.05 }}
             className="w-full sm:w-auto bg-gradient-to-r from-[#6c5ce7] to-[#a29bfe] px-6 py-3 rounded-full text-xs sm:text-sm font-black uppercase"
           >
-            Explore Open Roles
+            {c?.heroBtnPrimary || "Explore Open Roles"}
           </motion.button>
 
           <motion.button
             whileHover={{ scale: 1.05 }}
             className="w-full sm:w-auto border border-white/20 px-6 py-3 rounded-full text-xs sm:text-sm font-black uppercase"
           >
-            Our Philosophy
+            {c?.heroBtnSecondary || "Our Philosophy"}
           </motion.button>
         </motion.div>
 
@@ -141,7 +142,7 @@ function CareerHero() {
           className="absolute bottom-4 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2"
         >
           <span className="text-[8px] tracking-[0.3em] text-white/30 uppercase">
-            Scroll
+            {c?.scrollText || "Scroll"}
           </span>
           <div className="w-px h-10 bg-gradient-to-b from-white/30 to-transparent" />
         </motion.div>
@@ -152,6 +153,10 @@ function CareerHero() {
 
 /* ─── MANIFESTO ─── */
 function Manifesto() {
+  const { lang } = useLanguage();
+  const t = translations[lang];
+  const c = t.careersPage;
+
   return (
     <section className="relative bg-transparent py-24 px-6 md:px-16 max-w-7xl mx-auto z-10">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
@@ -161,51 +166,49 @@ function Manifesto() {
           transition={{ duration: 0.6 }}
           viewport={{ once: true }}
         >
-          <SectionLabel>Zone: Manifesto</SectionLabel>
+          <SectionLabel>{c?.manifestoZone || "Zone: Manifesto"}</SectionLabel>
           <h2 className="text-4xl md:text-5xl font-black leading-tight text-white mb-6">
-            PRECISION OVER
+            {c?.manifestoTitle || "PRECISION OVER"}
             <br />
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#6c5ce7] to-[#a29bfe]">
-              CONVENIENCE.
+              {c?.manifestoTitleGradient || "CONVENIENCE."}
             </span>
           </h2>
           <p className="text-sm text-white/40 leading-relaxed mb-10 max-w-sm">
-            We don&apos;t just build software. We forge digital environments
-            where data flows with architectural elegance. Our culture is rooted
-            in deep focus, radical autonomy, and a relentless pursuit of
-            engineering prestige.
+            {c?.manifestoDesc ||
+              "We don't just build software. We forge digital environments where data flows with architectural elegance. Our culture is rooted in deep focus, radical autonomy, and a relentless pursuit of engineering prestige."}
           </p>
           <div className="grid grid-cols-2 gap-6">
-            {[
-              {
-                num: "01.",
-                title: "Async Native",
-                desc: "Designed for deep work. No useless stand-ups.",
-              },
-              {
-                num: "02.",
-                title: "Tech Sovereign",
-                desc: "We own the stack. No technical debt compromises.",
-              },
-            ].map((item, idx) => (
-              <motion.div
-                key={item.num}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ delay: idx * 0.1 }}
-                viewport={{ once: true }}
-              >
-                <p className="text-[#6c5ce7] font-black text-lg mb-1">
-                  {item.num}
-                </p>
-                <p className="text-white text-xs font-bold tracking-widest uppercase mb-1">
-                  {item.title}
-                </p>
-                <p className="text-white/35 text-xs leading-relaxed">
-                  {item.desc}
-                </p>
-              </motion.div>
-            ))}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.1 }}
+              viewport={{ once: true }}
+            >
+              <p className="text-[#6c5ce7] font-black text-lg mb-1">01.</p>
+              <p className="text-white text-xs font-bold tracking-widest uppercase mb-1">
+                {c?.manifestoItem1Title || "Async Native"}
+              </p>
+              <p className="text-white/35 text-xs leading-relaxed">
+                {c?.manifestoItem1Desc ||
+                  "Designed for deep work. No useless stand-ups."}
+              </p>
+            </motion.div>
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 }}
+              viewport={{ once: true }}
+            >
+              <p className="text-[#6c5ce7] font-black text-lg mb-1">02.</p>
+              <p className="text-white text-xs font-bold tracking-widest uppercase mb-1">
+                {c?.manifestoItem2Title || "Tech Sovereign"}
+              </p>
+              <p className="text-white/35 text-xs leading-relaxed">
+                {c?.manifestoItem2Desc ||
+                  "We own the stack. No technical debt compromises."}
+              </p>
+            </motion.div>
           </div>
         </motion.div>
 
@@ -239,6 +242,10 @@ interface Vacancy {
 }
 
 function Vacancies() {
+  const { lang } = useLanguage();
+  const t = translations[lang];
+  const c = t.careersPage;
+
   const [vacancies, setVacancies] = useState<Vacancy[]>([]);
   const [loading, setLoading] = useState(true);
   const [isAdmin, setIsAdmin] = useState(false);
@@ -387,7 +394,7 @@ function Vacancies() {
           </p>
           <p className="text-white/35 text-xs leading-relaxed">{role.desc}</p>
           <button className="mt-2 text-[10px] tracking-[0.18em] uppercase text-[#6c5ce7] hover:text-white transition-colors">
-            Submit Pitch →
+            {c?.submitPitch || "Submit Pitch →"}
           </button>
         </motion.div>
       );
@@ -428,7 +435,7 @@ function Vacancies() {
         <div className="flex items-center justify-between mt-auto flex-wrap gap-3">
           {role.salary && (
             <p className="text-[10px] tracking-widest text-white/40 uppercase">
-              Salary: {role.salary}
+              {c?.salary || "Salary"}: {role.salary}
             </p>
           )}
           <div className="flex gap-2">
@@ -438,13 +445,13 @@ function Vacancies() {
                   onClick={() => openModal(role)}
                   className="px-4 py-2 rounded-full text-[10px] font-bold tracking-[0.18em] uppercase transition-all bg-amber-500 hover:bg-amber-600"
                 >
-                  Edit
+                  {c?.edit || "Edit"}
                 </button>
                 <button
                   onClick={() => handleDelete(role.id)}
                   className="px-4 py-2 rounded-full text-[10px] font-bold tracking-[0.18em] uppercase transition-all bg-red-500 hover:bg-red-600"
                 >
-                  Delete
+                  {c?.delete || "Delete"}
                 </button>
               </>
             )}
@@ -452,12 +459,16 @@ function Vacancies() {
             <button
               onClick={() => {
                 const vacancyId = role._id || role.id;
-                window.location.href = `/careers/apply?vacancy=${vacancyId}`;
+                window.open(
+                  `/careers/apply?vacancy=${vacancyId}`,
+                  "_blank",
+                  "noopener,noreferrer",
+                );
               }}
               className="px-5 py-2 rounded-full text-[10px] font-bold tracking-[0.18em] uppercase transition-all hover:opacity-80 hover:scale-105"
               style={{ backgroundColor: role.color || "#6c5ce7" }}
             >
-              Apply Now →
+              {c?.applyNow || "Apply Now →"}
             </button>
           </div>
         </div>
@@ -468,7 +479,9 @@ function Vacancies() {
   if (loading) {
     return (
       <section className="relative bg-transparent py-24 px-6 md:px-16 max-w-7xl mx-auto z-10">
-        <div className="text-center text-white/50">Loading vacancies...</div>
+        <div className="text-center text-white/50">
+          {c?.loading || "Loading vacancies..."}
+        </div>
       </section>
     );
   }
@@ -476,36 +489,36 @@ function Vacancies() {
   return (
     <>
       <section className="relative bg-transparent py-24 px-6 md:px-16 max-w-7xl mx-auto z-10">
-        <SectionLabel>Operational Series</SectionLabel>
+        <SectionLabel>{c?.vacanciesLabel || "Operational Series"}</SectionLabel>
         <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-12">
           <h2 className="text-5xl md:text-6xl font-black text-white leading-none">
-            AVAILABLE
+            {c?.vacanciesTitle || "AVAILABLE"}
             <br />
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#6c5ce7] to-[#00cec9]">
-              VACANCIES
+              {c?.vacanciesTitleGradient || "VACANCIES"}
             </span>
           </h2>
           <div className="flex gap-8">
             <div>
               <p className="text-[9px] tracking-[0.2em] text-white/40 uppercase mb-1">
-                Engineering
+                {c?.engineering || "Engineering"}
               </p>
               <p
                 className="text-white font-black text-lg"
                 style={{ color: "#6c5ce7" }}
               >
-                {engineeringCount} Roles
+                {engineeringCount} {c?.roles || "Roles"}
               </p>
             </div>
             <div>
               <p className="text-[9px] tracking-[0.2em] text-white/40 uppercase mb-1">
-                Design
+                {c?.design || "Design"}
               </p>
               <p
                 className="text-white font-black text-lg"
                 style={{ color: "#00cec9" }}
               >
-                {designCount} Roles
+                {designCount} {c?.roles || "Roles"}
               </p>
             </div>
           </div>
@@ -517,7 +530,7 @@ function Vacancies() {
               onClick={() => openModal()}
               className="px-6 py-3 bg-gradient-to-r from-[#6c5ce7] to-[#a29bfe] rounded-lg text-sm font-bold uppercase hover:shadow-lg transition-all"
             >
-              + Add New Vacancy
+              {c?.addNew || "+ Add New Vacancy"}
             </button>
           </div>
         )}
@@ -540,7 +553,9 @@ function Vacancies() {
           <div className="bg-[#11111e] border border-white/20 rounded-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
             <div className="sticky top-0 bg-[#1a1a2e] p-6 border-b border-white/10 flex justify-between items-center">
               <h2 className="text-xl font-bold text-white">
-                {editingVacancy ? "Edit Vacancy" : "Create New Vacancy"}
+                {editingVacancy
+                  ? c?.editVacancy || "Edit Vacancy"
+                  : c?.createVacancy || "Create New Vacancy"}
               </h2>
               <button
                 onClick={() => setModalOpen(false)}
@@ -554,7 +569,7 @@ function Vacancies() {
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div>
                   <label className="block text-sm font-medium text-white/80 mb-1">
-                    Title *
+                    {c?.title || "Title"} *
                   </label>
                   <input
                     type="text"
@@ -569,7 +584,7 @@ function Vacancies() {
 
                 <div>
                   <label className="block text-sm font-medium text-white/80 mb-1">
-                    Description *
+                    {c?.description || "Description"} *
                   </label>
                   <textarea
                     rows={3}
@@ -585,7 +600,7 @@ function Vacancies() {
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <label className="block text-sm font-medium text-white/80 mb-1">
-                      Tags (comma separated)
+                      {c?.tags || "Tags (comma separated)"}
                     </label>
                     <input
                       type="text"
@@ -599,7 +614,7 @@ function Vacancies() {
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-white/80 mb-1">
-                      Tech Stack (comma separated)
+                      {c?.techStack || "Tech Stack (comma separated)"}
                     </label>
                     <input
                       type="text"
@@ -616,7 +631,7 @@ function Vacancies() {
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <label className="block text-sm font-medium text-white/80 mb-1">
-                      Salary Range
+                      {c?.salaryRange || "Salary Range"}
                     </label>
                     <input
                       type="text"
@@ -630,7 +645,7 @@ function Vacancies() {
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-white/80 mb-1">
-                      Department
+                      {c?.department || "Department"}
                     </label>
                     <select
                       className="w-full px-4 py-2 bg-black/50 border border-white/20 rounded-lg text-white focus:border-[#6c5ce7] focus:outline-none"
@@ -639,8 +654,10 @@ function Vacancies() {
                         setFormData({ ...formData, department: e.target.value })
                       }
                     >
-                      <option value="Engineering">Engineering</option>
-                      <option value="Design">Design</option>
+                      <option value="Engineering">
+                        {c?.engineering || "Engineering"}
+                      </option>
+                      <option value="Design">{c?.design || "Design"} </option>
                     </select>
                   </div>
                 </div>
@@ -648,7 +665,7 @@ function Vacancies() {
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <label className="block text-sm font-medium text-white/80 mb-1">
-                      Color
+                      {c?.color || "Color"}
                     </label>
                     <input
                       type="color"
@@ -673,7 +690,7 @@ function Vacancies() {
                         }
                       />
                       <span className="text-sm text-white/80">
-                        Featured Position
+                        {c?.featured || "Featured Position"}
                       </span>
                     </label>
                   </div>
@@ -685,13 +702,15 @@ function Vacancies() {
                     onClick={() => setModalOpen(false)}
                     className="flex-1 px-6 py-2 border border-white/20 rounded-lg text-white/80 hover:bg-white/10 transition"
                   >
-                    Cancel
+                    {c?.cancel || "Cancel"}
                   </button>
                   <button
                     type="submit"
                     className="flex-1 px-6 py-2 bg-gradient-to-r from-[#6c5ce7] to-[#a29bfe] rounded-lg text-white font-bold hover:shadow-lg transition"
                   >
-                    {editingVacancy ? "Update" : "Create"}
+                    {editingVacancy
+                      ? c?.update || "Update"
+                      : c?.create || "Create"}
                   </button>
                 </div>
               </form>
@@ -706,10 +725,10 @@ function Vacancies() {
 /* ─── WHY BUILD WITH US ─── */
 const perks = [
   {
-    icon: (
+    icon: (color: string) => (
       <svg
-        width="32"
-        height="32"
+        width="28"
+        height="28"
         viewBox="0 0 24 24"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
@@ -719,8 +738,6 @@ const perks = [
           fill="currentColor"
           stroke="currentColor"
           strokeWidth="1.5"
-          strokeLinecap="round"
-          strokeLinejoin="round"
         />
         <path
           d="M12 6V12L15 15"
@@ -730,16 +747,15 @@ const perks = [
         />
       </svg>
     ),
-    title: "Equity & Ownership",
-    desc: "Generous stock options. You are not an employee; you are a primary stakeholder in the ecosystem's growth.",
+    key: "perk1",
     color: "#6c5ce7",
     gradient: "from-[#6c5ce7]/20 to-[#6c5ce7]/5",
   },
   {
-    icon: (
+    icon: (color: string) => (
       <svg
-        width="32"
-        height="32"
+        width="28"
+        height="28"
         viewBox="0 0 24 24"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
@@ -757,19 +773,17 @@ const perks = [
           strokeWidth="1.5"
           strokeLinejoin="round"
         />
-        <path d="M12 15V21" stroke="currentColor" strokeWidth="1.5" />
       </svg>
     ),
-    title: "Remote Autonomous",
-    desc: "Work from any node in the world. We focus on output quality, not clock-in timestamps.",
+    key: "perk2",
     color: "#00cec9",
     gradient: "from-[#00cec9]/20 to-[#00cec9]/5",
   },
   {
-    icon: (
+    icon: (color: string) => (
       <svg
-        width="32"
-        height="32"
+        width="28"
+        height="28"
         viewBox="0 0 24 24"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
@@ -778,13 +792,6 @@ const perks = [
           d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12"
           stroke="currentColor"
           strokeWidth="1.5"
-          strokeLinecap="round"
-        />
-        <path
-          d="M12 6V12L16 14"
-          stroke="currentColor"
-          strokeWidth="1.5"
-          strokeLinecap="round"
         />
         <circle cx="17" cy="17" r="3" stroke="currentColor" strokeWidth="1.5" />
         <path
@@ -795,26 +802,19 @@ const perks = [
         />
       </svg>
     ),
-    title: "Health Protocol",
-    desc: "Premium global health coverage and a mandatory 4-week 'Deep Sabbath' sabbatical every year.",
+    key: "perk3",
     color: "#a29bfe",
     gradient: "from-[#a29bfe]/20 to-[#a29bfe]/5",
   },
   {
-    icon: (
+    icon: (color: string) => (
       <svg
-        width="32"
-        height="32"
+        width="28"
+        height="28"
         viewBox="0 0 24 24"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
       >
-        <path
-          d="M12 2V4M12 20V22M4 12H2M6.5 6.5L5 5M17.5 6.5L19 5M22 12H20M18 18L19 19"
-          stroke="currentColor"
-          strokeWidth="1.5"
-          strokeLinecap="round"
-        />
         <circle cx="12" cy="12" r="4" stroke="currentColor" strokeWidth="1.5" />
         <path
           d="M12 8V12L14 14"
@@ -829,27 +829,51 @@ const perks = [
         />
       </svg>
     ),
-    title: "Learning Budget",
-    desc: "$5,000 annual budget for conferences, courses, and cutting-edge certifications.",
+    key: "perk4",
     color: "#fdcb6e",
     gradient: "from-[#fdcb6e]/20 to-[#fdcb6e]/5",
   },
 ];
 
 function WhyBuild() {
+  const { lang } = useLanguage();
+  const t = translations[lang];
+  const c = t.careersPage;
+
+  const perkTitles = {
+    perk1: c?.perk1Title || "Equity & Ownership",
+    perk2: c?.perk2Title || "Remote Autonomous",
+    perk3: c?.perk3Title || "Health Protocol",
+    perk4: c?.perk4Title || "Learning Budget",
+  };
+  const perkDescs = {
+    perk1:
+      c?.perk1Desc ||
+      "Generous stock options. You are not an employee; you are a primary stakeholder in the ecosystem's growth.",
+    perk2:
+      c?.perk2Desc ||
+      "Work from any node in the world. We focus on output quality, not clock-in timestamps.",
+    perk3:
+      c?.perk3Desc ||
+      "Premium global health coverage and a mandatory 4-week 'Deep Sabbath' sabbatical every year.",
+    perk4:
+      c?.perk4Desc ||
+      "$5,000 annual budget for conferences, courses, and cutting-edge certifications.",
+  };
+
   return (
     <section className="relative bg-transparent py-24 px-6 md:px-16 max-w-7xl mx-auto z-10">
       <div className="text-center mb-14">
-        <SectionLabel>Protocol · Rewards</SectionLabel>
+        <SectionLabel>{c?.whyBuildLabel || "Protocol · Rewards"}</SectionLabel>
         <motion.h2
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
           className="text-4xl md:text-5xl font-black text-white"
         >
-          WHY BUILD{" "}
+          {c?.whyBuildTitle || "WHY BUILD"}{" "}
           <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#6c5ce7] via-[#a29bfe] to-[#00cec9]">
-            WITH US
+            {c?.whyBuildTitleGradient || "WITH US"}
           </span>
         </motion.h2>
         <motion.p
@@ -858,14 +882,15 @@ function WhyBuild() {
           transition={{ duration: 0.5, delay: 0.1 }}
           className="mt-4 text-sm text-white/40 max-w-md mx-auto"
         >
-          Join a collective that values your growth as much as your contribution
+          {c?.whyBuildDesc ||
+            "Join a collective that values your growth as much as your contribution"}
         </motion.p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {perks.map((p, idx) => (
           <motion.div
-            key={p.title}
+            key={p.key}
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ delay: idx * 0.1, duration: 0.5 }}
@@ -887,15 +912,13 @@ function WhyBuild() {
                 color: p.color,
                 border: `1px solid ${p.color}30`,
               }}
-              whileHover={{ rotate: [0, -5, 5, 0] }}
-              transition={{ duration: 0.3 }}
             >
-              {p.icon}
+              {p.icon(p.color)}
             </motion.div>
 
             <div className="relative">
               <h3 className="text-white font-black text-sm tracking-[0.1em] uppercase mb-2">
-                {p.title}
+                {perkTitles[p.key as keyof typeof perkTitles]}
               </h3>
               <motion.div
                 className="h-px w-8 group-hover:w-12 transition-all duration-300"
@@ -904,7 +927,7 @@ function WhyBuild() {
             </div>
 
             <p className="text-white/35 text-xs leading-relaxed group-hover:text-white/50 transition-colors duration-300">
-              {p.desc}
+              {perkDescs[p.key as keyof typeof perkDescs]}
             </p>
 
             <div className="absolute bottom-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
@@ -934,31 +957,49 @@ function WhyBuild() {
         viewport={{ once: true }}
         className="mt-16 pt-8 border-t border-white/10 flex flex-wrap justify-center gap-8 md:gap-16"
       >
-        {[
-          { value: "98%", label: "Retention Rate", color: "#6c5ce7" },
-          { value: "🌍", label: "Global Team", color: "#00cec9" },
-          { value: "4.9★", label: "Glassdoor Rating", color: "#fdcb6e" },
-        ].map((stat, i) => (
-          <div key={i} className="text-center group cursor-pointer">
-            <p
-              className="text-2xl md:text-3xl font-black transition-all duration-300 group-hover:scale-110"
-              style={{ color: stat.color }}
-            >
-              {stat.value}
-            </p>
-            <p className="text-[9px] tracking-[0.2em] text-white/40 uppercase mt-1">
-              {stat.label}
-            </p>
-          </div>
-        ))}
+        <div className="text-center group cursor-pointer">
+          <p
+            className="text-2xl md:text-3xl font-black transition-all duration-300 group-hover:scale-110"
+            style={{ color: "#6c5ce7" }}
+          >
+            98%
+          </p>
+          <p className="text-[9px] tracking-[0.2em] text-white/40 uppercase mt-1">
+            {c?.retentionRate || "Retention Rate"}
+          </p>
+        </div>
+        <div className="text-center group cursor-pointer">
+          <p
+            className="text-2xl md:text-3xl font-black transition-all duration-300 group-hover:scale-110"
+            style={{ color: "#00cec9" }}
+          >
+            🌍
+          </p>
+          <p className="text-[9px] tracking-[0.2em] text-white/40 uppercase mt-1">
+            {c?.globalTeam || "Global Team"}
+          </p>
+        </div>
+        <div className="text-center group cursor-pointer">
+          <p
+            className="text-2xl md:text-3xl font-black transition-all duration-300 group-hover:scale-110"
+            style={{ color: "#fdcb6e" }}
+          >
+            4.9★
+          </p>
+          <p className="text-[9px] tracking-[0.2em] text-white/40 uppercase mt-1">
+            {c?.glassdoorRating || "Glassdoor Rating"}
+          </p>
+        </div>
       </motion.div>
     </section>
   );
 }
 
-/* ─── CTA BANNER (Enhanced) ─── */
-/* ─── CTA BANNER (Enhanced with Navigation) ─── */
+/* ─── CTA BANNER ─── */
 function CtaBanner() {
+  const { lang } = useLanguage();
+  const t = translations[lang];
+  const c = t.careersPage;
   const router = useRouter();
 
   return (
@@ -975,7 +1016,7 @@ function CtaBanner() {
           viewport={{ once: true }}
         >
           <h2 className="font-black text-white leading-none text-[clamp(2.5rem,9vw,6rem)]">
-            READY TO INITIATE
+            {c?.ctaTitle || "READY TO INITIATE"}
           </h2>
           <h2
             className="font-black italic text-[clamp(2.5rem,9vw,6rem)] leading-none underline decoration-[#6c5ce7] underline-offset-8 mt-2"
@@ -985,11 +1026,11 @@ function CtaBanner() {
               WebkitTextFillColor: "transparent",
             }}
           >
-            SEQUENCE?
+            {c?.ctaTitleGradient || "SEQUENCE?"}
           </h2>
           <p className="mt-6 text-sm text-white/40 max-w-sm mx-auto leading-relaxed">
-            Join a team that values technical mastery over corporate tradition.
-            Your best work starts here.
+            {c?.ctaDesc ||
+              "Join a team that values technical mastery over corporate tradition. Your best work starts here."}
           </p>
           <motion.button
             whileHover={{ scale: 1.05 }}
@@ -997,7 +1038,7 @@ function CtaBanner() {
             onClick={() => router.push("/careers/apply")}
             className="mt-10 bg-gradient-to-r from-[#6c5ce7] to-[#a29bfe] hover:shadow-[0_0_30px_rgba(108,92,231,0.5)] transition-all px-9 py-4 rounded-full text-xs font-bold tracking-[0.2em] uppercase cursor-pointer"
           >
-            Initiate Application
+            {c?.ctaBtn || "Initiate Application"}
           </motion.button>
         </motion.div>
       </div>
@@ -1007,111 +1048,20 @@ function CtaBanner() {
 
 /* ─── ROOT ─── */
 export default function CareersPage() {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext("2d");
-    if (!ctx) return;
-
-    let animId: number;
-    let nodes: Array<{
-      x: number;
-      y: number;
-      vx: number;
-      vy: number;
-      r: number;
-      color: string;
-    }> = [];
-
-    const resize = () => {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
-
-      nodes = Array.from({ length: 80 }, () => ({
-        x: Math.random() * canvas.width,
-        y: Math.random() * canvas.height,
-        vx: (Math.random() - 0.5) * 0.3,
-        vy: (Math.random() - 0.5) * 0.3,
-        r: Math.random() * 2.2 + 0.6,
-        color:
-          Math.random() > 0.6
-            ? "rgba(108, 92, 231, 0.4)"
-            : "rgba(162, 155, 254, 0.3)",
-      }));
-    };
-
-    resize();
-    window.addEventListener("resize", resize);
-
-    const draw = () => {
-      if (!ctx || !canvas) return;
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-      for (let i = 0; i < nodes.length; i++) {
-        for (let j = i + 1; j < nodes.length; j++) {
-          const d = Math.hypot(
-            nodes[i].x - nodes[j].x,
-            nodes[i].y - nodes[j].y,
-          );
-          if (d < 160) {
-            ctx.beginPath();
-            ctx.moveTo(nodes[i].x, nodes[i].y);
-            ctx.lineTo(nodes[j].x, nodes[j].y);
-            const opacity = 0.1 * (1 - d / 160);
-            ctx.strokeStyle = `rgba(108, 92, 231, ${opacity})`;
-            ctx.lineWidth = 0.5;
-            ctx.stroke();
-          }
-        }
-      }
-
-      nodes.forEach((n) => {
-        ctx.beginPath();
-        ctx.arc(n.x, n.y, n.r, 0, Math.PI * 2);
-        ctx.fillStyle = n.color;
-        ctx.fill();
-
-        n.x += n.vx;
-        n.y += n.vy;
-
-        if (n.x < 0) {
-          n.x = 0;
-          n.vx *= -1;
-        }
-        if (n.x > canvas.width) {
-          n.x = canvas.width;
-          n.vx *= -1;
-        }
-        if (n.y < 0) {
-          n.y = 0;
-          n.vy *= -1;
-        }
-        if (n.y > canvas.height) {
-          n.y = canvas.height;
-          n.vy *= -1;
-        }
-      });
-
-      animId = requestAnimationFrame(draw);
-    };
-
-    draw();
-
-    return () => {
-      cancelAnimationFrame(animId);
-      window.removeEventListener("resize", resize);
-    };
-  }, []);
-
   return (
     <PublicLayout>
       <main className="relative min-h-screen bg-[#05070a] text-white overflow-x-hidden">
-        {/* Full Page Particle Network Canvas */}
-        <canvas
-          ref={canvasRef}
-          className="fixed inset-0 w-full h-full pointer-events-none opacity-30 z-0"
+        {/* ✅ শুধু Particle Network কম্পোনেন্ট - ক্যানভাস ডুপ্লিকেট সরানো হয়েছে */}
+        <ParticleNetwork
+          opacity={0.35}
+          particleCount={80}
+          connectionDistance={170}
+          particleSize={{ min: 0.8, max: 2.5 }}
+          particleColor="rgba(108, 92, 231, 0.45)"
+          lineColor="rgba(108, 92, 231"
+          lineOpacity={0.12}
+          speed={0.35}
+          glowEffect={true}
         />
 
         {/* Fixed Gradient Glows */}

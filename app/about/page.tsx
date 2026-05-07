@@ -41,17 +41,19 @@ import {
   Cable,
   LucideIcon,
 } from "lucide-react";
-import { FaAws, FaFigma, FaDocker, FaAws as FaAwsIcon } from "react-icons/fa";
+import { FaAws, FaFigma, FaDocker } from "react-icons/fa";
 import { SiTailwindcss, SiGraphql, SiExpress } from "react-icons/si";
 import { IconType } from "react-icons";
 import ParticleNetwork from "@/components/ParticleNetwork";
 import { PublicLayout } from "../public-layout";
+import { useLanguage } from "@/constants/LanguageContext";
+import { translations } from "@/constants/translations";
 
 if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger);
 }
 
-// ✅ টাইপ ডিফাইন করুন
+// টাইপ ডিফাইন করুন
 type IconComponent = LucideIcon | IconType;
 
 interface Technology {
@@ -91,7 +93,7 @@ interface FeatureItem {
   isReactIcon: boolean;
 }
 
-// --- EXPANDED TECH STACK WITH MIXED ICONS ---
+// স্ট্যাটিক টেকনোলজি লিস্ট (আইকন আর কালার স্ট্যাটিক থাকবে)
 const technologies: Technology[] = [
   {
     name: "Next.js",
@@ -191,137 +193,56 @@ const technologies: Technology[] = [
   },
 ];
 
-// --- JOURNEY STEPS ---
-const journeySteps: JourneyStep[] = [
+// স্ট্যাটিক ফিচার কনফিগ (শুধু আইকন ও কালার)
+const featuresConfig: Omit<FeatureItem, "title" | "desc">[] = [
+  { icon: Terminal, color: "#00cec9", isReactIcon: false },
+  { icon: Atom, color: "#a29bfe", isReactIcon: false },
+  { icon: Globe, color: "#6c5ce7", isReactIcon: false },
+  { icon: ShieldCheck, color: "#00b894", isReactIcon: false },
+  { icon: FaDocker, color: "#2496ed", isReactIcon: true },
+  { icon: Cloud, color: "#ff9900", isReactIcon: false },
+];
+
+// স্ট্যাটিক জার্নি স্টেপ কনফিগ (আইকন, কালার, এলাইন)
+const journeyStepsConfig: Omit<
+  JourneyStep,
+  "title" | "desc" | "deliverables" | "duration"
+>[] = [
   {
     id: "01",
     year: "2022 – 2024",
-    title: "The Foundation",
-    desc: "Started as developers on key government projects, proving technical excellence and professionalism. These collaborative roots inspired us to build our own platform.",
     icon: Building2,
     color: "#6c5ce7",
     align: "left",
-    deliverables: [
-      "Govt. Project Experience",
-      "Core Team Synergy",
-      "Technical Excellence",
-    ],
-    duration: "Collaborative Roots",
   },
-  {
-    id: "02",
-    year: "2025",
-    title: "The Transition",
-    desc: "Conceptualized Grow Business Solutions. Extensive research on solving business problems with custom web apps and modern technology.",
-    icon: Search,
-    color: "#a29bfe",
-    align: "right",
-    deliverables: ["Market Research", "Service Roadmap", "Strategic Planning"],
-    duration: "Concept Phase",
-  },
-  {
-    id: "03",
-    year: "2026",
-    title: "The Official Launch",
-    desc: "Grow Business Solutions BD officially launches. Ready to deliver global-standard custom web solutions using cutting-edge MERN Stack technology.",
-    icon: Rocket,
-    color: "#00cec9",
-    align: "left",
-    deliverables: [
-      "Official Agency Launch",
-      "Custom Web Solutions",
-      "Client-First Approach",
-    ],
-    duration: "New Era Begins",
-  },
-  {
-    id: "04",
-    year: "Future",
-    title: "Global Impact",
-    desc: "Aiming to serve global clients with high-performance digital ecosystems, innovation, and uncompromised quality.",
-    icon: Globe,
-    color: "#6c5ce7",
-    align: "right",
-    deliverables: ["Global Reach", "Innovation Lab", "Enterprise Solutions"],
-    duration: "Worldwide Vision",
-  },
+  { id: "02", year: "2025", icon: Search, color: "#a29bfe", align: "right" },
+  { id: "03", year: "2026", icon: Rocket, color: "#00cec9", align: "left" },
+  { id: "04", year: "Future", icon: Globe, color: "#6c5ce7", align: "right" },
 ];
 
-// Stats Data
-const stats: StatItem[] = [
+// স্ট্যাটিক স্ট্যাটস কনফিগ
+const statsConfig = [
   {
     value: 3,
-    label: "Govt. Projects",
     suffix: "+",
     icon: Award,
     note: "Team Experience",
+    key: "govtProjects",
   },
-  {
-    value: 100,
-    label: "Code Quality",
-    suffix: "%",
-    icon: Zap,
-    note: "Standards",
-  },
+  { value: 100, suffix: "%", icon: Zap, note: "Standards", key: "codeQuality" },
   {
     value: 24,
-    label: "Support",
     suffix: "/7",
     icon: ShieldCheck,
     note: "Dedicated",
+    key: "support",
   },
   {
     value: 10,
-    label: "Tech Stack",
     suffix: "+",
     icon: Layers,
     note: "Modern Tools",
-  },
-];
-
-// Features data
-const features: FeatureItem[] = [
-  {
-    icon: Terminal,
-    title: "Optimized Core",
-    desc: "Engineered for peak dominance.",
-    color: "#00cec9",
-    isReactIcon: false,
-  },
-  {
-    icon: Atom,
-    title: "Reactive UI",
-    desc: "Fluid, responsive interfaces.",
-    color: "#a29bfe",
-    isReactIcon: false,
-  },
-  {
-    icon: Globe,
-    title: "Distributed Edge",
-    desc: "Global scale infrastructure.",
-    color: "#6c5ce7",
-    isReactIcon: false,
-  },
-  {
-    icon: ShieldCheck,
-    title: "Ironclad Security",
-    desc: "Enterprise-grade protection.",
-    color: "#00b894",
-    isReactIcon: false,
-  },
-  {
-    icon: FaDocker,
-    title: "Containerized",
-    desc: "Consistent deployment everywhere.",
-    color: "#2496ed",
-    isReactIcon: true,
-  },
-  {
-    icon: Cloud,
-    title: "Cloud Native",
-    desc: "AWS ready infrastructure.",
-    color: "#ff9900",
-    isReactIcon: false,
+    key: "techStack",
   },
 ];
 
@@ -346,9 +267,35 @@ const IconRenderer = ({
 };
 
 export default function AboutPage() {
+  const { lang } = useLanguage();
+  const t = translations[lang];
+  const about = t.aboutPage;
+
   const orbitRefs = useRef<HTMLDivElement[]>([]);
   const journeyLineRef = useRef<HTMLDivElement>(null);
   const journeyScrollRef = useRef<HTMLDivElement>(null);
+
+  // ট্রান্সলেশন থেকে টেক্সট ডাটা নেওয়া
+  const stats = statsConfig.map((stat) => ({
+    ...stat,
+    label:
+      about?.statsLabels?.[stat.key as keyof typeof about.statsLabels] ||
+      stat.key,
+  }));
+
+  const features = featuresConfig.map((feature, idx) => ({
+    ...feature,
+    title: about?.features?.[idx]?.title || "",
+    desc: about?.features?.[idx]?.desc || "",
+  }));
+
+  const journeySteps = journeyStepsConfig.map((step, idx) => ({
+    ...step,
+    title: about?.journeySteps?.[idx]?.title || "",
+    desc: about?.journeySteps?.[idx]?.desc || "",
+    deliverables: about?.journeySteps?.[idx]?.deliverables || [],
+    duration: about?.journeySteps?.[idx]?.duration || "",
+  }));
 
   // Orbital Animation
   useEffect(() => {
@@ -413,7 +360,7 @@ export default function AboutPage() {
     return () => {
       ScrollTrigger.getAll().forEach((trigger) => trigger.kill());
     };
-  }, []);
+  }, [journeySteps]);
 
   return (
     <PublicLayout>
@@ -441,40 +388,39 @@ export default function AboutPage() {
             >
               <span className="w-2 h-2 rounded-full bg-[#00cec9] animate-pulse" />
               <span className="text-[10px] md:text-[11px] tracking-[0.3em] text-white uppercase font-bold">
-                OUR ARCHITECTURAL DNA
+                {about?.heroBadge || "OUR ARCHITECTURAL DNA"}
               </span>
             </motion.div>
 
             <h1 className="font-black leading-[0.9] tracking-tighter text-white text-[clamp(2.5rem,10vw,6.5rem)] mb-6">
-              ENGINEERING <br />
+              {about?.heroTitle || "ENGINEERING"} <br />
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#6c5ce7] via-[#a29bfe] to-[#00cec9] italic">
-                DIGITAL EQUITY
+                {about?.heroTitleGradient || "DIGITAL EQUITY"}
               </span>
             </h1>
 
             <p className="max-w-xl mx-auto lg:mx-0 text-base md:text-xl text-white/70 leading-relaxed mb-10 font-medium">
-              Grow Business Solutions is a collective of architects designing{" "}
-              <span className="text-[#a29bfe] font-bold">high-performance</span>{" "}
-              digital ecosystems for the modern era.
+              {about?.heroDesc ||
+                "Grow Business Solutions is a collective of architects designing high-performance digital ecosystems for the modern era."}
             </p>
 
             <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4">
               <Link href="/vision">
                 <button className="w-full sm:w-auto bg-gradient-to-r from-[#6c5ce7] to-[#a29bfe] hover:shadow-[0_0_30px_rgba(108,92,231,0.5)] transition-all px-8 py-4 rounded-xl text-xs md:text-sm font-black tracking-widest uppercase">
-                  Explore Our Vision
+                  {about?.heroBtnPrimary || "Explore Our Vision"}
                 </button>
               </Link>
 
               <Link href="/ContactUs">
                 <button className="px-10 py-5 bg-gradient-to-r from-[#6c5ce7] to-[#a29bfe] rounded-2xl font-black text-xs tracking-widest uppercase shadow-[0_0_30px_rgba(108,92,231,0.4)] hover:scale-105 transition-all cursor-pointer">
-                  Start Your Journey →
+                  {about?.heroBtnSecondary || "Start Your Journey →"}
                 </button>
               </Link>
             </div>
           </div>
         </section>
 
-        {/* --- Stats Section --- */}
+        {/* --- STATS SECTION --- */}
         <section className="relative z-10 max-w-7xl mx-auto px-6 py-20">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
             {stats.map((stat, idx) => {
@@ -511,10 +457,11 @@ export default function AboutPage() {
         <section className="relative max-w-7xl mx-auto px-6 py-24 md:py-32 z-10">
           <div className="mb-16 md:mb-20 text-center lg:text-left">
             <h2 className="text-3xl md:text-6xl font-black tracking-tighter uppercase mb-4">
-              The Full Stack
+              {about?.fullStackTitle || "The Full Stack"}
             </h2>
             <p className="text-white/40 font-mono text-xs md:text-sm tracking-widest uppercase">
-              12+ Modern Technologies • MERN • DevOps • Cloud
+              {about?.fullStackSubtitle ||
+                "12+ Modern Technologies • MERN • DevOps • Cloud"}
             </p>
           </div>
 
@@ -545,10 +492,9 @@ export default function AboutPage() {
               ))}
             </div>
 
-            {/* Orbital Section - With 12 technologies */}
+            {/* Orbital Section */}
             <div className="lg:col-span-6 order-1 lg:order-2 relative h-[450px] md:h-[600px] flex items-center justify-center">
               <div className="absolute w-[300px] md:w-[500px] h-[300px] md:h-[500px] bg-[#6c5ce7]/5 blur-[80px] rounded-full animate-pulse" />
-
               <div className="relative z-30 w-28 h-28 md:w-36 md:h-36 rounded-full bg-[#05070a]/80 backdrop-blur-sm border border-white/10 flex items-center justify-center">
                 <div className="text-center">
                   <div className="text-[8px] font-bold tracking-widest text-[#6c5ce7] uppercase">
@@ -565,7 +511,6 @@ export default function AboutPage() {
                   typeof window !== "undefined" && window.innerWidth < 768
                     ? tech.orbit * 0.6
                     : tech.orbit;
-
                 return (
                   <div
                     key={i}
@@ -606,18 +551,18 @@ export default function AboutPage() {
           <div className="max-w-4xl mx-auto relative z-10">
             <div className="text-center mb-24">
               <h2 className="text-3xl font-black tracking-[0.3em] uppercase opacity-40 mb-2">
-                Our Journey
+                {about?.journeyTitle || "Our Journey"}
               </h2>
               <h3 className="text-5xl font-black tracking-tighter">
-                THE PATH{" "}
-                <span className="text-white/20 italic">TO INNOVATION</span>
+                {about?.journeySubtitle || "THE PATH"}{" "}
+                <span className="text-white/20 italic">
+                  {about?.journeySubtitleItalic || "TO INNOVATION"}
+                </span>
               </h3>
             </div>
 
-            {/* Central Vertical Timeline */}
             <div className="relative">
               <div className="absolute left-[24px] md:left-1/2 top-0 bottom-0 w-px bg-gradient-to-b from-transparent via-white/10 to-transparent" />
-
               <div
                 ref={journeyLineRef}
                 className="absolute left-[24px] md:left-1/2 w-[2px] bg-gradient-to-b from-[#6c5ce7] via-[#a29bfe] to-[#00cec9] top-0 shadow-[0_0_15px_#00cec9]"
@@ -630,12 +575,9 @@ export default function AboutPage() {
                   return (
                     <div
                       key={idx}
-                      className={`journey-step-${idx} relative flex items-center w-full ${
-                        step.align === "left" ? "md:flex-row-reverse" : ""
-                      }`}
+                      className={`journey-step-${idx} relative flex items-center w-full ${step.align === "left" ? "md:flex-row-reverse" : ""}`}
                     >
                       <div className="hidden md:block w-1/2" />
-
                       <div className="absolute left-[24px] md:left-1/2 -translate-x-1/2 z-10">
                         <div
                           className="w-14 h-14 rounded-full bg-[#05070a] border-2 border-white/10 flex items-center justify-center transition-all duration-300 hover:scale-150 cursor-pointer shadow-[0_0_20px_rgba(108,92,231,0.25)]"
@@ -644,13 +586,8 @@ export default function AboutPage() {
                           <StepIcon size={20} style={{ color: step.color }} />
                         </div>
                       </div>
-
                       <div
-                        className={`w-full md:w-1/2 pl-20 md:pl-0 ${
-                          step.align === "left"
-                            ? "md:pr-20 text-left md:text-right"
-                            : "md:pl-20 text-left"
-                        }`}
+                        className={`w-full md:w-1/2 pl-20 md:pl-0 ${step.align === "left" ? "md:pr-20 text-left md:text-right" : "md:pl-20 text-left"}`}
                       >
                         <span className="text-[10px] font-mono text-[#6c5ce7] font-black mb-2 block uppercase tracking-[0.3em]">
                           {step.id} • {step.year}
@@ -688,7 +625,7 @@ export default function AboutPage() {
           </div>
         </section>
 
-        {/* --- CTA Section --- */}
+        {/* --- CTA SECTION --- */}
         <section className="relative z-10 max-w-7xl mx-auto px-6 py-40">
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
@@ -702,18 +639,18 @@ export default function AboutPage() {
 
             <div className="text-center relative z-10">
               <h2 className="text-4xl md:text-6xl font-black leading-[1.1] mb-6 tracking-tighter">
-                Ready to Write <br />
+                {about?.ctaTitle || "Ready to Write"} <br />
                 <span className="bg-gradient-to-r from-[#6c5ce7] to-[#00cec9] bg-clip-text text-transparent">
-                  Your Success Story?
+                  {about?.ctaTitleGradient || "Your Success Story?"}
                 </span>
               </h2>
               <p className="text-white/40 text-lg mb-10 max-w-2xl mx-auto">
-                Let&apos;s build something extraordinary together. Join the
-                ranks of our global clients.
+                {about?.ctaDesc ||
+                  "Let's build something extraordinary together. Join the ranks of our global clients."}
               </p>
               <Link href="/ContactUs">
                 <button className="px-10 py-5 bg-gradient-to-r from-[#6c5ce7] to-[#a29bfe] rounded-2xl font-black text-xs tracking-widest uppercase shadow-[0_0_30px_rgba(108,92,231,0.4)] hover:scale-105 transition-all cursor-pointer">
-                  Start Your Journey →
+                  {about?.ctaBtn || "Start Your Journey →"}
                 </button>
               </Link>
             </div>

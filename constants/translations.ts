@@ -471,6 +471,115 @@ export const translations = {
         },
       ],
     },
+    //aboutpage
+    aboutPage: {
+      heroBadge: "OUR ARCHITECTURAL DNA",
+      heroTitle: "ENGINEERING",
+      heroTitleGradient: "DIGITAL EQUITY",
+      heroDesc:
+        "Grow Business Solutions is a collective of architects designing high-performance digital ecosystems for the modern era.",
+      heroBtnPrimary: "Explore Our Vision",
+      heroBtnSecondary: "Start Your Journey →",
+
+      fullStackTitle: "The Full Stack",
+      fullStackSubtitle: "12+ Modern Technologies • MERN • DevOps • Cloud",
+
+      journeyTitle: "Our Journey",
+      journeySubtitle: "THE PATH",
+      journeySubtitleItalic: "TO INNOVATION",
+
+      ctaTitle: "Ready to Write",
+      ctaTitleGradient: "Your Success Story?",
+      ctaDesc:
+        "Let's build something extraordinary together. Join the ranks of our global clients.",
+      ctaBtn: "Start Your Journey →",
+
+      // Stats labels
+      statsLabels: {
+        govtProjects: "Govt. Projects",
+        codeQuality: "Code Quality",
+        support: "Support",
+        techStack: "Tech Stack",
+      },
+
+      // Feature titles and descriptions
+      features: [
+        { title: "Optimized Core", desc: "Engineered for peak dominance." },
+        { title: "Reactive UI", desc: "Fluid, responsive interfaces." },
+        { title: "Distributed Edge", desc: "Global scale infrastructure." },
+        { title: "Ironclad Security", desc: "Enterprise-grade protection." },
+        { title: "Containerized", desc: "Consistent deployment everywhere." },
+        { title: "Cloud Native", desc: "AWS ready infrastructure." },
+      ],
+
+      // Journey steps
+      journeySteps: [
+        {
+          id: "01",
+          year: "2022 – 2024",
+          title: "The Foundation",
+          desc: "Started as developers on key government projects, proving technical excellence and professionalism. These collaborative roots inspired us to build our own platform.",
+          deliverables: [
+            "Govt. Project Experience",
+            "Core Team Synergy",
+            "Technical Excellence",
+          ],
+          duration: "Collaborative Roots",
+        },
+        {
+          id: "02",
+          year: "2025",
+          title: "The Transition",
+          desc: "Conceptualized Grow Business Solutions. Extensive research on solving business problems with custom web apps and modern technology.",
+          deliverables: [
+            "Market Research",
+            "Service Roadmap",
+            "Strategic Planning",
+          ],
+          duration: "Concept Phase",
+        },
+        {
+          id: "03",
+          year: "2026",
+          title: "The Official Launch",
+          desc: "Grow Business Solutions BD officially launches. Ready to deliver global-standard custom web solutions using cutting-edge MERN Stack technology.",
+          deliverables: [
+            "Official Agency Launch",
+            "Custom Web Solutions",
+            "Client-First Approach",
+          ],
+          duration: "New Era Begins",
+        },
+        {
+          id: "04",
+          year: "Future",
+          title: "Global Impact",
+          desc: "Aiming to serve global clients with high-performance digital ecosystems, innovation, and uncompromised quality.",
+          deliverables: [
+            "Global Reach",
+            "Innovation Lab",
+            "Enterprise Solutions",
+          ],
+          duration: "Worldwide Vision",
+        },
+      ],
+
+      // Technology names for orbit (optional - যদি চান)
+      techNames: {
+        nextjs: "Next.js",
+        react: "React",
+        nodejs: "Node.js",
+        mongodb: "MongoDB",
+        typescript: "TypeScript",
+        express: "Express",
+        tailwind: "Tailwind",
+        graphql: "GraphQL",
+        docker: "Docker",
+        aws: "AWS",
+        git: "Git",
+        figma: "Figma",
+      },
+    },
   },
 
   BN: {
@@ -937,6 +1046,113 @@ export const translations = {
           desc: "২৪/৭ মনিটরিং এবং অবিচ্ছিন্ন অপটিমাইজেশন সহ গ্লোবাল ডিপ্লয়মেন্ট।",
         },
       ],
+    },
+    //aboutpage
+    aboutPage: {
+      heroBadge: "আমাদের আর্কিটেকচারাল ডিএনএ",
+      heroTitle: "ইঞ্জিনিয়ারিং",
+      heroTitleGradient: "ডিজিটাল ইকুইটি",
+      heroDesc:
+        "গ্রো বিজনেস সলিউশনস হল স্থপতিদের একটি সমষ্টি যা আধুনিক যুগের জন্য উচ্চ-ক্ষমতাসম্পন্ন ডিজিটাল ইকোসিস্টেম ডিজাইন করে।",
+      heroBtnPrimary: "আমাদের ভিশন দেখুন",
+      heroBtnSecondary: "আপনার যাত্রা শুরু করুন →",
+
+      fullStackTitle: "দ্য ফুল স্ট্যাক",
+      fullStackSubtitle: "১২+ আধুনিক টেকনোলজি • MERN • ডেভঅপস • ক্লাউড",
+
+      journeyTitle: "আমাদের যাত্রা",
+      journeySubtitle: "দ্য পাথ",
+      journeySubtitleItalic: "টু ইনোভেশন",
+
+      ctaTitle: "লিখতে প্রস্তুত",
+      ctaTitleGradient: "আপনার সাফল্যের গল্প?",
+      ctaDesc:
+        "একসাথে অসাধারণ কিছু তৈরি করি। আমাদের বৈশ্বিক ক্লায়েন্টদের সাথে যোগ দিন।",
+      ctaBtn: "আপনার যাত্রা শুরু করুন →",
+
+      statsLabels: {
+        govtProjects: "সরকারি প্রকল্প",
+        codeQuality: "কোড কোয়ালিটি",
+        support: "সাপোর্ট",
+        techStack: "টেক স্ট্যাক",
+      },
+
+      features: [
+        { title: "অপটিমাইজড কোর", desc: "চূড়ান্ত দক্ষতার জন্য ইঞ্জিনিয়ারড।" },
+        { title: "রিঅ্যাকটিভ ইউআই", desc: "ফ্লুইড, রেস্পন্সিভ ইন্টারফেস।" },
+        { title: "ডিস্ট্রিবিউটেড এজ", desc: "গ্লোবাল স্কেল ইনফ্রাস্ট্রাকচার।" },
+        {
+          title: "আয়রনক্ল্যাড সিকিউরিটি",
+          desc: "এন্টারপ্রাইজ-গ্রেড প্রটেকশন।",
+        },
+        {
+          title: "কন্টেইনারাইজড",
+          desc: "সব জায়গায় কনসিস্টেন্ট ডিপ্লয়মেন্ট।",
+        },
+        { title: "ক্লাউড নেটিভ", desc: "AWS রেডি ইনফ্রাস্ট্রাকচার।" },
+      ],
+
+      journeySteps: [
+        {
+          id: "০১",
+          year: "২০২২ – ২০২৪",
+          title: "দ্য ফাউন্ডেশন",
+          desc: "গুরুত্বপূর্ণ সরকারি প্রকল্পে ডেভেলপার হিসেবে শুরু, প্রযুক্তিগত উৎকর্ষতা এবং পেশাদারিত্ব প্রমাণ করা। এই সহযোগিতামূলক শিকড় আমাদের নিজস্ব প্ল্যাটফর্ম তৈরি করতে অনুপ্রাণিত করেছে।",
+          deliverables: [
+            "সরকারি প্রকল্পের অভিজ্ঞতা",
+            "কোর টিম সিনার্জি",
+            "টেকনিক্যাল এক্সিলেন্স",
+          ],
+          duration: "সহযোগিতামূলক শিকড়",
+        },
+        {
+          id: "০২",
+          year: "২০২৫",
+          title: "দ্য ট্রানজিশন",
+          desc: "গ্রো বিজনেস সলিউশনস ধারণা। কাস্টম ওয়েব অ্যাপ এবং আধুনিক প্রযুক্তির মাধ্যমে ব্যবসায়িক সমস্যা সমাধানের উপর ব্যাপক গবেষণা।",
+          deliverables: [
+            "মার্কেট রিসার্চ",
+            "সার্ভিস রোডম্যাপ",
+            "স্ট্র্যাটেজিক প্ল্যানিং",
+          ],
+          duration: "কনসেপ্ট ফেজ",
+        },
+        {
+          id: "০৩",
+          year: "২০২৬",
+          title: "দ্য অফিসিয়াল লঞ্চ",
+          desc: "গ্রো বিজনেস সলিউশনস বিডি অফিসিয়ালি লঞ্চ হচ্ছে। অত্যাধুনিক MERN স্ট্যাক প্রযুক্তি ব্যবহার করে গ্লোবাল-স্ট্যান্ডার্ড কাস্টম ওয়েব সলিউশন সরবরাহ করতে প্রস্তুত।",
+          deliverables: [
+            "অফিসিয়াল এজেন্সি লঞ্চ",
+            "কাস্টম ওয়েব সলিউশন",
+            "ক্লায়েন্ট-ফার্স্ট অ্যাপ্রোচ",
+          ],
+          duration: "নতুন যুগের শুরু",
+        },
+        {
+          id: "০৪",
+          year: "ভবিষ্যৎ",
+          title: "গ্লোবাল ইমপ্যাক্ট",
+          desc: "উচ্চ-ক্ষমতাসম্পন্ন ডিজিটাল ইকোসিস্টেম, উদ্ভাবন এবং আপোষহীন মানের সাথে বিশ্বব্যাপী ক্লায়েন্টদের সেবা করার লক্ষ্য।",
+          deliverables: ["গ্লোবাল রিচ", "ইনোভেশন ল্যাব", "এন্টারপ্রাইজ সলিউশন"],
+          duration: "বিশ্বব্যাপী ভিশন",
+        },
+      ],
+
+      techNames: {
+        nextjs: "নেক্সট.জেএস",
+        react: "রিঅ্যাক্ট",
+        nodejs: "নোড.জেএস",
+        mongodb: "মঙ্গোডিবি",
+        typescript: "টাইপস্ক্রিপ্ট",
+        express: "এক্সপ্রেস",
+        tailwind: "টেইলউইন্ড",
+        graphql: "গ্রাফকিউএল",
+        docker: "ডকার",
+        aws: "এডব্লিউএস",
+        git: "গিট",
+        figma: "ফিগমা",
+      },
     },
   },
 };

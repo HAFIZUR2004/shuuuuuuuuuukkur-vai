@@ -4,7 +4,7 @@ import { useLanguage } from "@/constants/LanguageContext";
 import { translations } from "@/constants/translations";
 import { useEffect, useRef } from "react";
 import { useRouter } from "next/navigation"; 
-
+// llll
 export default function HeroSection() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const { lang } = useLanguage();

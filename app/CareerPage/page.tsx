@@ -29,7 +29,7 @@ const SectionLabel = ({ children }: { children: React.ReactNode }) => (
 /* ─── blob 3-D placeholder (pure CSS) ─── */
 function BlobVisual() {
   return (
-    <div className="relative w-full h-full flex items-center justify-center overflow-hidden rounded-2xl bg-[#111]">
+    <div className="relative w-full h-full flex items-center font-hind justify-center overflow-hidden rounded-2xl bg-[#111]">
       <div
         className="w-48 h-48 rounded-full"
         style={{
@@ -65,7 +65,7 @@ function CareerHero() {
   return (
     <motion.section
       style={{ opacity: heroOpacity, scale: heroScale }}
-      className="relative min-h-screen w-full flex items-center justify-center overflow-hidden px-4 sm:px-6 md:px-10"
+      className="relative min-h-screen w-full flex items-center justify-center overflow-hidden font-hind px-4 sm:px-6 md:px-10"
     >
       <svg
         className="absolute bottom-0 left-0 w-full h-[160px] sm:h-[200px] pointer-events-none z-1"
@@ -158,7 +158,7 @@ function Manifesto() {
   const c = t.careersPage;
 
   return (
-    <section className="relative bg-transparent py-24 px-6 md:px-16 max-w-7xl mx-auto z-10">
+    <section className="relative bg-transparent font-hind py-24 px-6 md:px-16 max-w-7xl mx-auto z-10">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
         <motion.div
           initial={{ opacity: 0, x: -50 }}
@@ -488,7 +488,7 @@ function Vacancies() {
 
   return (
     <>
-      <section className="relative bg-transparent py-24 px-6 md:px-16 max-w-7xl mx-auto z-10">
+      <section className="relative bg-transparent py-24 px-6 md:px-16 max-w-7xl font-hind mx-auto z-10">
         <SectionLabel>{c?.vacanciesLabel || "Operational Series"}</SectionLabel>
         <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-12">
           <h2 className="text-5xl md:text-6xl font-black text-white leading-none">
@@ -862,7 +862,7 @@ function WhyBuild() {
   };
 
   return (
-    <section className="relative bg-transparent py-24 px-6 md:px-16 max-w-7xl mx-auto z-10">
+    <section className="relative bg-transparent font-hind py-24 px-6 md:px-16 max-w-7xl mx-auto z-10">
       <div className="text-center mb-14">
         <SectionLabel>{c?.whyBuildLabel || "Protocol · Rewards"}</SectionLabel>
         <motion.h2
@@ -1003,7 +1003,7 @@ function CtaBanner() {
   const router = useRouter();
 
   return (
-    <section className="relative bg-transparent py-32 px-6 text-center overflow-hidden z-10">
+    <section className="relative bg-transparent font-hind py-32 px-6 text-center overflow-hidden z-10">
       <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
         <div className="w-[700px] h-[300px] rounded-full bg-[#6c5ce7]/10 blur-3xl animate-pulse" />
       </div>

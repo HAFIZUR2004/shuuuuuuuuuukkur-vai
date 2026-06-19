@@ -1,13 +1,10 @@
 import { NextResponse } from 'next/server';
-import clientPromise from '@/lib/mongodb';
+import { getDatabase } from '@/lib/mongodb';
 import { ObjectId } from 'mongodb';
-
-const DB_NAME = 'growbusinessDB';
 
 export async function GET() {
   try {
-    const client = await clientPromise;
-    const db = client.db(DB_NAME);
+    const db = await getDatabase();
     
     // প্রথমে পুরাতন ডাটা ডিলিট করুন
     await db.collection('applications').deleteMany({});

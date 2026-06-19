@@ -3,8 +3,8 @@
 import { useState, useEffect } from 'react';
 
 interface Portfolio {
-  _id: string;
-  id: string;
+  _id: string;  // MongoDB ObjectId
+  id: string;   // Your custom ID (01, 02, etc.)
   title: string;
   category: string;
   description: string;
@@ -87,78 +87,80 @@ export default function PortfolioManagement() {
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    if (!formData.title || !formData.category || !formData.description || !formData.image) {
-      alert('দয়া করে সব প্রয়োজনীয় তথ্য পূরণ করুন!');
-      return;
-    }
-    
-    const payload = {
-      title: formData.title,
-      category: formData.category,
-      description: formData.description,
-      tech: formData.tech.split(',').map(t => t.trim()).filter(t => t),
-      colorKey: formData.colorKey,
-      stats: formData.stats,
-      image: formData.image.trim(),
-      imageAlt: formData.imageAlt || formData.title,
-      github: formData.github?.trim() || '',
-      liveUrl: formData.liveUrl?.trim() || '',
-    };
-
-    try {
-      let response;
-      
-      if (editingItem) {
-        const idToUse = editingItem._id || editingItem.id;
-        response = await fetch(`/api/portfolio/${idToUse}`, {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload),
-        });
-      } else {
-        response = await fetch('/api/portfolio', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload),
-        });
-      }
-
-      if (response.ok) {
-        setModalOpen(false);
-        fetchPortfolios();
-        alert(editingItem ? '✅ প্রজেক্ট আপডেট হয়েছে!' : '✅ প্রজেক্ট তৈরি হয়েছে!');
-      } else {
-        const error = await response.json();
-        alert(`সেভ করতে ব্যর্থ হয়েছে: ${error.error || 'Unknown error'}`);
-      }
-    } catch (error) {
-      console.error('Submit error:', error);
-      alert('সেভ করতে ব্যর্থ হয়েছে');
-    }
+  e.preventDefault();
+  
+  if (!formData.title || !formData.category || !formData.description || !formData.image) {
+    alert('দয়া করে সব প্রয়োজনীয় তথ্য পূরণ করুন!');
+    return;
+  }
+  
+  const payload = {
+    title: formData.title,
+    category: formData.category,
+    description: formData.description,
+    tech: formData.tech.split(',').map(t => t.trim()).filter(t => t),
+    colorKey: formData.colorKey,
+    stats: formData.stats,
+    image: formData.image.trim(),
+    imageAlt: formData.imageAlt || formData.title,
+    github: formData.github?.trim() || '',
+    liveUrl: formData.liveUrl?.trim() || '',
   };
+
+  try {
+    let response;
+    
+    if (editingItem) {
+      // Use _id for the API endpoint (MongoDB ObjectId)
+      const idToUse = editingItem._id;
+      response = await fetch(`/api/portfolio/${idToUse}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+    } else {
+      response = await fetch('/api/portfolio', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+    }
+
+    if (response.ok) {
+      setModalOpen(false);
+      fetchPortfolios();
+      alert(editingItem ? '✅ প্রজেক্ট আপডেট হয়েছে!' : '✅ প্রজেক্ট তৈরি হয়েছে!');
+    } else {
+      const error = await response.json();
+      alert(`সেভ করতে ব্যর্থ হয়েছে: ${error.error || 'Unknown error'}`);
+    }
+  } catch (error) {
+    console.error('Submit error:', error);
+    alert('সেভ করতে ব্যর্থ হয়েছে');
+  }
+};
 
   const handleDelete = async (id: string) => {
-    if (!confirm('আপনি কি এই প্রজেক্ট ডিলিট করতে চান?')) return;
+  if (!confirm('আপনি কি এই প্রজেক্ট ডিলিট করতে চান?')) return;
+  
+  try {
+    // Make sure we're using the _id (MongoDB ObjectId)
+    const response = await fetch(`/api/portfolio/${id}`, { 
+      method: 'DELETE' 
+    });
     
-    try {
-      const response = await fetch(`/api/portfolio/${id}`, { 
-        method: 'DELETE' 
-      });
-      
-      if (response.ok) {
-        fetchPortfolios();
-        alert('✅ প্রজেক্ট ডিলিট হয়েছে!');
-      } else {
-        const error = await response.json();
-        alert(`ডিলিট করতে ব্যর্থ হয়েছে: ${error.error}`);
-      }
-    } catch (error) {
-      console.error('Delete error:', error);
-      alert('ডিলিট করতে ব্যর্থ হয়েছে');
+    if (response.ok) {
+      fetchPortfolios();
+      alert('✅ প্রজেক্ট ডিলিট হয়েছে!');
+    } else {
+      const error = await response.json();
+      alert(`ডিলিট করতে ব্যর্থ হয়েছে: ${error.error}`);
     }
-  };
+  } catch (error) {
+    console.error('Delete error:', error);
+    alert('ডিলিট করতে ব্যর্থ হয়েছে');
+  }
+};
 
   if (loading) {
     return (

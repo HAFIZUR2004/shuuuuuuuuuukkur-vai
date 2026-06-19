@@ -1,10 +1,8 @@
 "use client";
 
-import { useLanguage } from "@/constants/LanguageContext";
-import { translations } from "@/constants/translations";
 import React, { useEffect, useRef, useState, useMemo } from "react";
 import { useInView } from "react-intersection-observer";
-import { motion, useScroll, useTransform, Variants } from "framer-motion";
+import { motion, Variants } from "framer-motion";
 import {
   Star,
   Rocket,
@@ -31,29 +29,7 @@ const getFormattedCounter = (value: number, suffix: string) => {
   return `${value}${suffix}`;
 };
 
-// Stats configuration
-const statsConfig = [
-  {
-    icon: Clock,
-    isCounter: true,
-    targetValue: 8,
-    suffix: "+",
-  },
-  {
-    icon: Briefcase,
-    isCounter: true,
-    targetValue: 20,
-    suffix: "+",
-  },
-  {
-    icon: Users,
-    isCounter: true,
-    targetValue: 100,
-    suffix: "%",
-  },
-];
-
-// Card variants for animation
+// ✅ Card variants for animation
 const cardVariants: Variants = {
   hidden: { opacity: 0, y: 50 },
   visible: (i: number) => ({
@@ -68,8 +44,25 @@ const cardVariants: Variants = {
   }),
 };
 
-const SuccessSection = () => {
+interface SuccessSectionProps {
+  t: any;
+  lang: string;
+  // ✅ ডাইনামিক ভ্যালু পাস করার জন্য প্রপ্স
+  projectCount?: number;
+  yearsOfExp?: number;
+  satisfactionRate?: number;
+}
+
+const SuccessSection = ({ 
+  t, 
+  lang, 
+  projectCount: initialProjectCount = 9,
+  yearsOfExp = 2,
+  satisfactionRate = 100
+}: SuccessSectionProps) => {
   const [counters, setCounters] = useState([0, 0, 0]);
+  const [projectCount, setProjectCount] = useState<number>(initialProjectCount);
+  const [loading, setLoading] = useState<boolean>(true);
   const sectionRef = useRef<HTMLElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const { ref: inViewRef, inView } = useInView({
@@ -77,93 +70,140 @@ const SuccessSection = () => {
     threshold: 0.2,
   });
 
-  const { lang } = useLanguage();
-  const t = translations[lang];
+  // ✅ API থেকে প্রোজেক্ট কাউন্ট আনা (যদি প্রপ্স না দেয়া হয়)
+  useEffect(() => {
+    const fetchProjectCount = async () => {
+      try {
+        setLoading(true);
+        const res = await fetch('/api/portfolio');
+        
+        if (!res.ok) {
+          throw new Error(`HTTP error! status: ${res.status}`);
+        }
+        
+        const data = await res.json();
+        
+        if (Array.isArray(data)) {
+          setProjectCount(data.length);
+          console.log(`✅ Total projects: ${data.length}`);
+        } else {
+          setProjectCount(0);
+        }
+      } catch (error) {
+        console.error('❌ Error fetching project count:', error);
+        setProjectCount(initialProjectCount);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  // ✅ FIXED: No any type - proper typing
-  const dynamicStatsData: StatInfo[] = useMemo(() => {
-    if (lang === "BN" && t.stats && Array.isArray(t.stats)) {
-      return t.stats.map(
-        (stat: { title: string; desc: string }, idx: number) => ({
-          title: stat.title,
-          desc: stat.desc,
-          icon: [Clock, Briefcase, Users][idx] || Clock,
-          isCounter: true,
-          targetValue: idx === 2 ? 100 : 8,
-          suffix: idx === 2 ? "%" : "+",
-        }),
-      );
+    // যদি প্রপ্স হিসেবে projectCount না দেয়া হয় তাহলে API থেকে আনা হবে
+    if (initialProjectCount === 9) {
+      fetchProjectCount();
+    } else {
+      setProjectCount(initialProjectCount);
+      setLoading(false);
     }
-    // Default data for English
+  }, [initialProjectCount]);
+
+  // ✅ ডাইনামিক ডেটা তৈরী (প্রপ্স থেকে ভ্যালু নেওয়া)
+  const dynamicStatsData: StatInfo[] = useMemo(() => {
+    const isBN = lang === "BN" || lang === "bn";
+    
+    // ট্রান্সলেশন থেকে টেক্সট নেওয়া
+    const statsArray = Array.isArray(t?.stats) ? t.stats : [];
+    
+    // ✅ ডিফল্ট টেক্সট (ইংরেজি)
+    const defaultTitles = ["Years", "Projects", "Client Satisfaction"];
+    const defaultDescs = [
+      "Of dedicated craft in digital architecture.",
+      "High-impact solutions delivered globally.",
+      "Satisfaction rate across all partnerships."
+    ];
+
+    // ✅ বাংলা টেক্সট
+    const bnTitles = ["বছর", "প্রজেক্ট", "ক্লায়েন্ট সন্তুষ্টি"];
+    const bnDescs = [
+      "ডিজিটাল আর্কিটেকচারে নিবেদিত শিল্পশৈলী।",
+      "বিশ্বজুড়ে ডেলিভারি করা হাই-ইমপ্যাক্ট সলিউশন।",
+      "প্রতিটি পার্টনারশিপে পূর্ণ সন্তুষ্টির হার।"
+    ];
+
+    const titles = isBN ? bnTitles : defaultTitles;
+    const descs = isBN ? bnDescs : defaultDescs;
+
+    const getTitle = (idx: number) => {
+      return statsArray[idx]?.title || titles[idx];
+    };
+
+    const getDesc = (idx: number) => {
+      return statsArray[idx]?.desc || descs[idx];
+    };
+
     return [
       {
-        title: "8+ Years",
-        desc: "Of dedicated craft in digital architecture.",
+        title: `${yearsOfExp}+ ${getTitle(0)}`,
+        desc: getDesc(0),
         icon: Clock,
         isCounter: true,
-        targetValue: 8,
+        targetValue: yearsOfExp,
         suffix: "+",
       },
       {
-        title: "20+ Projects",
-        desc: "High-impact solutions delivered globally.",
+        title: `${projectCount}+ ${getTitle(1)}`,
+        desc: getDesc(1),
         icon: Briefcase,
         isCounter: true,
-        targetValue: 20,
+        targetValue: projectCount,
         suffix: "+",
       },
       {
-        title: "100% Client",
-        desc: "Satisfaction rate across all partnerships.",
+        title: `${satisfactionRate}% ${getTitle(2)}`,
+        desc: getDesc(2),
         icon: Users,
         isCounter: true,
-        targetValue: 100,
+        targetValue: satisfactionRate,
         suffix: "%",
       },
     ];
-  }, [lang, t.stats]);
+  }, [lang, t?.stats, projectCount, yearsOfExp, satisfactionRate]);
 
-  // Scroll animation
-  const { scrollYProgress } = useScroll({
-    target: sectionRef,
-    offset: ["start end", "end start"],
-  });
-  const opacity = useTransform(scrollYProgress, [0, 0.5, 1], [0.3, 1, 0.3]);
-  const scale = useTransform(scrollYProgress, [0, 0.5, 1], [0.95, 1, 0.95]);
-
-  // Counter animation
+  // ✅ কাউন্টার অ্যানিমেশন (ডাইনামিক টার্গেট ভ্যালু সহ)
   useEffect(() => {
-    if (inView) {
-      statsConfig.forEach((stat, idx) => {
-        if (stat.isCounter) {
-          let start = 0;
-          const end = stat.targetValue;
-          const duration = 2000;
-          const increment = end / (duration / 16);
+    if (inView && !loading) {
+      const targets = [
+        yearsOfExp,
+        projectCount,
+        satisfactionRate
+      ];
 
-          const timer = setInterval(() => {
-            start += increment;
-            if (start >= end) {
-              setCounters((prev) => {
-                const newCounters = [...prev];
-                newCounters[idx] = end;
-                return newCounters;
-              });
-              clearInterval(timer);
-            } else {
-              setCounters((prev) => {
-                const newCounters = [...prev];
-                newCounters[idx] = Math.floor(start);
-                return newCounters;
-              });
-            }
-          }, 16);
+      targets.forEach((end, idx) => {
+        let start = 0;
+        const duration = 2000;
+        const increment = end / (duration / 16);
 
-          return () => clearInterval(timer);
-        }
+        const timer = setInterval(() => {
+          start += increment;
+          if (start >= end) {
+            setCounters((prev) => {
+              const newCounters = [...prev];
+              newCounters[idx] = end;
+              return newCounters;
+            });
+            clearInterval(timer);
+          } else {
+            setCounters((prev) => {
+              const newCounters = [...prev];
+              newCounters[idx] = Math.floor(start);
+              return newCounters;
+            });
+          }
+        }, 16);
+
+        return () => clearInterval(timer);
       });
     }
-  }, [inView]);
+  }, [inView, projectCount, yearsOfExp, satisfactionRate, loading]);
 
   // Enhanced Particle Network Canvas Effect
   useEffect(() => {
@@ -300,15 +340,28 @@ const SuccessSection = () => {
     };
   }, []);
 
-  // Trust badges from translation
+  // ✅ ডাইনামিক ট্রাস্ট ব্যাজ (প্রোজেক্ট কাউন্ট আপডেট সহ)
+  const isBN = lang === "BN" || lang === "bn";
+  
   const trustBadges = [
     {
       icon: Trophy,
-      text: t.trustBadges?.projectsCompleted || "8+ Projects Completed",
+      text: isBN 
+        ? `${projectCount}+ প্রজেক্ট সম্পন্ন`
+        : `${projectCount}+ Projects Completed`,
     },
-    { icon: Star, text: t.trustBadges?.fiveStarRating || "5 Star Rating" },
-    { icon: Rocket, text: t.trustBadges?.onTimeDelivery || "On-Time Delivery" },
-    { icon: Award, text: t.trustBadges?.premiumQuality || "Premium Quality" },
+    { 
+      icon: Star, 
+      text: t?.trustBadges?.fiveStarRating || (isBN ? "৫ স্টার রেটিং" : "5 Star Rating") 
+    },
+    { 
+      icon: Rocket, 
+      text: t?.trustBadges?.onTimeDelivery || (isBN ? "সময়ে ডেলিভারি" : "On-Time Delivery") 
+    },
+    { 
+      icon: Award, 
+      text: t?.trustBadges?.premiumQuality || (isBN ? "প্রিমিয়াম কোয়ালিটি" : "Premium Quality") 
+    },
   ];
 
   return (
@@ -320,7 +373,7 @@ const SuccessSection = () => {
           inViewRef(el);
         }
       }}
-      className={`relative bg-[#0b0c18] text-white py-24 px-6 overflow-hidden ${lang === "BN" ? "font-hind" : ""}`}
+      className={`relative bg-[#0b0c18] text-white py-24 px-6 overflow-hidden ${isBN ? "font-hind" : ""}`}
     >
       {/* Particle Network Canvas */}
       <canvas
@@ -349,7 +402,10 @@ const SuccessSection = () => {
       </div>
 
       <motion.div
-        style={{ opacity, scale }}
+        initial={{ opacity: 0, scale: 0.95 }}
+        whileInView={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.6 }}
+        viewport={{ once: true, margin: "-50px" }}
         className="max-w-7xl mx-auto relative z-10"
       >
         <div className="text-center mb-20">
@@ -362,7 +418,7 @@ const SuccessSection = () => {
           >
             <div className="h-px w-8 bg-gradient-to-r from-transparent to-cyan-500" />
             <p className="text-cyan-400 font-mono text-xs uppercase tracking-[0.3em] font-semibold">
-              {t.successBadge}
+              {t?.successBadge || (isBN ? "সাফল্যের মাইলফলক" : "MILESTONES")}
             </p>
             <div className="h-px w-8 bg-gradient-to-l from-transparent to-cyan-500" />
           </motion.div>
@@ -376,13 +432,13 @@ const SuccessSection = () => {
           >
             <h2 className="text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-black tracking-tighter leading-tight">
               <span className="bg-gradient-to-r from-white via-white to-white/70 bg-clip-text text-transparent">
-                {t.successTitle}
+                {t?.successTitle || (isBN ? "গতিশীল" : "Success in")}
               </span>
               <br />
               <span className="relative inline-block mt-2">
                 <span className="absolute -inset-2 bg-gradient-to-r from-purple-600/20 to-cyan-500/20 blur-2xl" />
                 <span className="relative text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-purple-500 to-cyan-400">
-                  {t.successTitleGradient}
+                  {t?.successTitleGradient || (isBN ? "সাফল্য" : "Motion.")}
                 </span>
               </span>
             </h2>
@@ -395,122 +451,132 @@ const SuccessSection = () => {
             viewport={{ once: true }}
             className="text-white/40 text-base md:text-lg max-w-2xl mx-auto mt-6 leading-relaxed"
           >
-            {t.successDescription}
+            {t?.successDescription || (isBN 
+              ? "পরিমাপযোগ্য ফলাফল এবং ক্লায়েন্ট সন্তুষ্টির মাধ্যমে শ্রেষ্ঠত্ব প্রদান"
+              : "Delivering excellence through measurable results and client satisfaction")}
           </motion.p>
         </div>
 
-        {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
-          {statsConfig.map((config, i) => {
-            const IconComponent = config.icon;
-            const counterValue = counters[i];
-            const statInfo = dynamicStatsData[i];
+        {/* ✅ লোডিং ইন্ডিকেটর */}
+        {loading ? (
+          <div className="flex justify-center items-center py-12">
+            <div className="w-12 h-12 border-4 border-purple-500/30 border-t-purple-500 rounded-full animate-spin" />
+          </div>
+        ) : (
+          <>
+            {/* ✅ Stats Cards - ডাইনামিক ডেটা ব্যবহার করে */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
+              {dynamicStatsData.map((stat, i) => {
+                const IconComponent = stat.icon;
+                const counterValue = counters[i] || stat.targetValue;
 
-            return (
-              <motion.div
-                key={i}
-                custom={i}
-                variants={cardVariants}
-                initial="hidden"
-                whileInView="visible"
-                viewport={{ once: true, margin: "-50px" }}
-                whileHover={{ y: -10 }}
-                transition={{ delay: i * 0.15 }}
-                className="group relative rounded-3xl bg-white/[0.02] backdrop-blur-sm border border-white/5 overflow-hidden transition-all duration-500 hover:border-purple-500/30 hover:shadow-2xl"
-              >
-                <div className="absolute inset-0 bg-gradient-to-br from-purple-600/5 via-transparent to-cyan-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
-                <div className="absolute -inset-1 bg-gradient-to-r from-purple-600/20 to-cyan-500/20 blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
-
-                <div className="relative p-8 md:p-10 text-center">
+                return (
                   <motion.div
-                    initial={{ scale: 0, rotate: -180 }}
-                    whileInView={{ scale: 1, rotate: 0 }}
-                    transition={{
-                      delay: i * 0.1 + 0.3,
-                      type: "spring" as const,
-                      stiffness: 200,
-                    }}
-                    viewport={{ once: true }}
-                    className="w-16 h-16 mx-auto mb-6 flex items-center justify-center rounded-2xl bg-gradient-to-br from-purple-500/10 to-cyan-500/10 border border-white/10 group-hover:scale-110 transition-transform duration-300"
+                    key={i}
+                    custom={i}
+                    variants={cardVariants}
+                    initial="hidden"
+                    whileInView="visible"
+                    viewport={{ once: true, margin: "-50px" }}
+                    whileHover={{ y: -10 }}
+                    transition={{ delay: i * 0.15 }}
+                    className="group relative rounded-3xl bg-white/[0.02] backdrop-blur-sm border border-white/5 overflow-hidden transition-all duration-500 hover:border-purple-500/30 hover:shadow-2xl"
                   >
-                    <IconComponent
-                      className="w-8 h-8 text-white/80 group-hover:text-cyan-400 transition-colors duration-300"
+                    <div className="absolute inset-0 bg-gradient-to-br from-purple-600/5 via-transparent to-cyan-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
+                    <div className="absolute -inset-1 bg-gradient-to-r from-purple-600/20 to-cyan-500/20 blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
+
+                    <div className="relative p-8 md:p-10 text-center">
+                      <motion.div
+                        initial={{ scale: 0, rotate: -180 }}
+                        whileInView={{ scale: 1, rotate: 0 }}
+                        transition={{
+                          delay: i * 0.1 + 0.3,
+                          type: "spring" as const,
+                          stiffness: 200,
+                        }}
+                        viewport={{ once: true }}
+                        className="w-16 h-16 mx-auto mb-6 flex items-center justify-center rounded-2xl bg-gradient-to-br from-purple-500/10 to-cyan-500/10 border border-white/10 group-hover:scale-110 transition-transform duration-300"
+                      >
+                        <IconComponent
+                          className="w-8 h-8 text-white/80 group-hover:text-cyan-400 transition-colors duration-300"
+                          strokeWidth={1.5}
+                        />
+                      </motion.div>
+
+                      <motion.h3
+                        initial={{ opacity: 0, y: 20 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        transition={{ delay: i * 0.1 + 0.4 }}
+                        viewport={{ once: true }}
+                        className="text-4xl md:text-5xl font-black mb-3 tracking-tight"
+                      >
+                        <span className="bg-gradient-to-r from-white to-white/70 bg-clip-text text-transparent">
+                          {getFormattedCounter(counterValue, stat.suffix)}
+                        </span>
+                      </motion.h3>
+{/* ,,,,, */}
+                      <motion.p
+                        initial={{ opacity: 0 }}
+                        whileInView={{ opacity: 1 }}
+                        transition={{ delay: i * 0.1 + 0.45 }}
+                        viewport={{ once: true }}
+                        className="text-white/60 text-sm font-semibold mb-2"
+                      >
+                        {stat.title}
+                      </motion.p>
+
+                      <motion.p
+                        initial={{ opacity: 0 }}
+                        whileInView={{ opacity: 1 }}
+                        transition={{ delay: i * 0.1 + 0.5 }}
+                        viewport={{ once: true }}
+                        className="text-white/40 text-xs leading-relaxed max-w-[200px] mx-auto"
+                      >
+                        {stat.desc}
+                      </motion.p>
+
+                      <motion.div
+                        initial={{ width: 0 }}
+                        whileInView={{ width: 60 }}
+                        transition={{ delay: i * 0.1 + 0.6, duration: 0.6 }}
+                        viewport={{ once: true }}
+                        className="h-[2px] bg-gradient-to-r from-purple-500 to-cyan-500 rounded-full mt-6 mx-auto group-hover:w-24 transition-all duration-500"
+                      />
+                    </div>
+                  </motion.div>
+                );
+              })}
+            </div>
+
+            {/* ✅ Trust Badges - ডাইনামিক প্রোজেক্ট কাউন্ট সহ */}
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.6 }}
+              viewport={{ once: true }}
+              className="flex flex-wrap justify-center gap-6 md:gap-10 mt-16 pt-8 border-t border-white/5"
+            >
+              {trustBadges.map((badge, idx) => {
+                const BadgeIcon = badge.icon;
+                return (
+                  <motion.div
+                    key={idx}
+                    whileHover={{ scale: 1.05 }}
+                    className="flex items-center gap-2 px-4 py-2 rounded-full bg-white/[0.02] border border-white/5 hover:border-purple-500/30 transition-all duration-300"
+                  >
+                    <BadgeIcon
+                      className="w-4 h-4 text-cyan-400"
                       strokeWidth={1.5}
                     />
-                  </motion.div>
-
-                  <motion.h3
-                    initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    transition={{ delay: i * 0.1 + 0.4 }}
-                    viewport={{ once: true }}
-                    className="text-4xl md:text-5xl font-black mb-3 tracking-tight"
-                  >
-                    <span className="bg-gradient-to-r from-white to-white/70 bg-clip-text text-transparent">
-                      {getFormattedCounter(counterValue, config.suffix)}
+                    <span className="text-white/40 text-[10px] md:text-xs font-mono uppercase tracking-wider whitespace-nowrap">
+                      {badge.text}
                     </span>
-                  </motion.h3>
-
-                  <motion.p
-                    initial={{ opacity: 0 }}
-                    whileInView={{ opacity: 1 }}
-                    transition={{ delay: i * 0.1 + 0.45 }}
-                    viewport={{ once: true }}
-                    className="text-white/60 text-sm font-semibold mb-2"
-                  >
-                    {statInfo?.title}
-                  </motion.p>
-
-                  <motion.p
-                    initial={{ opacity: 0 }}
-                    whileInView={{ opacity: 1 }}
-                    transition={{ delay: i * 0.1 + 0.5 }}
-                    viewport={{ once: true }}
-                    className="text-white/40 text-xs leading-relaxed max-w-[200px] mx-auto"
-                  >
-                    {statInfo?.desc}
-                  </motion.p>
-
-                  <motion.div
-                    initial={{ width: 0 }}
-                    whileInView={{ width: 60 }}
-                    transition={{ delay: i * 0.1 + 0.6, duration: 0.6 }}
-                    viewport={{ once: true }}
-                    className="h-[2px] bg-gradient-to-r from-purple-500 to-cyan-500 rounded-full mt-6 mx-auto group-hover:w-24 transition-all duration-500"
-                  />
-                </div>
-              </motion.div>
-            );
-          })}
-        </div>
-
-        {/* Trust Badges */}
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.6 }}
-          viewport={{ once: true }}
-          className="flex flex-wrap justify-center gap-6 md:gap-10 mt-16 pt-8 border-t border-white/5"
-        >
-          {trustBadges.map((badge, idx) => {
-            const BadgeIcon = badge.icon;
-            return (
-              <motion.div
-                key={idx}
-                whileHover={{ scale: 1.05 }}
-                className="flex items-center gap-2 px-4 py-2 rounded-full bg-white/[0.02] border border-white/5 hover:border-purple-500/30 transition-all duration-300"
-              >
-                <BadgeIcon
-                  className="w-4 h-4 text-cyan-400"
-                  strokeWidth={1.5}
-                />
-                <span className="text-white/40 text-[10px] md:text-xs font-mono uppercase tracking-wider whitespace-nowrap">
-                  {badge.text}
-                </span>
-              </motion.div>
-            );
-          })}
-        </motion.div>
+                  </motion.div>
+                );
+              })}
+            </motion.div>
+          </>
+        )}
       </motion.div>
     </section>
   );

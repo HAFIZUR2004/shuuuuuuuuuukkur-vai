@@ -1,4 +1,4 @@
-// components/PremiumSpinner.tsx (সঠিক ভার্সন)
+// components/PremiumSpinner.tsx (সঠিক ভার্সন
 "use client";
 
 import React, { useEffect, useState } from "react";

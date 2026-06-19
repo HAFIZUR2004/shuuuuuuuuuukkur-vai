@@ -1,6 +1,6 @@
 "use client";
 
-import { ReactNode, useEffect, useState } from "react";
+import { ReactNode } from "react";
 import Footer from "@/components/Footer";
 
 interface PublicLayoutProps {
@@ -12,20 +12,10 @@ export function PublicLayout({
   children,
   showFooter = true,
 }: PublicLayoutProps) {
-  const [isPageReady, setIsPageReady] = useState(false);
-
-  useEffect(() => {
-    // সামান্য delay দিয়ে Footer দেখানোর জন্য
-    const timer = setTimeout(() => {
-      setIsPageReady(true);
-    }, 100);
-    return () => clearTimeout(timer);
-  }, []);
-
   return (
     <>
       {children}
-      {showFooter && isPageReady && <Footer />}
+      {showFooter && <Footer />}
     </>
   );
 }

@@ -1,6 +1,3 @@
-// app/api/notifications/[id]/route.ts
-export const dynamic = 'force-dynamic';
-
 import { NextRequest, NextResponse } from 'next/server';
 
 // টেম্পোরারি স্টোরেজ (production এ ডাটাবেস ব্যবহার করুন)

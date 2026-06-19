@@ -1,10 +1,13 @@
 "use client";
 
-import React, { useEffect, useRef, useState, useMemo } from "react";
-import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { useLanguage } from "@/constants/LanguageContext";
-import { translations } from "@/constants/translations";
+import React, {
+  useEffect,
+  useRef,
+  useState,
+  useMemo,
+  memo,
+  useCallback,
+} from "react";
 import {
   Code2,
   Atom,
@@ -27,11 +30,7 @@ import {
   Rocket,
   Eye,
 } from "lucide-react";
-import { motion, useScroll, useTransform } from "framer-motion";
-
-if (typeof window !== "undefined") {
-  gsap.registerPlugin(ScrollTrigger);
-}
+import { motion } from "framer-motion";
 
 // টেকনোলজি লিস্ট - কম্প্যাক্ট ও সাজানো
 const technologies = [
@@ -179,89 +178,148 @@ const categoryColors: Record<string, string> = {
   Security: "#e84393",
 };
 
-const TechStack = () => {
+interface TechStackProps {
+  t: any;
+  lang: string;
+}
+
+// Memoized tech node component
+const TechNode = memo(
+  ({
+    tech,
+    index,
+    totalTechs,
+    hoveredTech,
+    setHoveredTech,
+  }: {
+    tech: (typeof technologies)[0];
+    index: number;
+    totalTechs: number;
+    hoveredTech: string | null;
+    setHoveredTech: (name: string | null) => void;
+  }) => {
+    const angle = (index / totalTechs) * 360;
+    const radius = 210;
+    const x = Math.cos((angle * Math.PI) / 180) * radius;
+    const y = Math.sin((angle * Math.PI) / 180) * radius;
+    const isHovered = hoveredTech === tech.name;
+
+    return (
+      <div
+        className="absolute left-1/2 top-1/2 w-0 h-0 flex items-center justify-center pointer-events-none"
+        style={{
+          transform: `translate(calc(-50% + ${x}px), calc(-50% + ${y}px))`,
+        }}
+      >
+        <motion.div
+          className="pointer-events-auto group"
+          animate={{
+            scale: isHovered ? 1.35 : 1,
+            filter: isHovered
+              ? `drop-shadow(0 0 28px ${tech.color})`
+              : "drop-shadow(0 0 8px rgba(0,0,0,0.4))",
+          }}
+          onMouseEnter={() => setHoveredTech(tech.name)}
+          onMouseLeave={() => setHoveredTech(null)}
+          transition={{
+            type: "spring",
+            stiffness: 250,
+            damping: 15,
+          }}
+        >
+          <div
+            className="relative w-16 h-16 rounded-xl bg-gradient-to-br from-slate-900/85 to-slate-800/80 border-2 border-white/20 backdrop-blur-xl flex flex-col items-center justify-center transition-all duration-300 hover:border-white/50 cursor-pointer overflow-hidden shadow-xl"
+            style={{
+              boxShadow: isHovered
+                ? `0 0 32px ${tech.color}70, inset 0 0 20px ${tech.color}15, 0 0 60px ${tech.color}40`
+                : `0 0 16px rgba(0,0,0,0.5), 0 0 20px ${tech.color}20`,
+            }}
+          >
+            <div
+              className="absolute inset-0 opacity-0 group-hover:opacity-35 transition-opacity duration-300"
+              style={{
+                background: `radial-gradient(circle at center, ${tech.color}50 0%, transparent 70%)`,
+              }}
+            />
+
+            <motion.div
+              className="relative z-10"
+              animate={{
+                rotate: isHovered ? 360 : 0,
+                scale: isHovered ? 1.25 : 1,
+              }}
+              transition={{
+                duration: 0.6,
+                ease: "easeInOut",
+              }}
+            >
+              <tech.icon
+                size={28}
+                style={{
+                  color: tech.color,
+                  filter: `drop-shadow(0 0 8px ${tech.color}80)`,
+                }}
+              />
+            </motion.div>
+
+            <span className="relative z-10 text-[7px] font-mono uppercase tracking-wider text-white/70 group-hover:text-white mt-1 font-bold text-center leading-none">
+              {tech.name}
+            </span>
+          </div>
+        </motion.div>
+      </div>
+    );
+  },
+);
+
+TechNode.displayName = "TechNode";
+
+const TechStack = ({ t, lang }: TechStackProps) => {
   const sectionRef = useRef(null);
-  const orbitRefs = useRef<(HTMLDivElement | null)[]>([]);
   const gridRef = useRef<HTMLDivElement>(null);
   const [currentRow, setCurrentRow] = useState(0);
   const [hoveredTech, setHoveredTech] = useState<string | null>(null);
+  const [isVisible, setIsVisible] = useState(false);
 
-  const { lang } = useLanguage();
-  const t = translations[lang];
   const features = t.techStack?.features || [];
 
   const totalRows = Math.ceil(features.length / 2);
   const visibleRows = 2;
 
-  const { scrollYProgress } = useScroll({
-    target: sectionRef,
-    offset: ["start end", "end start"],
-  });
-  const headerOpacity = useTransform(scrollYProgress, [0, 0.2], [0, 1]);
+  // Viewport detection with Intersection Observer instead of GSAP ScrollTrigger
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setIsVisible(entry.isIntersecting);
+      },
+      { threshold: 0.1, rootMargin: "50px" },
+    );
 
-  const scrollNext = () => {
+    if (sectionRef.current) {
+      observer.observe(sectionRef.current);
+    }
+
+    return () => observer.disconnect();
+  }, []);
+
+  const scrollNext = useCallback(() => {
     if (currentRow < totalRows - visibleRows) {
       setCurrentRow((prev) => prev + 1);
     }
-  };
+  }, [currentRow, totalRows, visibleRows]);
 
-  const scrollPrev = () => {
+  const scrollPrev = useCallback(() => {
     if (currentRow > 0) {
       setCurrentRow((prev) => prev - 1);
     }
-  };
+  }, [currentRow]);
 
-  // অরবিট এনিমেশন - অপটিমাইজড
-  useEffect(() => {
-    const ctx = gsap.context(() => {
-      // হেডার এনিমেশন
-      gsap.from(".tech-header", {
-        opacity: 0,
-        y: 60,
-        duration: 1.2,
-        ease: "power4.out",
-        scrollTrigger: {
-          trigger: sectionRef.current,
-          start: "top 75%",
-        },
-      });
-
-      // অরবিট এনিমেশন - শুধু visible viewport এ
-      const activeOrbits = orbitRefs.current.filter(
-        (node, i) => node && Math.abs(i - 8) < 10,
-      );
-      activeOrbits.forEach((node, idx) => {
-        if (!node) return;
-        const tech = technologies[idx % technologies.length];
-        gsap.to(node, {
-          rotation: 360,
-          duration: tech.speed,
-          repeat: -1,
-          ease: "none",
-        });
-        const inner = node.querySelector(".tech-node-inner");
-        if (inner) {
-          gsap.to(inner, {
-            rotation: -360,
-            duration: tech.speed,
-            repeat: -1,
-            ease: "none",
-          });
-        }
-      });
-    }, sectionRef);
-
-    return () => ctx.revert();
-  }, []);
-
-  // গ্রিড স্ক্রল
+  // Grid scroll animation - optimized with CSS transform
   useEffect(() => {
     if (gridRef.current) {
-      gsap.to(gridRef.current, {
-        y: `-${currentRow * 310}px`,
-        duration: 0.8,
-        ease: "power3.inOut",
-      });
+      gridRef.current.style.transform = `translateY(-${currentRow * 310}px)`;
+      gridRef.current.style.transition =
+        "transform 0.8s cubic-bezier(0.16, 1, 0.3, 1)";
     }
   }, [currentRow]);
 
@@ -284,8 +342,29 @@ const TechStack = () => {
     "from-indigo-500/20 to-purple-500/20",
   ];
 
-  // ক্যাটাগরি গ্রুপিং
-  const categories = [...new Set(technologies.map((t) => t.category))];
+  // Memoize categories to prevent unnecessary re-renders
+  const categories = useMemo(
+    () => [...new Set(technologies.map((t) => t.category))],
+    [],
+  );
+
+  // Memoize tech nodes array
+  const memoizedTechNodes = useMemo(
+    () =>
+      isVisible
+        ? technologies.map((tech, i) => (
+            <TechNode
+              key={`${tech.name}-${i}`}
+              tech={tech}
+              index={i}
+              totalTechs={technologies.length}
+              hoveredTech={hoveredTech}
+              setHoveredTech={setHoveredTech}
+            />
+          ))
+        : null,
+    [isVisible, hoveredTech],
+  );
 
   return (
     <section
@@ -314,7 +393,10 @@ const TechStack = () => {
         {/* প্রিমিয়াম হেডার */}
         <motion.div
           className="tech-header text-center mb-24"
-          style={{ opacity: headerOpacity }}
+          initial={{ opacity: 0, y: 60 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, ease: "easeOut" }}
+          viewport={{ once: true, margin: "-50px" }}
         >
           <div className="inline-flex items-center gap-3 mb-6">
             <div className="h-px w-12 bg-gradient-to-r from-transparent to-purple-500" />
@@ -324,7 +406,7 @@ const TechStack = () => {
             <div className="h-px w-12 bg-gradient-to-l from-transparent to-purple-500" />
           </div>
 
-          <h2 className="text-5xl md:text-7xl lg:text-8xl font-black tracking-tighter mb-6">
+          <h2 className="text-5xl md:text-7xl lg:text-8xl font-black font-hind tracking-tighter mb-6">
             {t.techStack?.title || "The"}{" "}
             <span className="bg-gradient-to-r from-purple-400 via-pink-500 to-cyan-400 bg-clip-text text-transparent">
               {t.techStack?.titleGradient || "Atomic"}
@@ -332,7 +414,7 @@ const TechStack = () => {
             {t.techStack?.titleEnd || "Stack."}
           </h2>
 
-          <p className="text-white/40 max-w-2xl mx-auto text-lg font-light">
+          <p className="text-white/40 max-w-2xl mx-auto font-hind text-lg font-light">
             {lang === "BN"
               ? "আমরা ব্যবহার করি বিশ্বের সবচেয়ে আধুনিক ও শক্তিশালী টুলস এবং টেকনোলজি"
               : "We use cutting-edge tools & technologies to build exceptional digital experiences"}
@@ -359,7 +441,7 @@ const TechStack = () => {
                 ref={gridRef}
                 className="features-grid grid grid-cols-1 sm:grid-cols-2 gap-5"
               >
-                {features.map((feature, index) => {
+                {features.map((feature: any, index: number) => {
                   const Icon = featureIcons[index % featureIcons.length];
                   return (
                     <motion.div
@@ -440,104 +522,175 @@ const TechStack = () => {
             </div>
           </div>
 
-          {/* ডান পাশ - অরবিটাল টেক স্ট্যাক */}
-          <div className="relative h-[650px] flex items-center justify-center">
-            {/* অরবিট রিংস */}
-            <div className="absolute inset-0 flex items-center justify-center">
-              {[420, 380, 340, 300, 260, 220, 180].map((radius, idx) => (
-                <div
-                  key={radius}
-                  className="absolute rounded-full border border-white/[0.03]"
-                  style={{ width: radius * 2, height: radius * 2 }}
+          {/* ডান পাশ - এন্টারপ্রাইজ অরবিটাল টেক স্ট্যাক */}
+          <div className="relative flex items-center justify-center py-12 lg:py-0">
+            {/* কন্টেইনড কন্টেইনার - বৃহত্তর */}
+            <div className="relative w-full max-w-2xl aspect-square flex items-center justify-center">
+              {/* প্রিমিয়াম গ্লো লেয়ার */}
+              <div className="absolute inset-0 pointer-events-none flex items-center justify-center">
+                <motion.div
+                  className="absolute w-full h-full bg-gradient-to-r from-purple-600/20 via-purple-500/10 to-transparent rounded-full blur-3xl"
+                  animate={{
+                    scale: [0.9, 1.15, 0.9],
+                    opacity: [0.3, 0.5, 0.3],
+                  }}
+                  transition={{ duration: 3, repeat: Infinity }}
                 />
-              ))}
-            </div>
-
-            {/* গ্লো ইফেক্ট */}
-            <div className="absolute w-[200px] h-[200px] bg-gradient-to-r from-purple-600/30 to-cyan-600/30 rounded-full blur-[60px] animate-pulse" />
-
-            {/* সেন্টার কোর */}
-            <motion.div
-              className="relative z-30 w-36 h-36 rounded-full bg-gradient-to-br from-purple-600/30 via-pink-600/20 to-cyan-600/30 border-2 border-white/20 flex items-center justify-center backdrop-blur-2xl shadow-2xl"
-              animate={{ scale: [1, 1.05, 1] }}
-              transition={{ duration: 2, repeat: Infinity }}
-            >
-              <div className="text-center">
-                <Sparkles className="w-8 h-8 text-purple-400 mx-auto mb-2" />
-                <div
-                  className={`text-sm font-black tracking-tighter text-white ${lang === "BN" ? "font-hind text-xs" : ""}`}
-                >
-                  {t.techStack?.centerText || "MERN+"}
-                </div>
-                <div className="text-[8px] text-purple-400 font-mono mt-1">
-                  STACK
-                </div>
+                <motion.div
+                  className="absolute w-5/6 h-5/6 bg-gradient-to-l from-cyan-600/15 via-cyan-500/8 to-transparent rounded-full blur-3xl"
+                  animate={{
+                    scale: [0.95, 1.2, 0.95],
+                    opacity: [0.25, 0.45, 0.25],
+                  }}
+                  transition={{ duration: 4, repeat: Infinity, delay: 0.5 }}
+                />
+                <motion.div
+                  className="absolute w-2/3 h-2/3 bg-gradient-to-b from-pink-600/10 via-pink-500/5 to-transparent rounded-full blur-2xl"
+                  animate={{
+                    scale: [0.85, 1.1, 0.85],
+                    opacity: [0.2, 0.4, 0.2],
+                  }}
+                  transition={{ duration: 3.5, repeat: Infinity, delay: 1 }}
+                />
               </div>
-            </motion.div>
 
-            {/* অরবিটিং টেকনোলজিস */}
-            {technologies.map((tech, i) => {
-              const angle = (i / technologies.length) * 360;
-              const isHovered = hoveredTech === tech.name;
-              return (
-                <div
-                  key={i}
-                  ref={(el) => {
-                    orbitRefs.current[i] = el;
-                  }}
-                  className="absolute flex items-center justify-center pointer-events-none"
-                  style={{
-                    width: tech.orbit * 2,
-                    height: tech.orbit * 2,
-                    transform: `rotate(${angle}deg)`,
-                  }}
-                >
+              {/* প্রিমিয়াম অরবিট রিংস - স্মুথ রোটেশন */}
+              <div className="absolute inset-0 flex items-center justify-center">
+                {[
+                  { size: 420, duration: 120, direction: 1 },
+                  { size: 320, duration: 90, direction: -1 },
+                  { size: 200, duration: 60, direction: 1 },
+                ].map((ring, idx) => (
                   <motion.div
-                    className="tech-node-inner absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-auto group"
-                    style={{ transform: `rotate(-${angle}deg)` }}
-                    animate={{ scale: isHovered ? 1.2 : 1 }}
-                    onHoverStart={() => setHoveredTech(tech.name)}
-                    onHoverEnd={() => setHoveredTech(null)}
-                  >
-                    <div
-                      className="w-14 h-14 rounded-xl bg-gradient-to-br from-[#0a0b14] to-[#1a1b24] border border-white/10 backdrop-blur-xl flex flex-col items-center justify-center transition-all duration-500 group-hover:border-purple-400 group-hover:shadow-[0_0_30px_rgba(139,92,246,0.5)] group-hover:scale-125 cursor-pointer"
-                      style={{
-                        boxShadow: isHovered
-                          ? `0 0 20px ${tech.color}`
-                          : "none",
-                      }}
-                    >
-                      <tech.icon
-                        size={22}
-                        style={{ color: tech.color }}
-                        className="opacity-90 group-hover:opacity-100 transition-all group-hover:scale-110"
-                      />
-                      <span
-                        className={`text-[7px] font-mono uppercase tracking-wider text-white/50 group-hover:text-white mt-1 transition-colors ${lang === "BN" ? "font-hind" : ""}`}
-                      >
-                        {tech.name}
-                      </span>
-                    </div>
-                  </motion.div>
-                </div>
-              );
-            })}
+                    key={ring.size}
+                    className="absolute rounded-full border border-white/[0.05] shadow-lg"
+                    style={{
+                      width: ring.size,
+                      height: ring.size,
+                      boxShadow: `inset 0 0 30px rgba(139,92,246,0.1)`,
+                    }}
+                    animate={{
+                      rotate: ring.direction === 1 ? 360 : -360,
+                    }}
+                    transition={{
+                      duration: ring.duration,
+                      repeat: Infinity,
+                      ease: "linear",
+                    }}
+                  />
+                ))}
+              </div>
 
-            {/* ক্যাটাগরি লেবেল */}
-            <div className="absolute -bottom-12 left-1/2 -translate-x-1/2 flex flex-wrap justify-center gap-2 text-[9px] font-mono">
-              {categories.map((category, idx) => (
-                <span
-                  key={idx}
-                  className="px-2 py-1 rounded-full bg-white/5 backdrop-blur-sm text-white/40 hover:text-white transition-colors"
-                  style={
-                    {
-                      "--hover-color": categoryColors[category],
-                    } as React.CSSProperties
-                  }
+              {/* প্রিমিয়াম সেন্টার কোর - পালসিং */}
+              <div className="absolute inset-0 flex items-center justify-center z-30">
+                <motion.div
+                  animate={{
+                    y: [0, -8, 0],
+                    scale: [0.98, 1.02, 0.98],
+                  }}
+                  transition={{
+                    duration: 3,
+                    repeat: Infinity,
+                    ease: "easeInOut",
+                  }}
                 >
-                  {category}
-                </span>
-              ))}
+                  {/* অ্যানিমেটেড বর্ডার রিং */}
+                  <motion.div
+                    className="absolute w-48 h-48 rounded-full"
+                    animate={{ rotate: 360 }}
+                    transition={{
+                      duration: 10,
+                      repeat: Infinity,
+                      ease: "linear",
+                    }}
+                    style={{
+                      background:
+                        "conic-gradient(from 0deg, #8b5cf6 0%, #ec4899 25%, #22d3ee 50%, #8b5cf6 75%, #8b5cf6 100%)",
+                      WebkitMaskImage:
+                        "radial-gradient(circle, transparent 88%, black 100%)",
+                      maskImage:
+                        "radial-gradient(circle, transparent 88%, black 100%)",
+                      boxShadow: "0 0 40px rgba(139,92,246,0.4)",
+                    }}
+                  />
+
+                  {/* মূল কোর বক্স */}
+                  <div
+                    className="relative w-48 h-48 rounded-full bg-gradient-to-br from-slate-900/80 via-slate-800/70 to-slate-900/80 border-2 border-white/25 backdrop-blur-xl flex flex-col items-center justify-center shadow-2xl overflow-hidden"
+                    style={{
+                      boxShadow:
+                        "0 0 50px rgba(139,92,246,0.3), inset 0 0 30px rgba(139,92,246,0.1)",
+                    }}
+                  >
+                    <div className="absolute inset-0 bg-gradient-to-br from-purple-500/8 to-cyan-500/8" />
+                    <div className="relative z-10 text-center">
+                    
+                      <div
+                        className={`text-2xl font-black tracking-tight text-white drop-shadow-lg ${lang === "BN" ? "font-hind" : ""}`}
+                      >
+                        {t.techStack?.centerText || "MERN+"}
+                      </div>
+                      <motion.div
+                        className="text-[11px] text-purple-300 font-mono font-bold mt-2 tracking-widest drop-shadow-md"
+                        animate={{ opacity: [0.6, 1, 0.6] }}
+                        transition={{ duration: 2.5, repeat: Infinity }}
+                      >
+                        STACK
+                      </motion.div>
+                      <div className="mt-4 flex gap-2 justify-center">
+                        {[0, 1, 2].map((i) => (
+                          <motion.div
+                            key={i}
+                            className="w-2 h-2 rounded-full bg-gradient-to-r from-purple-400 to-cyan-400"
+                            animate={{ y: [0, -8, 0], opacity: [0.5, 1, 0.5] }}
+                            transition={{
+                              duration: 1,
+                              repeat: Infinity,
+                              delay: i * 0.15,
+                            }}
+                          />
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                </motion.div>
+              </div>
+
+              {/* বৃহৎ অরবিটিং টেক নোডস - সিঙ্ক্রোনাইজড সার্কুলার রোটেশন */}
+              <motion.div
+                className="absolute inset-0"
+                animate={isVisible ? { rotate: 360 } : { rotate: 0 }}
+                transition={{
+                  duration: 30,
+                  repeat: Infinity,
+                  ease: "linear",
+                  repeatType: "loop",
+                }}
+              >
+                {memoizedTechNodes}
+              </motion.div>
+
+              {/* প্রিমিয়াম ক্যাটাগরি ব্যাজেস */}
+              <motion.div
+                className="absolute -bottom-24 left-1/2 -translate-x-1/2 w-full flex flex-wrap justify-center gap-2 text-[9px] font-mono px-4"
+                initial={{ opacity: 0, y: 15 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.2 }}
+              >
+                {categories.map((category, idx) => (
+                  <motion.span
+                    key={idx}
+                    className="px-3 py-1 rounded-full bg-slate-900/50 backdrop-blur-md border border-white/15 text-white/60 hover:text-white/80 transition-all duration-300 font-semibold cursor-pointer text-nowrap shadow-lg"
+                    whileHover={{
+                      scale: 1.1,
+                      borderColor: categoryColors[category],
+                      boxShadow: `0 0 16px ${categoryColors[category]}40`,
+                    }}
+                  >
+                    {category}
+                  </motion.span>
+                ))}
+              </motion.div>
             </div>
           </div>
         </div>

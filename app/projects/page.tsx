@@ -359,7 +359,7 @@ export default function DynamicPortfolioPage() {
 
   return (
     <PublicLayout>
-      <div className="relative bg-[#0b0c18] text-white py-20 px-6 overflow-hidden min-h-screen font-sans">
+      <div className="relative bg-[#0b0c18] text-white py-20 px-6 overflow-hidden min-h-screen font-hind">
         {/* Enhanced Particle Network Background */}
         <canvas
           ref={canvasRef}

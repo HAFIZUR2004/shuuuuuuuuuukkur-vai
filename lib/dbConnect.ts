@@ -1,18 +1,21 @@
-import mongoose from 'mongoose';
+import mongoose from "mongoose";
+import { getMongoUri, MONGODB_DB } from "./dbConfig";
 
-const MONGODB_URI = process.env.MONGODB_URI!;
+type MongooseCache = {
+  conn: typeof mongoose | null;
+  promise: Promise<typeof mongoose> | null;
+};
 
-if (!MONGODB_URI) {
-  throw new Error('Please define MONGODB_URI in .env.local');
-}
+const globalWithMongoose = globalThis as typeof globalThis & {
+  mongooseCache?: MongooseCache;
+};
 
-// @ts-ignore - Ignore TypeScript error for global mongoose cache
-let cached = global.mongoose;
+const cached = globalWithMongoose.mongooseCache || {
+  conn: null,
+  promise: null,
+};
 
-if (!cached) {
-  // @ts-ignore
-  cached = global.mongoose = { conn: null, promise: null };
-}
+globalWithMongoose.mongooseCache = cached;
 
 export async function dbConnect() {
   if (cached.conn) {
@@ -22,11 +25,18 @@ export async function dbConnect() {
   if (!cached.promise) {
     const opts = {
       bufferCommands: false,
+      dbName: MONGODB_DB,
+      serverSelectionTimeoutMS: 5000,
     };
-    cached.promise = mongoose.connect(MONGODB_URI, opts).then((mongoose) => {
-      return mongoose;
-    });
+    cached.promise = mongoose.connect(getMongoUri(), opts);
   }
-  cached.conn = await cached.promise;
+
+  try {
+    cached.conn = await cached.promise;
+  } catch (error) {
+    cached.promise = null;
+    throw error;
+  }
+
   return cached.conn;
 }

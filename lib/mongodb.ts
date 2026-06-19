@@ -1,28 +1,57 @@
-import { MongoClient } from 'mongodb';
+import { Db, MongoClient } from "mongodb";
+import { getMongoUri, MONGODB_DB } from "./dbConfig";
 
-if (!process.env.MONGODB_URI) {
-  throw new Error('Please add your Mongo URI to .env.local');
+const options = {
+  serverSelectionTimeoutMS: 5000,
+};
+
+type MongoGlobal = typeof globalThis & {
+  _mongoClientPromise?: Promise<MongoClient>;
+};
+
+let productionClientPromise: Promise<MongoClient> | undefined;
+
+function createClientPromise() {
+  const client = new MongoClient(getMongoUri(), options);
+  return client.connect();
 }
 
-const uri = process.env.MONGODB_URI;
-const options = {};
+export function getMongoClient() {
+  if (process.env.NODE_ENV === "development") {
+    const globalWithMongo = globalThis as MongoGlobal;
 
-let client;
-let clientPromise: Promise<MongoClient>;
+    if (!globalWithMongo._mongoClientPromise) {
+      globalWithMongo._mongoClientPromise = createClientPromise();
+    }
 
-if (process.env.NODE_ENV === 'development') {
-  let globalWithMongo = global as typeof globalThis & {
-    _mongoClientPromise?: Promise<MongoClient>;
-  };
-
-  if (!globalWithMongo._mongoClientPromise) {
-    client = new MongoClient(uri, options);
-    globalWithMongo._mongoClientPromise = client.connect();
+    return globalWithMongo._mongoClientPromise;
   }
-  clientPromise = globalWithMongo._mongoClientPromise;
-} else {
-  client = new MongoClient(uri, options);
-  clientPromise = client.connect();
+
+  if (!productionClientPromise) {
+    productionClientPromise = createClientPromise();
+  }
+
+  return productionClientPromise;
 }
+
+export async function getDatabase(): Promise<Db> {
+  const client = await getMongoClient();
+  return client.db(MONGODB_DB);
+}
+
+const clientPromise = {
+  then: <TResult1 = MongoClient, TResult2 = never>(
+    onfulfilled?:
+      | ((value: MongoClient) => TResult1 | PromiseLike<TResult1>)
+      | null,
+    onrejected?: ((reason: unknown) => TResult2 | PromiseLike<TResult2>) | null,
+  ) => getMongoClient().then(onfulfilled, onrejected),
+  catch: <TResult = never>(
+    onrejected?: ((reason: unknown) => TResult | PromiseLike<TResult>) | null,
+  ) => getMongoClient().catch(onrejected),
+  finally: (onfinally?: (() => void) | null) =>
+    getMongoClient().finally(onfinally),
+  [Symbol.toStringTag]: "Promise",
+} as Promise<MongoClient>;
 
 export default clientPromise;

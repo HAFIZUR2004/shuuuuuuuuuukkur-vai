@@ -1,19 +1,13 @@
-// app/api/vacancies/[id]/route.ts
-export const dynamic = 'force-dynamic';
-
 import { NextRequest, NextResponse } from 'next/server';
 import { ObjectId } from 'mongodb';
-import clientPromise from '@/lib/mongodb';
-
-const DB_NAME = 'growbusinessDB';
+import { getDatabase } from '@/lib/mongodb';
 
 export async function GET(
   request: NextRequest,
   context: { params: Promise<{ id: string }> }
 ) {
   try {
-    const client = await clientPromise;
-    const db = client.db(DB_NAME);
+    const db = await getDatabase();
     const { id } = await context.params;
     
     let vacancy = null;
@@ -48,8 +42,7 @@ export async function PUT(
   context: { params: Promise<{ id: string }> }
 ) {
   try {
-    const client = await clientPromise;
-    const db = client.db(DB_NAME);
+    const db = await getDatabase();
     const { id } = await context.params;
     const body = await request.json();
     
@@ -99,8 +92,7 @@ export async function DELETE(
   context: { params: Promise<{ id: string }> }
 ) {
   try {
-    const client = await clientPromise;
-    const db = client.db(DB_NAME);
+    const db = await getDatabase();
     const { id } = await context.params;
     
     let result;

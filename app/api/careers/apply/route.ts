@@ -1,9 +1,7 @@
 import { NextResponse } from 'next/server';
-import clientPromise from '@/lib/mongodb';
+import { getDatabase } from '@/lib/mongodb';
 import { writeFile, mkdir } from 'fs/promises';
 import path from 'path';
-
-const DB_NAME = 'growbusinessDB';
 
 export async function POST(request: Request) {
   try {
@@ -60,8 +58,7 @@ export async function POST(request: Request) {
       await writeFile(path.join(uploadDir, fileName), buffer);
     }
 
-    const client = await clientPromise;
-    const db = client.db(DB_NAME);
+    const db = await getDatabase();
     
     const application = {
       fullName,

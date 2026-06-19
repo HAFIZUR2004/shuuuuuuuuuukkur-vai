@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Image from "next/image";
@@ -23,9 +23,13 @@ if (typeof window !== "undefined") {
 export default function Footer() {
   const footerRef = useRef<HTMLElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const currentYear = new Date().getFullYear();
+  const [currentYear, setCurrentYear] = useState<number>(2024);
   const { lang } = useLanguage();
   const t = translations[lang];
+
+  useEffect(() => {
+    setCurrentYear(new Date().getFullYear());
+  }, []);
 
   // Abstract Wireframe Canvas Effect (শুধু লাইন + ডটস, কোন BG নেই)
   useEffect(() => {

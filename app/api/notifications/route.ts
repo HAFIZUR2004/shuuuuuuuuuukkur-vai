@@ -1,5 +1,4 @@
 // app/api/notifications/route.ts
-export const dynamic = 'force-dynamic';
 
 import { NextRequest, NextResponse } from 'next/server';
 

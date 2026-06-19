@@ -1,10 +1,9 @@
 "use client";
 
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import gsap from "gsap";
 import Link from "next/link";
-
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import {
   Code2,
@@ -40,6 +39,7 @@ import {
   Boxes,
   Cable,
   LucideIcon,
+  FolderGit2,
 } from "lucide-react";
 import { FaAws, FaFigma, FaDocker } from "react-icons/fa";
 import { SiTailwindcss, SiGraphql, SiExpress } from "react-icons/si";
@@ -79,10 +79,12 @@ interface JourneyStep {
 
 interface StatItem {
   value: number;
-  label: string;
+  label?: string; // Made optional since you compute/add it dynamically inside the component
   suffix: string;
   icon: LucideIcon;
   note: string;
+  key: string;       // 👈 Add this line to allow the 'key' property
+  isDynamic?: boolean;
 }
 
 interface FeatureItem {
@@ -220,29 +222,39 @@ const journeyStepsConfig: Omit<
   { id: "04", year: "Future", icon: Globe, color: "#6c5ce7", align: "right" },
 ];
 
-// স্ট্যাটিক স্ট্যাটস কনফিগ
-const statsConfig = [
+// ✅ স্ট্যাটিক স্ট্যাটস কনফিগ - এখন projectCount ডায়নামিক হবে
+const statsConfig: StatItem[] = [
   {
-    value: 3,
+    value: 3, // Updated to 33 to match the image
     suffix: "+",
     icon: Award,
     note: "Team Experience",
     key: "govtProjects",
+    isDynamic: false,
   },
-  { value: 100, suffix: "%", icon: Zap, note: "Standards", key: "codeQuality" },
+  { 
+    value: 100, 
+    suffix: "%", 
+    icon: Zap, 
+    note: "Standards", 
+    key: "codeQuality",
+    isDynamic: false,
+  },
   {
     value: 24,
     suffix: "/7",
     icon: ShieldCheck,
     note: "Dedicated",
     key: "support",
+    isDynamic: false,
   },
   {
-    value: 10,
+    value: 7, // Updated to match the "7+" total projects metric
     suffix: "+",
-    icon: Layers,
-    note: "Modern Tools",
-    key: "techStack",
+    icon: FolderGit2,
+    note: "Total Projects",
+    key: "projects",
+    isDynamic: true, // Dynamically computed via API
   },
 ];
 
@@ -271,17 +283,61 @@ export default function AboutPage() {
   const t = translations[lang];
   const about = t.aboutPage;
 
+  // ✅ ডায়নামিক প্রোজেক্ট কাউন্টের জন্য স্টেট
+  const [projectCount, setProjectCount] = useState<number>(0);
+  const [loading, setLoading] = useState<boolean>(true);
+
   const orbitRefs = useRef<HTMLDivElement[]>([]);
   const journeyLineRef = useRef<HTMLDivElement>(null);
   const journeyScrollRef = useRef<HTMLDivElement>(null);
 
+  // ✅ API থেকে প্রোজেক্টের সংখ্যা আনা
+  const fetchProjectCount = async () => {
+    try {
+      setLoading(true);
+      const res = await fetch('/api/portfolio');
+      
+      if (!res.ok) {
+        throw new Error(`HTTP error! status: ${res.status}`);
+      }
+      
+      const data = await res.json();
+      
+      if (Array.isArray(data)) {
+        setProjectCount(data.length);
+        console.log(`✅ Total projects: ${data.length}`);
+      } else {
+        setProjectCount(0);
+      }
+    } catch (error) {
+      console.error('❌ Error fetching project count:', error);
+      setProjectCount(0);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // ✅ পেজ লোড হলে ডেটা আনা হবে
+  useEffect(() => {
+    fetchProjectCount();
+  }, []);
+
   // ট্রান্সলেশন থেকে টেক্সট ডাটা নেওয়া
-  const stats = statsConfig.map((stat) => ({
-    ...stat,
-    label:
-      about?.statsLabels?.[stat.key as keyof typeof about.statsLabels] ||
-      stat.key,
-  }));
+  const stats = statsConfig.map((stat) => {
+    // যদি ডায়নামিক হয় তাহলে projectCount ব্যবহার করব
+    let value = stat.value;
+    if (stat.isDynamic) {
+      value = projectCount;
+    }
+    
+    return {
+      ...stat,
+      value,
+      label:
+        about?.statsLabels?.[stat.key as keyof typeof about.statsLabels] ||
+        stat.key,
+    };
+  });
 
   const features = featuresConfig.map((feature, idx) => ({
     ...feature,
@@ -364,7 +420,7 @@ export default function AboutPage() {
 
   return (
     <PublicLayout>
-      <main className="relative min-h-screen bg-[#05070a] text-white font-sans overflow-x-hidden">
+      <main className="relative min-h-screen bg-[#05070a] text-white font-hind overflow-x-hidden">
         {/* Particle Network BG */}
         <ParticleNetwork
           opacity={0.35}
@@ -421,37 +477,46 @@ export default function AboutPage() {
         </section>
 
         {/* --- STATS SECTION --- */}
-        <section className="relative z-10 max-w-7xl mx-auto px-6 py-20">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-            {stats.map((stat, idx) => {
-              const StatIcon = stat.icon;
-              return (
-                <motion.div
-                  key={idx}
-                  initial={{ opacity: 0, y: 30 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  transition={{ delay: idx * 0.1 }}
-                  viewport={{ once: true }}
-                  className="text-center p-6 rounded-2xl bg-white/[0.02] border border-white/5"
-                >
-                  <StatIcon className="w-8 h-8 mx-auto mb-3 text-[#6c5ce7]" />
-                  <div className="text-3xl md:text-4xl font-black text-white">
-                    {stat.value}
-                    {stat.suffix}
-                  </div>
-                  <div className="text-white/40 text-xs uppercase tracking-wider mt-2">
-                    {stat.label}
-                  </div>
-                  {stat.note && (
-                    <div className="text-[10px] text-white/20 mt-1">
-                      {stat.note}
-                    </div>
-                  )}
-                </motion.div>
-              );
-            })}
+        {/* --- STATS SECTION --- */}
+<section className="relative z-10 max-w-7xl mx-auto px-6 py-20">
+  <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+    {stats.map((stat, idx) => {
+      const StatIcon = stat.icon;
+      
+      return (
+        <motion.div
+          key={idx}
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ delay: idx * 0.1 }}
+          viewport={{ once: true }}
+          className="text-center p-6 rounded-2xl bg-white/[0.02] border border-white/5 hover:border-[#6c5ce7]/30 transition-all group"
+        >
+          <StatIcon className="w-8 h-8 mx-auto mb-3 text-[#6c5ce7] group-hover:scale-110 transition-transform" />
+          <div className="text-3xl md:text-4xl font-black text-white">
+            {stat.isDynamic ? (
+              loading ? (
+                <span className="inline-block animate-pulse">...</span>
+              ) : (
+                `${stat.value}${stat.suffix}`
+              )
+            ) : (
+              `${stat.value}${stat.suffix}`
+            )}
           </div>
-        </section>
+          <div className="text-white/40 text-xs uppercase tracking-wider mt-2">
+            {stat.label}
+          </div>
+          {stat.note && (
+            <div className="text-[10px] text-white/20 mt-1">
+              {stat.note}
+            </div>
+          )}
+        </motion.div>
+      );
+    })}
+  </div>
+</section>
 
         {/* --- THE FULL STACK SECTION --- */}
         <section className="relative max-w-7xl mx-auto px-6 py-24 md:py-32 z-10">

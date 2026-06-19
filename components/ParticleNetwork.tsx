@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 
 interface ParticleNetworkProps {
@@ -22,7 +22,7 @@ interface ParticleNetworkProps {
 
 export default function ParticleNetwork({
   opacity = 0.85,
-  particleCount = 85,
+  particleCount = 50,
   connectionDistance = 200,
   particleSize = { min: 1.8, max: 4.5 },
   particleColor = "rgba(139, 92, 246, 0.95)",
@@ -35,19 +35,9 @@ export default function ParticleNetwork({
 }: ParticleNetworkProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
-
-  // Safe values with defaults
-  const minSize = particleSize?.min ?? 1.8;
-  const maxSize = particleSize?.max ?? 4.5;
-
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext("2d");
-    if (!ctx) return;
-
-    let animId: number;
-    let nodes: Array<{
+  const [isVisible, setIsVisible] = useState(false);
+  const nodesRef = useRef<
+    Array<{
       x: number;
       y: number;
       vx: number;
@@ -56,10 +46,45 @@ export default function ParticleNetwork({
       pulse: number;
       pulseDir: number;
       brightness: number;
-    }> = [];
+    }>
+  >([]);
+
+  // Safe values with defaults
+  const minSize = particleSize?.min ?? 1.8;
+  const maxSize = particleSize?.max ?? 4.5;
+
+  useEffect(() => {
+    // Intersection Observer to pause animation when off-screen
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setIsVisible(entry.isIntersecting);
+      },
+      { threshold: 0 },
+    );
+
+    if (containerRef.current) {
+      observer.observe(containerRef.current);
+    }
+
+    return () => observer.disconnect();
+  }, []);
+
+  useEffect(() => {
+    if (!isVisible) return; // Skip animation if not visible
+
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+
+    let animId: number;
+    let nodes = nodesRef.current;
 
     const initNodes = (width: number, height: number) => {
-      const actualCount = Math.min(particleCount, Math.floor((width * height) / 10000));
+      const actualCount = Math.min(
+        particleCount,
+        Math.floor((width * height) / 15000),
+      );
       nodes = [];
       for (let i = 0; i < actualCount; i++) {
         nodes.push({
@@ -73,6 +98,7 @@ export default function ParticleNetwork({
           brightness: 0.6 + Math.random() * 0.4,
         });
       }
+      nodesRef.current = nodes;
     };
 
     const resize = () => {
@@ -80,10 +106,10 @@ export default function ParticleNetwork({
       const rect = containerRef.current.getBoundingClientRect();
       canvas.width = rect.width;
       canvas.height = rect.height;
-      
+
       ctx.fillStyle = "#0b0c18";
       ctx.fillRect(0, 0, canvas.width, canvas.height);
-      
+
       initNodes(canvas.width, canvas.height);
     };
 
@@ -99,154 +125,99 @@ export default function ParticleNetwork({
 
     window.addEventListener("resize", resize);
 
-    const drawGlowLine = (x1: number, y1: number, x2: number, y2: number, opacity: number) => {
-      if (!ctx) return;
-      
-      ctx.beginPath();
-      ctx.moveTo(x1, y1);
-      ctx.lineTo(x2, y2);
-      
-      const gradient = ctx.createLinearGradient(x1, y1, x2, y2);
-      gradient.addColorStop(0, `rgba(139, 92, 246, ${opacity + 0.15})`);
-      gradient.addColorStop(0.3, `rgba(167, 139, 250, ${opacity + 0.2})`);
-      gradient.addColorStop(0.7, `rgba(34, 211, 238, ${opacity + 0.15})`);
-      gradient.addColorStop(1, `rgba(20, 184, 166, ${opacity + 0.1})`);
-      
-      ctx.strokeStyle = gradient;
-      ctx.lineWidth = 1.2;
-      ctx.stroke();
-    };
+    const connectionDistSq = connectionDistance * connectionDistance; // Pre-calculate squared distance
+    const lineOpacityCached = lineOpacity;
 
     const draw = () => {
       if (!ctx || !canvas || nodes.length === 0) return;
       const W = canvas.width;
       const H = canvas.height;
-      
+
+      // Clear with solid color instead of gradient (faster)
       ctx.fillStyle = "#0b0c18";
       ctx.fillRect(0, 0, W, H);
-      
-      const bgGradient = ctx.createRadialGradient(W * 0.2, H * 0.4, 0, W * 0.5, H * 0.5, W * 0.8);
+
+      // Simple background gradient - drawn once
+      const bgGradient = ctx.createRadialGradient(
+        W * 0.2,
+        H * 0.4,
+        0,
+        W * 0.5,
+        H * 0.5,
+        W * 0.8,
+      );
       bgGradient.addColorStop(0, `rgba(110, 60, 210, ${bgOpacity * 0.8})`);
       bgGradient.addColorStop(0.6, `rgba(80, 40, 180, ${bgOpacity * 0.4})`);
       bgGradient.addColorStop(1, `rgba(11, 12, 24, 0)`);
       ctx.fillStyle = bgGradient;
       ctx.fillRect(0, 0, W, H);
-      
-      ctx.strokeStyle = "rgba(139, 92, 246, 0.03)";
-      ctx.lineWidth = 0.5;
-      for (let i = 0; i < W; i += 50) {
-        ctx.beginPath();
-        ctx.moveTo(i, 0);
-        ctx.lineTo(i, H);
-        ctx.stroke();
-        ctx.beginPath();
-        ctx.moveTo(0, i);
-        ctx.lineTo(W, i);
-        ctx.stroke();
-      }
 
+      // Draw connections with optimized loop - use squared distance
       for (let i = 0; i < nodes.length; i++) {
+        const node1 = nodes[i];
+        // Only check next nodes to avoid duplicate lines
         for (let j = i + 1; j < nodes.length; j++) {
-          const dx = nodes[i].x - nodes[j].x;
-          const dy = nodes[i].y - nodes[j].y;
-          const distance = Math.sqrt(dx * dx + dy * dy);
+          const node2 = nodes[j];
+          const dx = node1.x - node2.x;
+          const dy = node1.y - node2.y;
+          const distanceSq = dx * dx + dy * dy;
 
-          if (distance < connectionDistance) {
-            const connectionOpacity = lineOpacity * (1 - distance / connectionDistance);
-            
-            for (let layer = 0; layer < 2; layer++) {
-              ctx.lineWidth = 2 + layer * 2;
-              ctx.strokeStyle = `rgba(139, 92, 246, ${connectionOpacity * (0.3 - layer * 0.1)})`;
-              ctx.beginPath();
-              ctx.moveTo(nodes[i].x, nodes[i].y);
-              ctx.lineTo(nodes[j].x, nodes[j].y);
-              ctx.stroke();
-            }
-            
-            drawGlowLine(nodes[i].x, nodes[i].y, nodes[j].x, nodes[j].y, connectionOpacity);
+          if (distanceSq < connectionDistSq) {
+            const distance = Math.sqrt(distanceSq);
+            const connectionOpacity =
+              lineOpacityCached * (1 - distance / connectionDistance);
+
+            ctx.lineWidth = 1.5;
+            ctx.strokeStyle = `rgba(139, 92, 246, ${connectionOpacity * 0.5})`;
+            ctx.beginPath();
+            ctx.moveTo(node1.x, node1.y);
+            ctx.lineTo(node2.x, node2.y);
+            ctx.stroke();
           }
         }
       }
 
+      // Draw particles - simplified glow
       nodes.forEach((node) => {
-        let pulseRadius = node.r + Math.sin(node.pulse) * 1.0;
-        pulseRadius = Math.max(0.8, Math.min(pulseRadius, node.r + 1.2));
         node.pulse += node.pulseDir;
-        
-        for (let layer = 3; layer >= 0; layer--) {
-          const glowSize = pulseRadius + layer * 4;
-          const glowOpacity = 0.15 - layer * 0.035;
-          
+        // Compute pulse radius but clamp to a sensible minimum to prevent
+        // negative or zero radii which crash the canvas API (IndexSizeError).
+        const rawPulse = node.r + Math.sin(node.pulse) * 0.8;
+        const minAllowedRadius = Math.max(0.5, minSize * 0.25);
+        const pulseRadius = Math.max(minAllowedRadius, rawPulse);
+
+        // Skip expensive glow for smaller particles
+        if (glowEffect && node.r > 2.5) {
+          const glowRadius = Math.max(pulseRadius + 2, minAllowedRadius + 1);
           ctx.beginPath();
-          ctx.arc(node.x, node.y, glowSize, 0, Math.PI * 2);
-          
-          const glowGradient = ctx.createRadialGradient(
-            node.x, node.y, 0,
-            node.x, node.y, glowSize
-          );
-          glowGradient.addColorStop(0, `rgba(139, 92, 246, ${glowOpacity + 0.08})`);
-          glowGradient.addColorStop(0.5, `rgba(167, 139, 250, ${glowOpacity * 0.7})`);
-          glowGradient.addColorStop(1, `rgba(34, 211, 238, 0)`);
-          
-          ctx.fillStyle = glowGradient;
+          ctx.arc(node.x, node.y, glowRadius, 0, Math.PI * 2);
+          ctx.fillStyle = `rgba(139, 92, 246, 0.15)`;
           ctx.fill();
         }
-        
-        ctx.beginPath();
-        ctx.arc(node.x, node.y, pulseRadius, 0, Math.PI * 2);
-        
-        const particleGradient = ctx.createRadialGradient(
-          node.x - 3, node.y - 3, 0,
-          node.x, node.y, pulseRadius
-        );
-        
-        const brightness = node.brightness;
-        particleGradient.addColorStop(0, `rgba(255, 255, 255, 1)`);
-        particleGradient.addColorStop(0.2, `rgba(199, 139, 250, ${brightness})`);
-        particleGradient.addColorStop(0.5, `rgba(139, 92, 246, ${brightness * 0.9})`);
-        particleGradient.addColorStop(0.8, `rgba(34, 211, 238, ${brightness * 0.7})`);
-        particleGradient.addColorStop(1, `rgba(20, 184, 166, ${brightness * 0.5})`);
-        
-        ctx.fillStyle = particleGradient;
-        ctx.fill();
 
-        if (node.r > 2 && glowEffect) {
-          ctx.save();
-          ctx.shadowBlur = 12;
-          ctx.shadowColor = "rgba(139, 92, 246, 0.8)";
-          
+        // Draw particle — guard before calling arc
+        if (pulseRadius > 0) {
           ctx.beginPath();
-          ctx.moveTo(node.x - pulseRadius * 1.5, node.y);
-          ctx.lineTo(node.x + pulseRadius * 1.5, node.y);
-          ctx.moveTo(node.x, node.y - pulseRadius * 1.5);
-          ctx.lineTo(node.x, node.y + pulseRadius * 1.5);
-          ctx.strokeStyle = `rgba(255, 255, 255, 0.7)`;
-          ctx.lineWidth = 1;
-          ctx.stroke();
-          
+          ctx.arc(node.x, node.y, pulseRadius, 0, Math.PI * 2);
+          ctx.fillStyle = `rgba(139, 92, 246, 0.8)`;
+          ctx.fill();
+
+          // Core highlight (smaller positive radius)
+          const coreRadius = Math.max(
+            pulseRadius * 0.4,
+            minAllowedRadius * 0.5,
+          );
           ctx.beginPath();
-          ctx.moveTo(node.x - pulseRadius, node.y - pulseRadius);
-          ctx.lineTo(node.x + pulseRadius, node.y + pulseRadius);
-          ctx.moveTo(node.x + pulseRadius, node.y - pulseRadius);
-          ctx.lineTo(node.x - pulseRadius, node.y + pulseRadius);
-          ctx.stroke();
-          
-          ctx.restore();
+          ctx.arc(node.x - 1, node.y - 1, coreRadius, 0, Math.PI * 2);
+          ctx.fillStyle = `rgba(255, 255, 255, 0.8)`;
+          ctx.fill();
         }
 
-        ctx.beginPath();
-        ctx.arc(node.x - 1, node.y - 1, pulseRadius * 0.3, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(255, 255, 255, 0.95)`;
-        ctx.fill();
-        
-        ctx.beginPath();
-        ctx.arc(node.x - 0.5, node.y - 0.5, pulseRadius * 0.15, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(255, 255, 255, 1)`;
-        ctx.fill();
-
+        // Update position
         node.x += node.vx;
         node.y += node.vy;
 
+        // Wrap around screen
         const margin = 20;
         if (node.x < -margin) node.x = canvas.width + margin;
         if (node.x > canvas.width + margin) node.x = -margin;
@@ -257,14 +228,26 @@ export default function ParticleNetwork({
       animId = requestAnimationFrame(draw);
     };
 
-    draw();
+    if (isVisible) {
+      draw();
+    }
 
     return () => {
       cancelAnimationFrame(animId);
       window.removeEventListener("resize", resize);
       resizeObserver.disconnect();
     };
-  }, [particleCount, connectionDistance, lineOpacity, speed, glowEffect, bgOpacity, maxSize, minSize]);
+  }, [
+    isVisible,
+    particleCount,
+    connectionDistance,
+    lineOpacity,
+    speed,
+    glowEffect,
+    bgOpacity,
+    maxSize,
+    minSize,
+  ]);
 
   return (
     <motion.div
@@ -274,11 +257,7 @@ export default function ParticleNetwork({
       transition={{ duration: 1.5 }}
       className={`fixed inset-0 w-full h-full pointer-events-none z-0 ${className}`}
     >
-      <canvas
-        ref={canvasRef}
-        className="w-full h-full"
-        style={{ opacity }}
-      />
+      <canvas ref={canvasRef} className="w-full h-full" style={{ opacity }} />
     </motion.div>
   );
 }

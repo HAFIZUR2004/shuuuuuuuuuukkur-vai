@@ -3,13 +3,12 @@
 import React, { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
-import PremiumSpinner from "@/components/PremiumSpinner";
 import { useLanguage } from "@/constants/LanguageContext";
 import { translations } from "@/constants/translations";
 
-// ✅ টেস্টিমোনিয়াল টাইপ ডিফাইন করুন
+// ✅ টেস্টিমোনিয়াল টাইপ ডিফাইন করুন (MongoDB _id স্ট্রিং হবে)
 interface TestimonialType {
-  id: number;
+  id: string; // MongoDB _id
   name: string;
   role: string;
   comment: string;
@@ -18,113 +17,58 @@ interface TestimonialType {
   company: string;
 }
 
-const defaultTestimonials: TestimonialType[] = [
-  {
-    id: 1,
-    name: "Alex Rivera",
-    role: "CEO",
-    comment:
-      "The level of professionalism and technical depth provided was exceptional. Our conversion rate increased by 200% after the redesign.",
-    image: "https://i.ibb.co.com/KjmfmrTk/cropped-circle-image.png",
-    rating: 5,
-    company: "TechVibe",
-  },
-  {
-    id: 2,
-    name: "Sophia Chen",
-    role: "Founder",
-    comment:
-      "Working with this team was a game-changer. Their understanding of MERN stack and eye for premium animations is unmatched in the industry.",
-    image: "https://i.ibb.co.com/KjmfmrTk/cropped-circle-image.png",
-    rating: 5,
-    company: "GreenLeaf",
-  },
-  {
-    id: 3,
-    name: "Marcus Thorne",
-    role: "Product Manager",
-    comment:
-      "Fast, reliable, and incredibly creative. The custom dashboard they built for us is now our core competitive advantage.",
-    image: "https://i.ibb.co.com/KjmfmrTk/cropped-circle-image.png",
-    rating: 5,
-    company: "CloudScale",
-  },
-  {
-    id: 4,
-    name: "Isabella Martinez",
-    role: "CTO",
-    comment:
-      "Absolutely outstanding! The attention to detail and commitment to excellence is rare to find. They delivered ahead of schedule.",
-    image: "https://i.ibb.co.com/KjmfmrTk/cropped-circle-image.png",
-    rating: 5,
-    company: "InnovateHub",
-  },
-  {
-    id: 5,
-    name: "David Kim",
-    role: "Technical Director",
-    comment:
-      "The best investment we've made this year. The team's expertise in modern web technologies transformed our digital presence completely.",
-    image: "https://i.ibb.co.com/KjmfmrTk/cropped-circle-image.png",
-    rating: 5,
-    company: "DevOps Pro",
-  },
-];
+interface PremiumReviewsProps {
+  t?: any;
+  lang?: string;
+}
 
-const PremiumReviews = () => {
-  const { lang } = useLanguage();
-  const t = translations[lang];
+const PremiumReviews = ({ t: propT, lang: propLang }: PremiumReviewsProps) => {
+  const context = useLanguage();
+  const lang = propLang || context.lang;
+  const t = propT || translations[lang as keyof typeof translations];
 
-  const [loading, setLoading] = useState(true);
   const [index, setIndex] = useState(0);
   const [isAutoPlaying, setIsAutoPlaying] = useState(true);
   const [touchStart, setTouchStart] = useState(0);
   const [touchEnd, setTouchEnd] = useState(0);
-  const [testimonials, setTestimonials] =
-    useState<TestimonialType[]>(defaultTestimonials);
+  const [testimonials, setTestimonials] = useState<TestimonialType[]>([]);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLElement>(null);
   const autoPlayRef = useRef<NodeJS.Timeout | null>(null);
 
-  // ✅ Load testimonials and convert to proper format
+  // ✅ ডেটাবেস থেকে টেস্টিমোনিয়াল লোড করুন (শুধু active)
   useEffect(() => {
-    const loadTestimonials = () => {
+    const fetchTestimonials = async () => {
       try {
-        const translationTestimonials = t?.premiumReviews?.testimonials;
+        const response = await fetch("/api/testimonials");
+        const result = await response.json();
 
-        if (
-          translationTestimonials &&
-          Array.isArray(translationTestimonials) &&
-          translationTestimonials.length > 0
-        ) {
-          const convertedTestimonials: TestimonialType[] =
-            translationTestimonials.map((item, idx) => ({
-              id: idx + 1,
-              name: item.name || defaultTestimonials[idx]?.name || "Anonymous",
-              role: item.role || "",
-              comment: item.comment || "",
-              company: item.company || "",
-              image:
-                defaultTestimonials[idx]?.image ||
-                "https://i.ibb.co.com/KjmfmrTk/cropped-circle-image.png",
-              rating: 5,
-            }));
-          setTestimonials(convertedTestimonials);
+        if (result.success && Array.isArray(result.data)) {
+          // MongoDB _id → id ম্যাপিং
+          const formatted: TestimonialType[] = result.data.map((item: any) => ({
+            id: item._id.toString(),
+            name: item.name || "",
+            role: item.role || "",
+            comment: item.comment || "",
+            image: item.image || "",
+            rating: item.rating || 5,
+            company: item.company || "",
+          }));
+          setTestimonials(formatted);
         } else {
-          setTestimonials(defaultTestimonials);
+          console.warn("No testimonials found or API error");
+          setTestimonials([]);
         }
       } catch (error) {
-        console.error("Error loading testimonials:", error);
-        setTestimonials(defaultTestimonials);
-      } finally {
-        setTimeout(() => setLoading(false), 500);
+        console.error("Error fetching testimonials:", error);
+        setTestimonials([]);
       }
     };
 
-    loadTestimonials();
-  }, [t]);
+    fetchTestimonials();
+  }, []);
 
-  // Particle Network Canvas Effect
+  // Particle Network Canvas Effect (অপরিবর্তিত)
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -298,17 +242,7 @@ const PremiumReviews = () => {
     if (touchStart - touchEnd < -75) handlePrev();
   };
 
-  // ✅ PremiumSpinner props match
-  if (loading) {
-    return (
-      <PremiumSpinner
-        loadingTexts={[t?.premiumReviews?.loadingText || "Loading Reviews"]}
-        pleaseWait={t?.premiumReviews?.loadingSubText || "Please wait"}
-        complete="Complete"
-      />
-    );
-  }
-
+  // ✅ No data state
   if (testimonials.length === 0) {
     return (
       <section className="relative py-16 md:py-24 lg:py-32 px-4 md:px-6 overflow-hidden bg-gradient-to-br from-[#0b0c18] via-[#0f0f1a] to-[#0b0c18]">
@@ -323,6 +257,7 @@ const PremiumReviews = () => {
 
   const currentReview = testimonials[index];
 
+  // ✅ UI Rendering (বাকি অংশ অপরিবর্তিত)
   return (
     <section
       ref={containerRef}
@@ -438,8 +373,7 @@ const PremiumReviews = () => {
                     <div className="relative group">
                       <div className="absolute inset-0 rounded-full bg-gradient-to-r from-purple-500 to-cyan-500 blur-md opacity-60 group-hover:opacity-100 transition-opacity duration-500" />
                       <div className="relative w-16 h-16 md:w-20 md:h-20 rounded-full overflow-hidden border-2 border-white/20 shadow-xl bg-[#0b0c18]">
-                        {currentReview.image &&
-                        currentReview.image.trim() !== "" ? (
+                        {currentReview.image ? (
                           <Image
                             src={currentReview.image}
                             alt={currentReview.name}
@@ -585,7 +519,7 @@ const PremiumReviews = () => {
                 "200+ Happy Clients",
             },
             {
-              icon: "🚀",
+              icon: "🏆",
               text:
                 t.premiumReviews?.trustBadges?.projectsDelivered ||
                 "50+ Projects Delivered",

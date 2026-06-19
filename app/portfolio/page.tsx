@@ -298,10 +298,16 @@ export default function HomePage() {
               {t?.portfolio?.titleGradient || "Artifacts."}
             </span>
           </h2>
+          {/* Description from translations (was present in constants/translations.ts as `desc`) */}
+          {t?.portfolio?.desc && (
+            <p className="mt-6 text-white/60 max-w-3xl leading-relaxed">
+              {t.portfolio.desc}
+            </p>
+          )}
         </div>
 
         <div className="grid md:grid-cols-3 gap-8">
-          {projects.slice(0, 6).map((project, idx) => (
+          {projects.slice(0, 7).map((project, idx) => (
             <div
               key={project._id}
               ref={(el) => {

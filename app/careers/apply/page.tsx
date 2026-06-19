@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { Suspense, useState, useEffect } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import Link from "next/link";
@@ -21,7 +21,7 @@ interface Vacancy {
   department: string;
 }
 
-export default function ApplyPage() {
+function ApplyPageContent() {
   const { lang } = useLanguage();
   const t = translations[lang];
   const ap = t.applyPage;
@@ -439,5 +439,19 @@ export default function ApplyPage() {
         </motion.form>
       </div>
     </main>
+  );
+}
+
+export default function ApplyPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen bg-[#0a0a0f] flex items-center justify-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#6c5ce7]"></div>
+        </div>
+      }
+    >
+      <ApplyPageContent />
+    </Suspense>
   );
 }

@@ -89,11 +89,12 @@ export const translations = {
       },
     ],
     trustBadges: {
-      projectsCompleted: "8+ Projects Completed",
+      projectsCompleted: "9+ Projects Completed",
       fiveStarRating: "5 Star Rating",
       onTimeDelivery: "On-Time Delivery",
       premiumQuality: "Premium Quality",
     },
+
 
     // Team Section
     teamHorizontal: {
@@ -108,15 +109,27 @@ export const translations = {
       allNodesActive: "ALL NODES ACTIVE",
       members: [
         {
+          name: "Saiful Islam",
+          role: "Founder & CEO",
+          company: "",
+          image: "/team/saifulislam.png",
+          social: {
+            twitter: "https://twitter.com/",
+            github: "https://github.com/",
+            linkedin: "https://linkedin.com/in/",
+            instagram: "https://instagram.com/",
+          },
+        },
+        {
           name: "Hafizur Rahman",
           role: "Technical Consultant",
           company: "",
           image: "/team/hafizur.jpg",
           social: {
-            twitter: "https://twitter.com/hafizur",
-            github: "https://github.com/hafizur",
-            linkedin: "https://linkedin.com/in/hafizur",
-            instagram: "https://instagram.com/hafizur",
+            twitter: "https://twitter.com/",
+            github: "https://github.com/HAFIZUR2004",
+            linkedin: "https://linkedin.com/in/hafizur-mern",
+            instagram: "https://instagram.com",
           },
         },
         {
@@ -129,6 +142,18 @@ export const translations = {
             github: "https://github.com/mahmud014",
             linkedin: "in/shukurmahmud",
             instagram: "smanik5588",
+          },
+        },
+        {
+          name: "Sharif Mohammad Nasrullah",
+          role: "Full Stack Engineer | AI Integration Specialist",
+          company: "",
+          image: "/team/nasrullah.png",
+          social: {
+            twitter: "https://twitter.com/",
+            github: "https://github.com/sharif418",
+            linkedin: "in/bibekbhowmick",
+            instagram: "",
           },
         },
         {
@@ -771,8 +796,7 @@ export const translations = {
       },
     ],
 
-    //Success in Motion
-    successBadge: "সাফল্যের মাইলফলক",
+ successBadge: "সাফল্যের মাইলফলক",
     successTitle: "গতিশীল",
     successTitleGradient: "সাফল্য",
     successDescription:
@@ -792,7 +816,7 @@ export const translations = {
       },
     ],
     trustBadges: {
-      projectsCompleted: "৮+ প্রজেক্ট সম্পন্ন",
+      projectsCompleted: "৯+ প্রজেক্ট সম্পন্ন",
       fiveStarRating: "৫ স্টার রেটিং",
       onTimeDelivery: "সময়ে ডেলিভারি",
       premiumQuality: "প্রিমিয়াম কোয়ালিটি",
@@ -811,15 +835,27 @@ export const translations = {
       allNodesActive: "সকল নোড সক্রিয়",
       members: [
         {
+          name: "সাইফুল ইসলাম",
+          role: "প্রতিষ্ঠাতা ও প্রধান নির্বাহী কর্মকর্তা",
+          company: "",
+          image: "/team/saifulislam.png",
+          social: {
+            twitter: "https://twitter.com/",
+            github: "https://github.com/",
+            linkedin: "https://linkedin.com/in/",
+            instagram: "https://instagram.com/",
+          },
+        },
+        {
           name: "হাফিজুর রহমান",
           role: "প্রযুক্তি পরামর্শক",
           company: "",
           image: "/team/hafizur.jpg",
           social: {
-            twitter: "https://twitter.com/hafizur",
-            github: "https://github.com/hafizur",
-            linkedin: "https://linkedin.com/in/hafizur",
-            instagram: "https://instagram.com/hafizur",
+            twitter: "https://twitter.com/",
+            github: "https://github.com/HAFIZUR2004",
+            linkedin: "https://linkedin.com/in/hafizur-mern",
+            instagram: "https://instagram.com/",
           },
         },
         {
@@ -832,6 +868,18 @@ export const translations = {
             github: "https://github.com/mahmud014",
             linkedin: "in/shukurmahmud",
             instagram: "smanik5588",
+          },
+        },
+        {
+          name: "শরীফ মো নাসরুল্লাহ ",
+          role: "ফুল স্ট্যাক ইঞ্জিনিয়ার | এআই ইন্টিগ্রেশন স্পেশালিস্ট",
+          company: "",
+          image: "/team/nasrullah.png",
+          social: {
+            twitter: "https://twitter.com/",
+            github: "https://github.com/sharif418",
+            linkedin: "https://linkedin.com/in/",
+            instagram: "https://instagram.com/",
           },
         },
         {

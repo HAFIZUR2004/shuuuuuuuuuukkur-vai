@@ -3,8 +3,6 @@
 import React, { useEffect, useRef } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { useLanguage } from "@/constants/LanguageContext";
-import { translations } from "@/constants/translations";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -31,12 +29,14 @@ const steps = [
   },
 ];
 
-const EngineeringProtocol = () => {
+interface EngineeringProtocolProps {
+  t: any;
+  lang: string;
+}
+
+const EngineeringProtocol = ({ t, lang }: EngineeringProtocolProps) => {
   const scrollRef = useRef<HTMLDivElement>(null);
   const lineRef = useRef<HTMLDivElement>(null);
-
-  const { lang } = useLanguage();
-  const t = translations[lang];
 
   useEffect(() => {
     // --- GSAP Scroll Animations ---
@@ -173,7 +173,6 @@ const EngineeringProtocol = () => {
         </div>
       </div>
 
-      {/* ইনলাইন স্টাইল যোগ করা হচ্ছে */}
       <style jsx>{`
         @import url('https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@300;400;500;600;700&display=swap');
         

@@ -1,15 +1,11 @@
-// app/api/vacancies/route.ts
-export const dynamic = 'force-dynamic';
-
 import { NextRequest, NextResponse } from 'next/server';
-import clientPromise from '@/lib/mongodb';
-import { IVacancy, validateVacancy, defaultVacancy } from '@/app/models/Vacancy';
+import { getDatabase } from '@/lib/mongodb';
+import { validateVacancy, defaultVacancy } from '@/app/models/Vacancy';
 
 // GET - সব ভ্যাকেন্সি
 export async function GET() {
   try {
-    const client = await clientPromise;
-    const db = client.db('portfolio');
+    const db = await getDatabase();
     const vacancies = await db.collection('vacancies').find({}).sort({ createdAt: -1 }).toArray();
     
     return NextResponse.json(vacancies);
@@ -36,8 +32,7 @@ export async function POST(request: NextRequest) {
       );
     }
     
-    const client = await clientPromise;
-    const db = client.db('portfolio');
+    const db = await getDatabase();
     
     const newVacancy = {
       ...defaultVacancy,

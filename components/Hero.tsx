@@ -1,91 +1,149 @@
 "use client";
 
-import { useLanguage } from "@/constants/LanguageContext";
-import { translations } from "@/constants/translations";
-import { useEffect, useRef } from "react";
-import { useRouter } from "next/navigation"; 
-// llll
-export default function HeroSection() {
+import { useEffect, useRef, useCallback, useMemo } from "react";
+import { useRouter } from "next/navigation";
+
+interface HeroProps {
+  t: any;
+  lang: string;
+}
+
+// Memoize handlers to prevent recreations
+const Hero = ({ t, lang }: HeroProps) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const { lang } = useLanguage();
-  const t = translations[lang];
-   const router = useRouter(); 
+  const animIdRef = useRef<number | undefined>(undefined);
+  const isVisibleRef = useRef(true);
+  const router = useRouter();
 
- const handleContactClick = () => {
-    router.push('/ContactUs');
-  };
+  const handleContactClick = useCallback(() => {
+    router.push("/ContactUs");
+  }, [router]);
 
-   const handleServiceClick = () => {
-   
-    const serviceSection = document.getElementById('success-section');
+  const handleServiceClick = useCallback(() => {
+    const serviceSection = document.getElementById("success-section");
     if (serviceSection) {
-      serviceSection.scrollIntoView({ behavior: 'smooth' });
+      serviceSection.scrollIntoView({ behavior: "smooth" });
     }
-  };
+  }, []);
+
+  // Pre-calculate nodes with proper typing
+  const nodes = useMemo(
+    () =>
+      Array.from({ length: 25 }, () => ({
+        // Reduced from 35 to 25 particles
+        x: Math.random() * 1000,
+        y: Math.random() * 1000,
+        vx: (Math.random() - 0.5) * 0.2, // Reduced velocity
+        vy: (Math.random() - 0.5) * 0.2,
+        r: Math.random() * 2 + 0.8,
+      })),
+    [],
+  );
+
+  // Optimize canvas animation with better throttling
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
-    const ctx = canvas.getContext("2d");
+
+    const ctx = canvas.getContext("2d", { alpha: true });
     if (!ctx) return;
 
-    let animId: number;
+    let lastResizeTime = 0;
+    const RESIZE_THROTTLE = 100;
 
     const resize = () => {
+      const now = Date.now();
+      if (now - lastResizeTime < RESIZE_THROTTLE) return;
+      lastResizeTime = now;
+
       canvas.width = canvas.offsetWidth;
       canvas.height = canvas.offsetHeight;
     };
+
     resize();
-    window.addEventListener("resize", resize);
 
-    const nodes = Array.from({ length: 35 }, () => ({
-      x: Math.random() * canvas.width,
-      y: Math.random() * canvas.height,
-      vx: (Math.random() - 0.5) * 0.25,
-      vy: (Math.random() - 0.5) * 0.25,
-      r: Math.random() * 2.2 + 0.8,
-    }));
+    // Throttle resize listener
+    let resizeTimeout: NodeJS.Timeout;
+    const handleResize = () => {
+      clearTimeout(resizeTimeout);
+      resizeTimeout = setTimeout(resize, RESIZE_THROTTLE);
+    };
 
+    window.addEventListener("resize", handleResize, { passive: true });
+
+    // Viewport detection - only animate when visible
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        isVisibleRef.current = entry.isIntersecting;
+      },
+      { rootMargin: "100px" },
+    );
+    observer.observe(canvas);
+
+    // Optimized draw function - reduce distance checks
+    const connectionDistance = 110;
+    const maxConnectionDistance = 160;
     const draw = () => {
+      if (!isVisibleRef.current) {
+        animIdRef.current = requestAnimationFrame(draw);
+        return;
+      }
+
       const W = canvas.width;
       const H = canvas.height;
-      ctx.clearRect(0, 0, W, H);
+
+      // Use fillRect instead of clearRect for better performance
+      ctx.fillStyle = "rgba(10, 11, 20, 0)";
+      ctx.fillRect(0, 0, W, H);
+
+      // Batch connection drawing - only check nearby particles
+      const connectionDistSq = connectionDistance * connectionDistance;
 
       for (let i = 0; i < nodes.length; i++) {
         for (let j = i + 1; j < nodes.length; j++) {
           const dx = nodes[i].x - nodes[j].x;
           const dy = nodes[i].y - nodes[j].y;
-          const d = Math.sqrt(dx * dx + dy * dy);
-          if (d < 110) {
+          const distSq = dx * dx + dy * dy;
+
+          if (distSq < connectionDistSq) {
+            const d = Math.sqrt(distSq);
             ctx.beginPath();
             ctx.moveTo(nodes[i].x, nodes[i].y);
             ctx.lineTo(nodes[j].x, nodes[j].y);
-            ctx.strokeStyle = `rgba(120,80,220,${0.22 * (1 - d / 160)})`;
+            ctx.strokeStyle = `rgba(120,80,220,${0.22 * (1 - d / maxConnectionDistance)})`;
             ctx.lineWidth = 0.7;
             ctx.stroke();
           }
         }
       }
 
+      // Draw and update particles
+      ctx.fillStyle = "rgba(140,100,240,0.75)";
       nodes.forEach((n) => {
         ctx.beginPath();
         ctx.arc(n.x, n.y, n.r, 0, Math.PI * 2);
-        ctx.fillStyle = "rgba(140,100,240,0.75)";
         ctx.fill();
+
         n.x += n.vx;
         n.y += n.vy;
+
+        // Bounce off walls
         if (n.x < 0 || n.x > W) n.vx *= -1;
         if (n.y < 0 || n.y > H) n.vy *= -1;
       });
 
-      animId = requestAnimationFrame(draw);
+      animIdRef.current = requestAnimationFrame(draw);
     };
+
     draw();
 
     return () => {
-      cancelAnimationFrame(animId);
-      window.removeEventListener("resize", resize);
+      if (animIdRef.current) cancelAnimationFrame(animIdRef.current);
+      clearTimeout(resizeTimeout);
+      window.removeEventListener("resize", handleResize);
+      observer.disconnect();
     };
-  }, []);
+  }, [nodes]);
 
   return (
     <>
@@ -97,14 +155,13 @@ export default function HeroSection() {
 
         {/* Subtle background gradient for depth */}
         <div
-  className="bg-gradient"
-  aria-hidden
-  style={{
-    background:
-      "radial-gradient(circle at 20% 40%, rgba(110, 60, 210, 0.55) 0%, rgba(11, 12, 24, 0) 80%)",
-  }}
-/>
-
+          className="bg-gradient"
+          aria-hidden
+          style={{
+            background:
+              "radial-gradient(circle at 20% 40%, rgba(110, 60, 210, 0.55) 0%, rgba(11, 12, 24, 0) 80%)",
+          }}
+        />
 
         {/* Bottom wave lines */}
         <svg
@@ -176,7 +233,7 @@ export default function HeroSection() {
             <button className="btn btn-primary" onClick={handleContactClick}>
               {t.heroBtnPrimary}
             </button>
-             <button className="btn btn-secondary" onClick={handleServiceClick}>
+            <button className="btn btn-secondary" onClick={handleServiceClick}>
               {t.heroBtnSecondary}
             </button>
           </div>
@@ -184,7 +241,7 @@ export default function HeroSection() {
       </section>
     </>
   );
-}
+};
 
 /* ── Globe Component ── */
 function GlobeSVG() {
@@ -613,8 +670,6 @@ function hexPts(cx: number, cy: number, s: number): string {
 }
 
 const css = `
-  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
-  @import url('https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@300;400;500;600;700&display=swap');
 
   .hero {
     position: relative;
@@ -1103,3 +1158,5 @@ const css = `
     }
   }
 `;
+
+export default Hero;

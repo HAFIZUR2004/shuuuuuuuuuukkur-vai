@@ -25,164 +25,9 @@ import { PublicLayout } from "../public-layout";
 import { FaFacebook, FaInstagram, FaLinkedin } from "react-icons/fa";
 import { FaXTwitter } from "react-icons/fa6";
 
-// ============ প্রিমিয়াম লোডিং স্পিনার ============
-const PremiumSpinner = () => {
-  const [loadingProgress, setLoadingProgress] = useState(0);
-  const [loadingText, setLoadingText] = useState("Loading Contact");
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setLoadingProgress((prev) => {
-        if (prev >= 100) {
-          clearInterval(interval);
-          return 100;
-        }
-        return prev + 2;
-      });
-    }, 40);
-
-    const texts = [
-      "Initializing Secure Channel",
-      "Loading Interface",
-      "Preparing Form",
-      "Almost Ready",
-    ];
-    let textIndex = 0;
-    const textInterval = setInterval(() => {
-      if (textIndex < texts.length) {
-        setLoadingText(texts[textIndex]);
-        textIndex++;
-      }
-    }, 800);
-
-    return () => {
-      clearInterval(interval);
-      clearInterval(textInterval);
-    };
-  }, []);
-
-  return (
-    <div className="fixed inset-0 bg-gradient-to-br from-[#05070a] via-[#0a0c0f] to-[#05070a] flex flex-col items-center justify-center z-[200]">
-      <div className="absolute inset-0 overflow-hidden">
-        <motion.div
-          className="absolute w-[600px] h-[600px] bg-[#6c5ce7]/20 rounded-full"
-          animate={{ x: [-300, 300], y: [-300, 300] }}
-          transition={{ duration: 10, repeat: Infinity, repeatType: "reverse" }}
-        />
-        <motion.div
-          className="absolute w-[500px] h-[500px] bg-[#00cec9]/20 rounded-full bottom-0 right-0"
-          animate={{ x: [300, -300], y: [300, -300] }}
-          transition={{ duration: 8, repeat: Infinity, repeatType: "reverse" }}
-        />
-      </div>
-
-      <div
-        className="absolute inset-0 opacity-[0.05]"
-        style={{
-          backgroundImage: `linear-gradient(rgba(255,255,255,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.05) 1px, transparent 1px)`,
-          backgroundSize: "50px 50px",
-        }}
-      />
-
-      <motion.div
-        className="relative w-32 h-32 mb-8"
-        initial={{ scale: 0.8, opacity: 0 }}
-        animate={{ scale: 1, opacity: 1 }}
-        transition={{ type: "spring", damping: 15 }}
-      >
-        <motion.div
-          className="absolute inset-0 rounded-full border-4 border-transparent border-t-[#6c5ce7] border-r-[#00cec9]"
-          animate={{ rotate: 360 }}
-          transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-        />
-        <motion.div
-          className="absolute inset-2 rounded-full border-4 border-transparent border-b-[#6c5ce7] border-l-[#00cec9]"
-          animate={{ rotate: -360 }}
-          transition={{ duration: 1.5, repeat: Infinity, ease: "linear" }}
-        />
-        <motion.div
-          className="absolute inset-4 rounded-full border-4 border-transparent border-t-[#a29bfe] border-r-[#00cec9]"
-          animate={{ rotate: 360 }}
-          transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
-        />
-        <motion.div
-          className="absolute inset-0 flex items-center justify-center"
-          animate={{ scale: [1, 1.1, 1], opacity: [0.5, 1, 0.5] }}
-          transition={{ duration: 1.5, repeat: Infinity }}
-        >
-          <div className="w-10 h-10 bg-gradient-to-r from-[#6c5ce7] to-[#00cec9] rounded-full blur-md" />
-        </motion.div>
-      </motion.div>
-
-      <motion.div
-        className="relative w-20 h-20 mb-6"
-        animate={{ rotate: 360, scale: [1, 1.05, 1] }}
-        transition={{
-          rotate: { duration: 3, repeat: Infinity, ease: "linear" },
-          scale: { duration: 1.5, repeat: Infinity },
-        }}
-      >
-        <div className="w-full h-full bg-gradient-to-r from-[#6c5ce7] to-[#00cec9] rounded-full flex items-center justify-center">
-          <span className="text-white text-2xl font-bold">✉️</span>
-        </div>
-      </motion.div>
-
-      <motion.div
-        className="text-center space-y-3"
-        animate={{ opacity: [0.4, 1, 0.4] }}
-        transition={{ duration: 1.5, repeat: Infinity }}
-      >
-        <p className="text-xl md:text-2xl font-bold bg-gradient-to-r from-[#6c5ce7] to-[#00cec9] bg-clip-text text-transparent">
-          {loadingText}
-        </p>
-        <p className="text-[#6c5ce7]/50 font-mono text-[10px] tracking-[0.3em] uppercase">
-          Please wait
-        </p>
-      </motion.div>
-
-      <div className="w-64 md:w-80 mt-8">
-        <div className="h-[2px] bg-white/10 rounded-full overflow-hidden">
-          <motion.div
-            className="h-full bg-gradient-to-r from-[#6c5ce7] to-[#00cec9] rounded-full"
-            initial={{ width: "0%" }}
-            animate={{ width: `${loadingProgress}%` }}
-            transition={{ duration: 0.1 }}
-          />
-        </div>
-        <motion.p
-          className="text-[10px] text-white/30 text-center mt-2 font-mono"
-          animate={{ opacity: [0.3, 1, 0.3] }}
-          transition={{ duration: 1, repeat: Infinity }}
-        >
-          {loadingProgress}% Complete
-        </motion.p>
-      </div>
-
-      <div className="absolute inset-0 pointer-events-none">
-        {[...Array(15)].map((_, i) => (
-          <motion.div
-            key={i}
-            className="absolute w-1 h-1 bg-[#6c5ce7] rounded-full"
-            initial={{ x: "50%", y: "50%", scale: 0 }}
-            animate={{
-              x: `${50 + (Math.random() - 0.5) * 100}%`,
-              y: `${50 + (Math.random() - 0.5) * 100}%`,
-              scale: [0, 1, 0],
-              opacity: [0, 1, 0],
-            }}
-            transition={{ duration: 2, repeat: Infinity, delay: i * 0.15 }}
-          />
-        ))}
-      </div>
-    </div>
-  );
-};
-// ==================================================
-
 export default function ContactSection() {
   const { lang } = useLanguage();
   const t = translations[lang];
-  const [loading, setLoading] = useState(true);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -201,11 +46,6 @@ export default function ContactSection() {
   ];
 
   useEffect(() => {
-    const timer = setTimeout(() => setLoading(false), 2000);
-    return () => clearTimeout(timer);
-  }, []);
-
-  useEffect(() => {
     const interval = setInterval(() => {
       setPlaceholderIndex((prev) => (prev + 1) % placeholders.length);
     }, 3000);
@@ -216,7 +56,7 @@ export default function ContactSection() {
     {
       icon: Phone,
       label: "DIRECT LINE",
-      value: "+8801884369340",
+      value: "+8801726441994",
       color: "#6c5ce7",
       detail: "24/7 Available",
     },
@@ -230,7 +70,7 @@ export default function ContactSection() {
     {
       icon: MapPin,
       label: "GLOBAL NODE",
-      value: "Barishal, Bangladesh • Remote First",
+      value: "House 76/A, Road 11, Banani, Dhaka, Banani Model Town, Bangladesh, 1213 • Remote First",
       color: "#00cec9",
       detail: "Worldwide Service",
     },
@@ -302,11 +142,9 @@ export default function ContactSection() {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  if (loading) return <PremiumSpinner />;
-
   return (
     <PublicLayout>
-      <section className="relative min-h-screen bg-[#05070a] text-white flex items-center px-4 md:px-10 py-32 overflow-hidden">
+      <section className="relative min-h-screen bg-[#05070a] text-white font-hind flex items-center px-4 md:px-10 py-32 overflow-hidden">
         <ParticleNetwork
           opacity={0.4}
           particleCount={70}
@@ -341,7 +179,7 @@ export default function ContactSection() {
 
               <h2 className="text-5xl md:text-7xl lg:text-8xl font-black leading-[0.9] tracking-tighter uppercase">
                 {t.initiate || "INITIATE"} <br />
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#6c5ce7] via-[#a29bfe] to-[#00cec9] italic">
+                <span className="text-transparent bg-clip-text bg-linear-to-r from-[#6c5ce7] via-[#a29bfe] to-[#00cec9] italic">
                   {t.connection || "CONNECTION"}
                 </span>
               </h2>
@@ -360,7 +198,7 @@ export default function ContactSection() {
                   initial={{ opacity: 0, y: 20 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   transition={{ delay: i * 0.1 }}
-                  className="flex items-center gap-2 px-4 py-2 rounded-full bg-white/[0.02] border border-white/10 hover:border-purple-500/30 transition-all"
+                  className="flex items-center gap-2 px-4 py-2 rounded-full bg-white/2 border border-white/10 hover:border-purple-500/30 transition-all"
                 >
                   <badge.icon size={14} style={{ color: badge.color }} />
                   <span className="text-[10px] text-white/60 font-mono uppercase tracking-wider">
@@ -374,8 +212,8 @@ export default function ContactSection() {
             <div className="grid lg:grid-cols-2 gap-8 items-start">
               {/* Left Side - Contact Info Cards */}
               <div className="space-y-6">
-                <div className="relative rounded-3xl bg-gradient-to-br from-white/[0.03] to-transparent border border-white/10 p-6 backdrop-blur-sm">
-                  <h3 className="text-lg font-black uppercase tracking-wider mb-6 bg-gradient-to-r from-white to-white/50 bg-clip-text text-transparent">
+                <div className="relative rounded-3xl bg-linear-to-br from-white/3 to-transparent border border-white/10 p-6 backdrop-blur-sm">
+                  <h3 className="text-lg font-black uppercase tracking-wider mb-6 bg-linear-to-r from-white to-white/50 bg-clip-text text-transparent">
                     {t.connectUs}
                   </h3>
                   <div className="space-y-4">
@@ -383,9 +221,9 @@ export default function ContactSection() {
                       <motion.div
                         key={i}
                         whileHover={{ x: 10, borderColor: item.color }}
-                        className="flex items-center gap-4 p-4 rounded-2xl bg-white/[0.02] border border-white/10 hover:border-opacity-50 transition-all group cursor-pointer"
+                        className="flex items-center gap-4 p-4 rounded-2xl bg-white/2 border border-white/10 hover:border-opacity-50 transition-all group cursor-pointer"
                       >
-                        <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-500/20 to-cyan-500/20 flex items-center justify-center flex-shrink-0">
+                        <div className="w-12 h-12 rounded-xl bg-linear-to-br from-purple-500/20 to-cyan-500/20 flex items-center justify-center shrink-0">
                           <item.icon size={22} style={{ color: item.color }} />
                         </div>
                         <div>
@@ -429,17 +267,17 @@ export default function ContactSection() {
               </div>
 
               {/* Right Side - Form */}
-              <div className="relative rounded-3xl bg-gradient-to-br from-white/[0.03] to-transparent border border-white/10 p-6 backdrop-blur-sm">
-                <div className="absolute top-0 right-0 w-40 h-40 bg-gradient-to-br from-purple-500/10 to-cyan-500/10 rounded-full blur-3xl" />
-                <div className="absolute bottom-0 left-0 w-40 h-40 bg-gradient-to-tr from-cyan-500/10 to-purple-500/10 rounded-full blur-3xl" />
+              <div className="relative rounded-3xl bg-linear-to-br from-white/3 to-transparent border border-white/10 p-6 backdrop-blur-sm">
+                <div className="absolute top-0 right-0 w-40 h-40 bg-linear-to-br from-purple-500/10 to-cyan-500/10 rounded-full blur-3xl" />
+                <div className="absolute bottom-0 left-0 w-40 h-40 bg-linear-to-tr from-cyan-500/10 to-purple-500/10 rounded-full blur-3xl" />
 
-                <h3 className="text-lg font-black uppercase tracking-wider mb-6 bg-gradient-to-r from-white to-white/50 bg-clip-text text-transparent">
+                <h3 className="text-lg font-black uppercase tracking-wider mb-6 bg-linear-to-r from-white to-white/50 bg-clip-text text-transparent">
                   {t.sendMessage}
                 </h3>
 
                 <form onSubmit={handleSubmit} className="flex flex-col gap-5">
                   <div className="relative group">
-                    <div className="absolute -inset-[1px] bg-gradient-to-r from-[#00cec9]/50 to-[#6c5ce7]/50 rounded-xl blur-sm opacity-0 group-focus-within:opacity-100 transition-opacity duration-500" />
+                    <div className="absolute -inset-px bg-linear-to-r from-[#00cec9]/50 to-[#6c5ce7]/50 rounded-xl blur-sm opacity-0 group-focus-within:opacity-100 transition-opacity duration-500" />
                     <div className="relative bg-[#0a0c0f]/80 backdrop-blur-md border border-white/10 rounded-xl overflow-hidden group-hover:border-white/20 transition-colors">
                       <User
                         size={12}
@@ -463,7 +301,7 @@ export default function ContactSection() {
                   </div>
 
                   <div className="relative group">
-                    <div className="absolute -inset-[1px] bg-gradient-to-r from-[#6c5ce7]/50 to-[#00cec9]/50 rounded-xl blur-sm opacity-0 group-focus-within:opacity-100 transition-opacity duration-500" />
+                    <div className="absolute -inset-px bg-linear-to-r from-[#6c5ce7]/50 to-[#00cec9]/50 rounded-xl blur-sm opacity-0 group-focus-within:opacity-100 transition-opacity duration-500" />
                     <div className="relative bg-[#0a0c0f]/80 backdrop-blur-md border border-white/10 rounded-xl overflow-hidden group-hover:border-white/20 transition-colors">
                       <AtSign
                         size={12}
@@ -485,7 +323,7 @@ export default function ContactSection() {
                   </div>
 
                   <div className="relative group">
-                    <div className="absolute -inset-[1px] bg-gradient-to-r from-[#6c5ce7]/50 via-[#a29bfe]/30 to-[#00cec9]/50 rounded-xl blur-sm opacity-0 group-focus-within:opacity-100 transition-opacity duration-500" />
+                    <div className="absolute -inset-px bg-linear-to-r from-[#6c5ce7]/50 via-[#a29bfe]/30 to-[#00cec9]/50 rounded-xl blur-sm opacity-0 group-focus-within:opacity-100 transition-opacity duration-500" />
                     <div className="relative bg-[#0a0c0f]/80 backdrop-blur-md border border-white/10 rounded-xl overflow-hidden group-hover:border-white/20 transition-colors">
                       <MessageSquare
                         size={12}
@@ -533,7 +371,7 @@ export default function ContactSection() {
                         />
                       )}
                     </span>
-                    <div className="absolute inset-0 bg-gradient-to-r from-[#6c5ce7] via-[#a29bfe] to-[#00cec9]" />
+                    <div className="absolute inset-0 bg-linear-to-r from-[#6c5ce7] via-[#a29bfe] to-[#00cec9]" />
                     <div className="absolute inset-0 bg-gradient-to-r from-[#00cec9] via-[#a29bfe] to-[#6c5ce7] translate-x-[-100%] group-hover:translate-x-0 transition-transform duration-500" />
                   </motion.button>
                 </form>

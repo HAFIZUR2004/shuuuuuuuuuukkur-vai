@@ -27,7 +27,6 @@ import {
   MessageSquareIcon,
 } from "lucide-react";
 import Link from "next/link";
-import PremiumSpinner from "@/components/PremiumSpinner";
 import ParticleNetwork from "@/components/ParticleNetwork";
 import { PublicLayout } from "../public-layout";
 import { useLanguage } from "@/constants/LanguageContext";
@@ -106,7 +105,7 @@ export default function ServicesPage() {
     desc: timelineList[idx]?.desc || "",
   }));
 
-  const [loading, setLoading] = useState(true);
+  // Loading is now handled globally by LoadingProvider - no need for local loading state
   const timelineLineRef = useRef<HTMLDivElement>(null);
   const timelineScrollRef = useRef<HTMLDivElement>(null);
   const contactFormRef = useRef<HTMLDivElement>(null);
@@ -122,20 +121,13 @@ export default function ServicesPage() {
     message: string;
   } | null>(null);
 
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setLoading(false);
-    }, 2000);
-    return () => clearTimeout(timer);
-  }, []);
-
   const scrollToContactForm = () => {
     contactFormRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
   // GSAP Timeline Animation
   useEffect(() => {
-    if (!loading && timeline.length > 0) {
+    if (timeline.length > 0) {
       setTimeout(() => {
         if (timelineLineRef.current && timelineScrollRef.current) {
           gsap.fromTo(
@@ -180,7 +172,7 @@ export default function ServicesPage() {
     return () => {
       ScrollTrigger.getAll().forEach((trigger) => trigger.kill());
     };
-  }, [loading, timeline]);
+  }, [timeline]);
 
   const handleFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -227,25 +219,9 @@ export default function ServicesPage() {
     }
   };
 
-  if (loading) {
-    return (
-      <div className="fixed inset-0 z-[9999] bg-[#05070a]">
-        <PremiumSpinner
-          loadingTexts={[
-            "Loading Services",
-            "Preparing Interface",
-            "Almost Ready",
-          ]}
-          pleaseWait="Please wait"
-          complete="Complete"
-        />
-      </div>
-    );
-  }
-
   return (
     <PublicLayout showFooter={true}>
-      <main className="relative min-h-screen bg-[#05070a] text-white selection:bg-[#6c5ce7]/30 overflow-hidden">
+      <main className="relative min-h-screen bg-[#05070a] font-hind text-white selection:bg-[#6c5ce7]/30 overflow-hidden">
         <ParticleNetwork
           opacity={0.4}
           particleCount={60}

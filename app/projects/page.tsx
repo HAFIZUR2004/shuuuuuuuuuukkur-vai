@@ -17,6 +17,9 @@ import { useLanguage } from "@/constants/LanguageContext";
 import { translations } from "@/constants/translations";
 import { PublicLayout } from "../public-layout";
 
+// ✅ এখানে ParticleNetwork ইম্পোর্ট করুন
+import ParticleNetwork from "@/components/ParticleNetwork";
+
 const iconMap: Record<string, IconDefinition> = {
   faLayerGroup: faLayerGroup,
   faDatabase: faDatabase,
@@ -185,7 +188,9 @@ export default function DynamicPortfolioPage() {
   const [projects, setProjects] = useState<PortfolioItem[]>([]);
   const [loading, setLoading] = useState(true);
   const headerRef = useRef<HTMLDivElement>(null);
-  const canvasRef = useRef<HTMLCanvasElement>(null);
+  
+  // ❌ canvasRef সরানো হয়েছে কারণ আমরা ParticleNetwork ব্যবহার করছি
+  // const canvasRef = useRef<HTMLCanvasElement>(null);
 
   const [scrollProgress, setScrollProgress] = useState(0);
 
@@ -234,112 +239,7 @@ export default function DynamicPortfolioPage() {
     fetchProjects();
   }, []);
 
-  // Enhanced Particle Effect
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext("2d");
-    if (!ctx) return;
-
-    let animId: number;
-    let nodes: Array<{
-      x: number;
-      y: number;
-      vx: number;
-      vy: number;
-      r: number;
-      color: string;
-      pulse: number;
-    }> = [];
-
-    const resize = () => {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
-
-      const nodeCount = window.innerWidth < 768 ? 45 : 90;
-      nodes = Array.from({ length: nodeCount }, () => ({
-        x: Math.random() * canvas.width,
-        y: Math.random() * canvas.height,
-        vx: (Math.random() - 0.5) * 0.3,
-        vy: (Math.random() - 0.5) * 0.3,
-        r: Math.random() * 2.5 + 1,
-        color:
-          Math.random() > 0.6
-            ? "rgba(168, 85, 247, 0.5)"
-            : "rgba(34, 211, 238, 0.4)",
-        pulse: Math.random() * Math.PI * 2,
-      }));
-    };
-
-    window.addEventListener("resize", resize);
-    resize();
-
-    const draw = () => {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-      for (let i = 0; i < nodes.length; i++) {
-        for (let j = i + 1; j < nodes.length; j++) {
-          const dx = nodes[i].x - nodes[j].x;
-          const dy = nodes[i].y - nodes[j].y;
-          const dist = Math.sqrt(dx * dx + dy * dy);
-
-          if (dist < 150) {
-            ctx.beginPath();
-            ctx.moveTo(nodes[i].x, nodes[i].y);
-            ctx.lineTo(nodes[j].x, nodes[j].y);
-            const gradient = ctx.createLinearGradient(
-              nodes[i].x,
-              nodes[i].y,
-              nodes[j].x,
-              nodes[j].y,
-            );
-            gradient.addColorStop(
-              0,
-              `rgba(168, 85, 247, ${0.12 * (1 - dist / 150)})`,
-            );
-            gradient.addColorStop(
-              1,
-              `rgba(34, 211, 238, ${0.12 * (1 - dist / 150)})`,
-            );
-            ctx.strokeStyle = gradient;
-            ctx.lineWidth = 0.8;
-            ctx.stroke();
-          }
-        }
-      }
-
-      nodes.forEach((n) => {
-        const pulseRadius = n.r + Math.sin(n.pulse) * 0.5;
-        n.pulse += 0.02;
-
-        ctx.beginPath();
-        ctx.arc(n.x, n.y, pulseRadius, 0, Math.PI * 2);
-        ctx.fillStyle = n.color;
-        ctx.fill();
-
-        ctx.beginPath();
-        ctx.arc(n.x, n.y, pulseRadius + 2, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(168, 85, 247, 0.03)`;
-        ctx.fill();
-
-        n.x += n.vx;
-        n.y += n.vy;
-
-        if (n.x < -50) n.x = canvas.width + 50;
-        if (n.x > canvas.width + 50) n.x = -50;
-        if (n.y < -50) n.y = canvas.height + 50;
-        if (n.y > canvas.height + 50) n.y = -50;
-      });
-
-      animId = requestAnimationFrame(draw);
-    };
-
-    draw();
-    return () => {
-      cancelAnimationFrame(animId);
-      window.removeEventListener("resize", resize);
-    };
-  }, [loading]);
+  // ❌ পুরানো Particle Effect useEffect সরানো হয়েছে
 
   const headerY = 1 - scrollProgress * 200;
   const headerOpacity = 1 - scrollProgress * 2;
@@ -360,10 +260,14 @@ export default function DynamicPortfolioPage() {
   return (
     <PublicLayout>
       <div className="relative bg-[#0b0c18] text-white py-20 px-6 overflow-hidden min-h-screen font-hind">
-        {/* Enhanced Particle Network Background */}
-        <canvas
-          ref={canvasRef}
-          className="fixed inset-0 w-full h-full pointer-events-none z-0 opacity-70"
+        
+        {/* ✅ এখন ParticleNetwork কম্পোনেন্ট ব্যবহার করা হচ্ছে */}
+        <ParticleNetwork 
+          particleCount={80}
+          opacity={0.8}
+          glowEffect={true}
+          // mouseInfluence={0.5}
+          connectionDistance={250}
         />
 
         {/* Static Grid Overlay */}

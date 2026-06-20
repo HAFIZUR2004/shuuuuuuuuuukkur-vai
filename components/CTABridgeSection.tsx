@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useRef } from "react";
+import React from "react";
 import { motion } from "framer-motion";
 import {
   ArrowRight,
@@ -14,184 +14,64 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 
+// ✅ Import ParticleNetwork
+import ParticleNetwork from "@/components/ParticleNetwork";
+
 interface CTABridgeSectionProps {
   t: any;
   lang: string;
 }
 
 export default function CTABridgeSection({ t, lang }: CTABridgeSectionProps) {
-  const sectionRef = useRef<HTMLDivElement>(null);
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-
-  // Animated background canvas with flowing particles
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-
-    const ctx = canvas.getContext("2d");
-    if (!ctx) return;
-
-    let animId: number;
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight * 0.6;
-
-    interface Particle {
-      x: number;
-      y: number;
-      vx: number;
-      vy: number;
-      size: number;
-      opacity: number;
-    }
-
-    const particles: Particle[] = Array.from({ length: 30 }, () => ({
-      x: Math.random() * canvas.width,
-      y: Math.random() * canvas.height,
-      vx: (Math.random() - 0.5) * 0.5,
-      vy: (Math.random() - 0.5) * 0.5,
-      size: Math.random() * 2 + 0.5,
-      opacity: Math.random() * 0.5 + 0.2,
-    }));
-
-    const draw = () => {
-      // Clear with semi-transparent background for trail effect
-      ctx.fillStyle = "rgba(10, 10, 15, 0.02)";
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-      // Draw connecting lines
-      for (let i = 0; i < particles.length; i++) {
-        for (let j = i + 1; j < particles.length; j++) {
-          const dx = particles[i].x - particles[j].x;
-          const dy = particles[i].y - particles[j].y;
-          const distance = Math.sqrt(dx * dx + dy * dy);
-
-          if (distance < 150) {
-            ctx.strokeStyle = `rgba(108, 92, 231, ${0.1 * (1 - distance / 150)})`;
-            ctx.lineWidth = 0.5;
-            ctx.beginPath();
-            ctx.moveTo(particles[i].x, particles[i].y);
-            ctx.lineTo(particles[j].x, particles[j].y);
-            ctx.stroke();
-          }
-        }
-      }
-
-      // Update and draw particles
-      particles.forEach((particle) => {
-        particle.x += particle.vx;
-        particle.y += particle.vy;
-        particle.opacity += (Math.random() - 0.5) * 0.02;
-        particle.opacity = Math.max(0.1, Math.min(0.8, particle.opacity));
-
-        // Wrap around
-        if (particle.x < 0) particle.x = canvas.width;
-        if (particle.x > canvas.width) particle.x = 0;
-        if (particle.y < 0) particle.y = canvas.height;
-        if (particle.y > canvas.height) particle.y = 0;
-
-        // Draw particle with glow
-        const gradient = ctx.createRadialGradient(
-          particle.x,
-          particle.y,
-          0,
-          particle.x,
-          particle.y,
-          particle.size * 2,
-        );
-        gradient.addColorStop(0, `rgba(108, 92, 231, ${particle.opacity})`);
-        gradient.addColorStop(1, "rgba(108, 92, 231, 0)");
-
-        ctx.fillStyle = gradient;
-        ctx.beginPath();
-        ctx.arc(particle.x, particle.y, particle.size * 2, 0, Math.PI * 2);
-        ctx.fill();
-
-        // Core particle
-        ctx.fillStyle = `rgba(255, 255, 255, ${particle.opacity * 0.8})`;
-        ctx.beginPath();
-        ctx.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);
-        ctx.fill();
-      });
-
-      animId = requestAnimationFrame(draw);
-    };
-
-    draw();
-
-    const handleResize = () => {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight * 0.6;
-    };
-
-    window.addEventListener("resize", handleResize);
-    return () => {
-      cancelAnimationFrame(animId);
-      window.removeEventListener("resize", handleResize);
-    };
-  }, []);
-
+  // ✅ ট্রান্সলেশন ডেটা সরাসরি t থেকে নেওয়া হচ্ছে
   const features = [
     {
       icon: Zap,
-      title: lang === "BN" ? "দ্রুত বাস্তবায়ন" : "Lightning Fast",
-      desc:
-        lang === "BN"
-          ? "আপনার আইডিয়া থেকে বাজার পর্যন্ত ৩০ দিনে"
-          : "From idea to market in just 30 days",
+      title: t?.cta?.fastImplementation || (lang === "BN" ? "দ্রুত বাস্তবায়ন" : "Lightning Fast"),
+      desc: t?.cta?.fastDesc || (lang === "BN" ? "আপনার আইডিয়া থেকে বাজার পর্যন্ত ৩০ দিনে" : "From idea to market in just 30 days"),
     },
     {
       icon: Target,
-      title: lang === "BN" ? "লক্ষ্য ভিত্তিক" : "Goal Oriented",
-      desc:
-        lang === "BN"
-          ? "আপনার ব্যবসায়িক লক্ষ্য আমাদের মিশন"
-          : "Your business goals drive our mission",
+      title: t?.cta?.goalOriented || (lang === "BN" ? "লক্ষ্য ভিত্তিক" : "Goal Oriented"),
+      desc: t?.cta?.goalDesc || (lang === "BN" ? "আপনার ব্যবসায়িক লক্ষ্য আমাদের মিশন" : "Your business goals drive our mission"),
     },
     {
       icon: Heart,
-      title: lang === "BN" ? "যত্নশীল সহায়তা" : "Dedicated Care",
-      desc:
-        lang === "BN"
-          ? "২৪/৭ সাপোর্ট এবং ক্রমাগত অপটিমাইজেশন"
-          : "24/7 support and continuous optimization",
+      title: t?.cta?.dedicatedCare || (lang === "BN" ? "যত্নশীল সহায়তা" : "Dedicated Care"),
+      desc: t?.cta?.careDesc || (lang === "BN" ? "২৪/৭ সাপোর্ট এবং ক্রমাগত অপটিমাইজেশন" : "24/7 support and continuous optimization"),
     },
   ];
 
   const stats = [
     {
-      number: "99.9%",
-      label: lang === "BN" ? "আপটাইম" : "Uptime",
+      number: t?.cta?.uptime || "99.9%",
+      label: t?.cta?.uptimeLabel || (lang === "BN" ? "আপটাইম" : "Uptime"),
       icon: Rocket,
     },
     {
-      number: "2x",
-      label: lang === "BN" ? "দ্রুত বৃদ্ধি" : "Growth",
+      number: t?.cta?.growth || "2x",
+      label: t?.cta?.growthLabel || (lang === "BN" ? "দ্রুত বৃদ্ধি" : "Growth"),
       icon: TrendingUp,
     },
     {
-      number: "100%",
-      label: lang === "BN" ? "সন্তুষ্টি" : "Satisfaction",
+      number: t?.cta?.satisfaction || "100%",
+      label: t?.cta?.satisfactionLabel || (lang === "BN" ? "সন্তুষ্টি" : "Satisfaction"),
       icon: Star,
     },
   ];
 
   return (
-    <section
-      ref={sectionRef}
-      className="relative min-h-screen flex items-center justify-center py-20 px-4 overflow-hidden bg-gradient-to-b from-[#0a0b14] via-[#0f1420] to-[#0a0b14]"
-    >
-      {/* Animated background canvas */}
-      <canvas
-        ref={canvasRef}
-        className="absolute inset-0 w-full h-full"
-        style={{ opacity: 0.4 }}
+    <section className="relative min-h-screen flex items-center justify-center py-20 px-4 overflow-hidden bg-[#0b0c18]">
+      
+      {/* ✅ Particle Network Background - All other backgrounds removed */}
+      <ParticleNetwork 
+        particleCount={60}
+        opacity={0.4}
+        glowEffect={true}
+        // mouseInfluence={0.5}
+        connectionDistance={200}
+        className="absolute inset-0 z-0"
       />
-
-      {/* Gradient overlays */}
-      <div className="absolute inset-0 pointer-events-none">
-        <div className="absolute top-0 right-0 w-96 h-96 bg-purple-600/10 rounded-full blur-3xl" />
-        <div className="absolute bottom-0 left-0 w-96 h-96 bg-cyan-600/10 rounded-full blur-3xl" />
-      </div>
 
       <div className="max-w-6xl font-hind mx-auto relative z-10 w-full">
         {/* Main heading */}
@@ -211,27 +91,25 @@ export default function CTABridgeSection({ t, lang }: CTABridgeSectionProps) {
           >
             <div className="h-px w-8 bg-gradient-to-r from-transparent to-purple-500" />
             <span className="text-purple-400 text-xs font-mono tracking-widest font-bold uppercase">
-              {lang === "BN"
-                ? "আপনার সাফল্য আমাদের লক্ষ্য"
-                : "Your Success, Our Mission"}
+              {t?.cta?.badge || (lang === "BN" ? "আপনার সাফল্য আমাদের লক্ষ্য" : "Your Success, Our Mission")}
             </span>
             <div className="h-px w-8 bg-gradient-to-l from-transparent to-purple-500" />
           </motion.div>
 
           <h2 className="text-5xl md:text-6xl lg:text-7xl font-black tracking-tighter mb-6 leading-tight">
             <span className="text-white">
-              {lang === "BN" ? "প্রস্তুত" : "Ready to"}
+              {t?.cta?.title || (lang === "BN" ? "প্রস্তুত" : "Ready to")}
             </span>
             <br />
             <span className="bg-gradient-to-r from-purple-400 via-pink-500 to-cyan-400 bg-clip-text text-transparent">
-              {lang === "BN" ? "রূপান্তরিত করতে?" : "Transform?"}
+              {t?.cta?.titleGradient || (lang === "BN" ? "রূপান্তরিত করতে?" : "Transform?")}
             </span>
           </h2>
 
           <p className="text-white/50 max-w-2xl mx-auto text-lg font-light leading-relaxed">
-            {lang === "BN"
+            {t?.cta?.description || (lang === "BN"
               ? "আমরা শুধু ডেভেলপার নই, আমরা আপনার বৃদ্ধির অংশীদার। আপনার ডিজিটাল স্বপ্ন বাস্তবায়নের জন্য আমরা প্রতিশ্রুতিবদ্ধ।"
-              : "We're not just developers—we're partners in your growth. Let's build something extraordinary together."}
+              : "We're not just developers—we're partners in your growth. Let's build something extraordinary together.")}
           </p>
         </motion.div>
 
@@ -327,7 +205,7 @@ export default function CTABridgeSection({ t, lang }: CTABridgeSectionProps) {
               whileTap={{ scale: 0.95 }}
               className="px-8 py-4 rounded-xl bg-gradient-to-r from-purple-600 to-purple-500 text-white font-bold text-lg shadow-lg hover:shadow-2xl transition-all duration-300 group flex items-center gap-3"
             >
-              {lang === "BN" ? "প্রকল্প শুরু করুন" : "Start Your Project"}
+              {t?.cta?.startProject || (lang === "BN" ? "প্রকল্প শুরু করুন" : "Start Your Project")}
               <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
             </motion.button>
           </Link>
@@ -338,7 +216,7 @@ export default function CTABridgeSection({ t, lang }: CTABridgeSectionProps) {
               whileTap={{ scale: 0.95 }}
               className="px-8 py-4 rounded-xl border-2 border-purple-500/50 text-white font-bold text-lg hover:bg-purple-500/10 transition-all duration-300 group flex items-center gap-3"
             >
-              {lang === "BN" ? "আমাদের দলে যোগ দিন" : "Join Our Team"}
+              {t?.cta?.joinTeam || (lang === "BN" ? "আমাদের দলে যোগ দিন" : "Join Our Team")}
               <CheckCircle2 className="w-5 h-5 group-hover:scale-110 transition-transform" />
             </motion.button>
           </Link>
@@ -352,9 +230,9 @@ export default function CTABridgeSection({ t, lang }: CTABridgeSectionProps) {
         >
           <div className="inline-flex items-center gap-2 text-white/30 text-sm">
             <div className="h-px w-4 bg-gradient-to-r from-transparent to-white/30" />
-            {lang === "BN"
+            {t?.cta?.bottomText || (lang === "BN"
               ? "নীচে আমাদের সাম্প্রতিক প্রকল্প দেখুন"
-              : "See Our Recent Work Below"}
+              : "See Our Recent Work Below")}
             <div className="h-px w-4 bg-gradient-to-l from-transparent to-white/30" />
           </div>
         </motion.div>

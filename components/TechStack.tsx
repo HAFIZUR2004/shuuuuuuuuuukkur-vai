@@ -29,8 +29,16 @@ import {
   Zap,
   Rocket,
   Eye,
+  Star,
+  Clock,
+  CheckCircle2,
+  Lock,
+  MessageCircle,
 } from "lucide-react";
 import { motion } from "framer-motion";
+
+// ✅ Import ParticleNetwork
+import ParticleNetwork from "@/components/ParticleNetwork";
 
 // টেকনোলজি লিস্ট - কম্প্যাক্ট ও সাজানো
 const technologies = [
@@ -286,7 +294,7 @@ const TechStack = ({ t, lang }: TechStackProps) => {
   const totalRows = Math.ceil(features.length / 2);
   const visibleRows = 2;
 
-  // Viewport detection with Intersection Observer instead of GSAP ScrollTrigger
+  // Viewport detection with Intersection Observer
   useEffect(() => {
     const observer = new IntersectionObserver(
       ([entry]) => {
@@ -366,28 +374,28 @@ const TechStack = ({ t, lang }: TechStackProps) => {
     [isVisible, hoveredTech],
   );
 
+  // Trust badges with Lucide icons
+  const trustBadges = [
+    { text: "24/7 Support", icon: Clock },
+    { text: "100% Client Satisfaction", icon: Star },
+    { text: "On-Time Delivery", icon: Rocket },
+    { text: "Enterprise Grade Security", icon: Lock },
+  ];
+
   return (
     <section
       ref={sectionRef}
-      className="relative py-32 px-6 overflow-hidden bg-gradient-to-b from-[#0a0b14] via-[#0a0b14] to-[#05060a]"
+      className="relative py-32 px-6 overflow-hidden bg-[#0b0c18]"
     >
-      {/* অ্যানিমেটেড ব্যাকগ্রাউন্ড */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[500px] bg-gradient-to-r from-purple-600/20 via-pink-600/10 to-cyan-600/20 rounded-full blur-[120px] animate-pulse" />
-        <div className="absolute bottom-0 right-0 w-[600px] h-[600px] bg-gradient-to-tl from-blue-600/10 to-transparent rounded-full blur-[100px]" />
-        <div className="absolute top-1/2 left-0 w-[400px] h-[400px] bg-purple-500/5 rounded-full blur-[80px]" />
-      </div>
-
-      {/* গ্রিড প্যাটার্ন */}
-      <div className="absolute inset-0 opacity-[0.02] pointer-events-none">
-        <div
-          className="absolute inset-0"
-          style={{
-            backgroundImage: `linear-gradient(rgba(255,255,255,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.05) 1px, transparent 1px)`,
-            backgroundSize: "60px 60px",
-          }}
-        />
-      </div>
+      {/* ✅ Particle Network Background - All other backgrounds removed */}
+      <ParticleNetwork 
+        particleCount={50}
+        opacity={0.3}
+        glowEffect={true}
+        // mouseInfluence={0.4}
+        connectionDistance={180}
+        className="absolute inset-0 z-0"
+      />
 
       <div className="max-w-7xl mx-auto relative z-10">
         {/* প্রিমিয়াম হেডার */}
@@ -420,7 +428,7 @@ const TechStack = ({ t, lang }: TechStackProps) => {
               : "We use cutting-edge tools & technologies to build exceptional digital experiences"}
           </p>
 
-          {/* অ্যানিমেটেড ডটস */}
+          {/* অ্যানিমেটেড ডটস - Lucide Sparkles ব্যবহার করে */}
           <div className="flex justify-center gap-2 mt-8">
             {[...Array(5)].map((_, i) => (
               <motion.div
@@ -526,7 +534,7 @@ const TechStack = ({ t, lang }: TechStackProps) => {
           <div className="relative flex items-center justify-center py-12 lg:py-0">
             {/* কন্টেইনড কন্টেইনার - বৃহত্তর */}
             <div className="relative w-full max-w-2xl aspect-square flex items-center justify-center">
-              {/* প্রিমিয়াম গ্লো লেয়ার */}
+              {/* প্রিমিয়াম গ্লো লেয়ার - ParticleNetwork দিয়ে রিপ্লেস করা হয়েছে */}
               <div className="absolute inset-0 pointer-events-none flex items-center justify-center">
                 <motion.div
                   className="absolute w-full h-full bg-gradient-to-r from-purple-600/20 via-purple-500/10 to-transparent rounded-full blur-3xl"
@@ -535,22 +543,6 @@ const TechStack = ({ t, lang }: TechStackProps) => {
                     opacity: [0.3, 0.5, 0.3],
                   }}
                   transition={{ duration: 3, repeat: Infinity }}
-                />
-                <motion.div
-                  className="absolute w-5/6 h-5/6 bg-gradient-to-l from-cyan-600/15 via-cyan-500/8 to-transparent rounded-full blur-3xl"
-                  animate={{
-                    scale: [0.95, 1.2, 0.95],
-                    opacity: [0.25, 0.45, 0.25],
-                  }}
-                  transition={{ duration: 4, repeat: Infinity, delay: 0.5 }}
-                />
-                <motion.div
-                  className="absolute w-2/3 h-2/3 bg-gradient-to-b from-pink-600/10 via-pink-500/5 to-transparent rounded-full blur-2xl"
-                  animate={{
-                    scale: [0.85, 1.1, 0.85],
-                    opacity: [0.2, 0.4, 0.2],
-                  }}
-                  transition={{ duration: 3.5, repeat: Infinity, delay: 1 }}
                 />
               </div>
 
@@ -624,7 +616,6 @@ const TechStack = ({ t, lang }: TechStackProps) => {
                   >
                     <div className="absolute inset-0 bg-gradient-to-br from-purple-500/8 to-cyan-500/8" />
                     <div className="relative z-10 text-center">
-                    
                       <div
                         className={`text-2xl font-black tracking-tight text-white drop-shadow-lg ${lang === "BN" ? "font-hind" : ""}`}
                       >
@@ -695,29 +686,27 @@ const TechStack = ({ t, lang }: TechStackProps) => {
           </div>
         </div>
 
-        {/* বটম ট্রাস্ট ব্যাজ */}
+        {/* বটম ট্রাস্ট ব্যাজ - সমস্ত ইমোজি সরিয়ে Lucide আইকন ব্যবহার করা হয়েছে */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.3 }}
           className="flex flex-wrap justify-center gap-4 mt-20 pt-8"
         >
-          {[
-            { text: "24/7 Support", icon: "💬" },
-            { text: "100% Client Satisfaction", icon: "⭐" },
-            { text: "On-Time Delivery", icon: "🚀" },
-            { text: "Enterprise Grade Security", icon: "🔒" },
-          ].map((badge, i) => (
-            <div
-              key={i}
-              className="flex items-center gap-2 px-4 py-2 rounded-full bg-white/[0.02] border border-white/5 hover:border-purple-500/30 transition-all duration-300"
-            >
-              <span className="text-sm">{badge.icon}</span>
-              <span className="text-white/40 text-[10px] font-mono uppercase tracking-wider">
-                {badge.text}
-              </span>
-            </div>
-          ))}
+          {trustBadges.map((badge, i) => {
+            const Icon = badge.icon;
+            return (
+              <div
+                key={i}
+                className="flex items-center gap-2 px-4 py-2 rounded-full bg-white/[0.02] border border-white/5 hover:border-purple-500/30 transition-all duration-300"
+              >
+                <Icon size={16} className="text-purple-400" />
+                <span className="text-white/40 text-[10px] font-mono uppercase tracking-wider">
+                  {badge.text}
+                </span>
+              </div>
+            );
+          })}
         </motion.div>
       </div>
     </section>

@@ -6,6 +6,12 @@ import Image from "next/image";
 import { useLanguage } from "@/constants/LanguageContext";
 import { translations } from "@/constants/translations";
 
+// ✅ Import ParticleNetwork
+import ParticleNetwork from "@/components/ParticleNetwork";
+
+// ✅ Lucide icons for trust badges
+import { Star, Users, Trophy, MessageCircle } from "lucide-react";
+
 // ✅ টেস্টিমোনিয়াল টাইপ ডিফাইন করুন (MongoDB _id স্ট্রিং হবে)
 interface TestimonialType {
   id: string; // MongoDB _id
@@ -32,7 +38,6 @@ const PremiumReviews = ({ t: propT, lang: propLang }: PremiumReviewsProps) => {
   const [touchStart, setTouchStart] = useState(0);
   const [touchEnd, setTouchEnd] = useState(0);
   const [testimonials, setTestimonials] = useState<TestimonialType[]>([]);
-  const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLElement>(null);
   const autoPlayRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -68,137 +73,7 @@ const PremiumReviews = ({ t: propT, lang: propLang }: PremiumReviewsProps) => {
     fetchTestimonials();
   }, []);
 
-  // Particle Network Canvas Effect (অপরিবর্তিত)
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-
-    const ctx = canvas.getContext("2d");
-    if (!ctx) return;
-
-    let animId: number;
-    let nodes: Array<{
-      x: number;
-      y: number;
-      vx: number;
-      vy: number;
-      r: number;
-      color: string;
-      pulse: number;
-      pulseDir: number;
-    }> = [];
-
-    const resize = () => {
-      const rect = canvas.parentElement?.getBoundingClientRect();
-      if (rect) {
-        canvas.width = rect.width;
-        canvas.height = rect.height;
-      } else {
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
-      }
-
-      const nodeCount = Math.min(
-        65,
-        Math.floor((canvas.width * canvas.height) / 20000),
-      );
-      nodes = [];
-
-      for (let i = 0; i < nodeCount; i++) {
-        nodes.push({
-          x: Math.random() * canvas.width,
-          y: Math.random() * canvas.height,
-          vx: (Math.random() - 0.5) * 0.35,
-          vy: (Math.random() - 0.5) * 0.35,
-          r: Math.random() * 2.8 + 1,
-          color:
-            Math.random() > 0.5
-              ? `rgba(139, 92, 246, ${Math.random() * 0.5 + 0.3})`
-              : `rgba(34, 211, 238, ${Math.random() * 0.5 + 0.2})`,
-          pulse: Math.random() * Math.PI * 2,
-          pulseDir: 0.02 + Math.random() * 0.03,
-        });
-      }
-    };
-
-    canvas.style.position = "absolute";
-    canvas.style.top = "0";
-    canvas.style.left = "0";
-    canvas.style.width = "100%";
-    canvas.style.height = "100%";
-
-    resize();
-    window.addEventListener("resize", resize);
-
-    const draw = () => {
-      if (!ctx || !canvas || nodes.length === 0) return;
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-      for (let i = 0; i < nodes.length; i++) {
-        for (let j = i + 1; j < nodes.length; j++) {
-          const dx = nodes[i].x - nodes[j].x;
-          const dy = nodes[i].y - nodes[j].y;
-          const distance = Math.sqrt(dx * dx + dy * dy);
-
-          if (distance < 170) {
-            ctx.beginPath();
-            ctx.moveTo(nodes[i].x, nodes[i].y);
-            ctx.lineTo(nodes[j].x, nodes[j].y);
-
-            const opacity = 0.1 * (1 - distance / 170);
-            const gradient = ctx.createLinearGradient(
-              nodes[i].x,
-              nodes[i].y,
-              nodes[j].x,
-              nodes[j].y,
-            );
-            gradient.addColorStop(0, `rgba(139, 92, 246, ${opacity})`);
-            gradient.addColorStop(1, `rgba(34, 211, 238, ${opacity})`);
-
-            ctx.strokeStyle = gradient;
-            ctx.lineWidth = 0.8;
-            ctx.stroke();
-          }
-        }
-      }
-
-      nodes.forEach((node) => {
-        const pulseRadius = node.r + Math.sin(node.pulse) * 0.8;
-        node.pulse += node.pulseDir;
-
-        ctx.beginPath();
-        ctx.arc(node.x, node.y, pulseRadius, 0, Math.PI * 2);
-        ctx.fillStyle = node.color;
-        ctx.fill();
-
-        if (node.r > 2) {
-          ctx.beginPath();
-          ctx.arc(node.x, node.y, node.r + 1.8, 0, Math.PI * 2);
-          ctx.fillStyle = `rgba(139, 92, 246, 0.05)`;
-          ctx.fill();
-        }
-
-        node.x += node.vx;
-        node.y += node.vy;
-
-        if (node.x < -50) node.x = canvas.width + 50;
-        if (node.x > canvas.width + 50) node.x = -50;
-        if (node.y < -50) node.y = canvas.height + 50;
-        if (node.y > canvas.height + 50) node.y = -50;
-      });
-
-      animId = requestAnimationFrame(draw);
-    };
-
-    draw();
-
-    return () => {
-      if (animId) cancelAnimationFrame(animId);
-      window.removeEventListener("resize", resize);
-    };
-  }, []);
-
-  // Auto-slide logic
+  // ✅ Auto-slide logic
   useEffect(() => {
     if (testimonials.length === 0) return;
 
@@ -245,7 +120,7 @@ const PremiumReviews = ({ t: propT, lang: propLang }: PremiumReviewsProps) => {
   // ✅ No data state
   if (testimonials.length === 0) {
     return (
-      <section className="relative py-16 md:py-24 lg:py-32 px-4 md:px-6 overflow-hidden bg-gradient-to-br from-[#0b0c18] via-[#0f0f1a] to-[#0b0c18]">
+      <section className="relative py-16 md:py-24 lg:py-32 px-4 md:px-6 overflow-hidden bg-[#0b0c18]">
         <div className="text-center">
           <p className="text-white/40">
             {t?.premiumReviews?.noData || "No testimonials available"}
@@ -257,21 +132,41 @@ const PremiumReviews = ({ t: propT, lang: propLang }: PremiumReviewsProps) => {
 
   const currentReview = testimonials[index];
 
-  // ✅ UI Rendering (বাকি অংশ অপরিবর্তিত)
+  // ✅ Trust badges with Lucide icons
+  const trustBadges = [
+    {
+      icon: Star,
+      text: t.premiumReviews?.trustBadges?.rating || "4.9/5 Average Rating",
+    },
+    {
+      icon: Users,
+      text: t.premiumReviews?.trustBadges?.happyClients || "200+ Happy Clients",
+    },
+    {
+      icon: Trophy,
+      text: t.premiumReviews?.trustBadges?.projectsDelivered || "50+ Projects Delivered",
+    },
+    {
+      icon: MessageCircle,
+      text: t.premiumReviews?.trustBadges?.support || "24/7 Support",
+    },
+  ];
+
+  // ✅ UI Rendering
   return (
     <section
       ref={containerRef}
-      className={`relative py-16 md:py-24 lg:py-32 px-4 md:px-6 overflow-hidden bg-gradient-to-br from-[#0b0c18] via-[#0f0f1a] to-[#0b0c18] ${lang === "BN" ? "font-hind" : ""}`}
+      className={`relative py-16 md:py-24 lg:py-32 px-4 md:px-6 overflow-hidden bg-[#0b0c18] ${lang === "BN" ? "font-hind" : ""}`}
     >
-      <canvas
-        ref={canvasRef}
-        className="absolute inset-0 w-full h-full pointer-events-none z-0"
-        style={{ opacity: 0.45 }}
+      {/* ✅ Particle Network Background */}
+      <ParticleNetwork 
+        particleCount={50}
+        opacity={0.4}
+        glowEffect={true}
+        // mouseInfluence={0.4}
+        connectionDistance={180}
+        className="absolute inset-0 z-0"
       />
-
-      <div className="absolute top-0 left-0 w-[300px] md:w-[500px] h-[300px] md:h-[500px] bg-purple-900/15 blur-[100px] md:blur-[120px] rounded-full -translate-x-1/2 -translate-y-1/2 pointer-events-none z-0" />
-      <div className="absolute bottom-0 right-0 w-[300px] md:w-[500px] h-[300px] md:h-[500px] bg-cyan-900/15 blur-[100px] md:blur-[120px] rounded-full translate-x-1/2 translate-y-1/2 pointer-events-none z-0" />
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] md:w-[600px] h-[400px] md:h-[600px] bg-purple-500/5 blur-[100px] rounded-full pointer-events-none z-0" />
 
       <div className="max-w-6xl mx-auto relative z-10">
         {/* Section Header */}
@@ -498,7 +393,7 @@ const PremiumReviews = ({ t: propT, lang: propLang }: PremiumReviewsProps) => {
           ))}
         </div>
 
-        {/* Trust Badges */}
+        {/* Trust Badges - Now using Lucide icons instead of emojis */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -506,43 +401,22 @@ const PremiumReviews = ({ t: propT, lang: propLang }: PremiumReviewsProps) => {
           viewport={{ once: true }}
           className="flex flex-wrap justify-center gap-4 md:gap-8 mt-12 md:mt-16 pt-6 md:pt-8 border-t border-white/5"
         >
-          {[
-            {
-              icon: "⭐",
-              text:
-                t.premiumReviews?.trustBadges?.rating || "4.9/5 Average Rating",
-            },
-            {
-              icon: "😊",
-              text:
-                t.premiumReviews?.trustBadges?.happyClients ||
-                "200+ Happy Clients",
-            },
-            {
-              icon: "🏆",
-              text:
-                t.premiumReviews?.trustBadges?.projectsDelivered ||
-                "50+ Projects Delivered",
-            },
-            {
-              icon: "💬",
-              text: t.premiumReviews?.trustBadges?.support || "24/7 Support",
-            },
-          ].map((badge, i) => (
-            <motion.div
-              key={i}
-              className="flex items-center gap-2"
-              whileHover={{ scale: 1.05 }}
-              transition={{ type: "spring", stiffness: 400 }}
-            >
-              <span className="text-cyan-500 text-sm md:text-base">
-                {badge.icon}
-              </span>
-              <span className="text-white/40 text-[10px] md:text-xs font-mono uppercase tracking-wider whitespace-nowrap">
-                {badge.text}
-              </span>
-            </motion.div>
-          ))}
+          {trustBadges.map((badge, i) => {
+            const Icon = badge.icon;
+            return (
+              <motion.div
+                key={i}
+                className="flex items-center gap-2"
+                whileHover={{ scale: 1.05 }}
+                transition={{ type: "spring", stiffness: 400 }}
+              >
+                <Icon className="w-5 h-5 text-cyan-500" />
+                <span className="text-white/40 text-[10px] md:text-xs font-mono uppercase tracking-wider whitespace-nowrap">
+                  {badge.text}
+                </span>
+              </motion.div>
+            );
+          })}
         </motion.div>
 
         <div className="block md:hidden text-center mt-6">

@@ -21,13 +21,15 @@ import {
   Phone,
   Mail,
   Loader2,
-  User,
   User2,
   MailIcon,
   MessageSquareIcon,
 } from "lucide-react";
 import Link from "next/link";
+
+// ✅ ParticleNetwork ইম্পোর্ট করা আছে
 import ParticleNetwork from "@/components/ParticleNetwork";
+
 import { PublicLayout } from "../public-layout";
 import { useLanguage } from "@/constants/LanguageContext";
 import { translations } from "@/constants/translations";
@@ -105,7 +107,6 @@ export default function ServicesPage() {
     desc: timelineList[idx]?.desc || "",
   }));
 
-  // Loading is now handled globally by LoadingProvider - no need for local loading state
   const timelineLineRef = useRef<HTMLDivElement>(null);
   const timelineScrollRef = useRef<HTMLDivElement>(null);
   const contactFormRef = useRef<HTMLDivElement>(null);
@@ -222,6 +223,8 @@ export default function ServicesPage() {
   return (
     <PublicLayout showFooter={true}>
       <main className="relative min-h-screen bg-[#05070a] font-hind text-white selection:bg-[#6c5ce7]/30 overflow-hidden">
+        
+        {/* ✅ Particle Network Background */}
         <ParticleNetwork
           opacity={0.4}
           particleCount={60}

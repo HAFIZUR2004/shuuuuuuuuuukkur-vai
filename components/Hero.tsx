@@ -8,7 +8,6 @@ interface HeroProps {
   lang: string;
 }
 
-// Memoize handlers to prevent recreations
 const Hero = ({ t, lang }: HeroProps) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const animIdRef = useRef<number | undefined>(undefined);
@@ -26,21 +25,39 @@ const Hero = ({ t, lang }: HeroProps) => {
     }
   }, []);
 
-  // Pre-calculate nodes with proper typing
+  // প্যার্টিকেল নোড তৈরি - অপ্টিমাইজড
   const nodes = useMemo(
     () =>
-      Array.from({ length: 25 }, () => ({
-        // Reduced from 35 to 25 particles
+      Array.from({ length: 20 }, () => ({
         x: Math.random() * 1000,
         y: Math.random() * 1000,
-        vx: (Math.random() - 0.5) * 0.2, // Reduced velocity
-        vy: (Math.random() - 0.5) * 0.2,
-        r: Math.random() * 2 + 0.8,
+        vx: (Math.random() - 0.5) * 0.15,
+        vy: (Math.random() - 0.5) * 0.15,
+        r: Math.random() * 1.5 + 0.5,
+        baseR: Math.random() * 1.5 + 0.5,
       })),
     [],
   );
 
-  // Optimize canvas animation with better throttling
+  // মাউস ইন্টারঅ্যাকশন
+  const mouseRef = useRef({ x: -1000, y: -1000, radius: 200 });
+
+  const handleMouseMove = useCallback((e: MouseEvent) => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const rect = canvas.getBoundingClientRect();
+    mouseRef.current = {
+      x: e.clientX - rect.left,
+      y: e.clientY - rect.top,
+      radius: 180,
+    };
+  }, []);
+
+  const handleMouseLeave = useCallback(() => {
+    mouseRef.current = { x: -1000, y: -1000, radius: 200 };
+  }, []);
+
+  // ক্যানভাস অ্যানিমেশন
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -51,18 +68,22 @@ const Hero = ({ t, lang }: HeroProps) => {
     let lastResizeTime = 0;
     const RESIZE_THROTTLE = 100;
 
+    // রিসাইজ ফাংশন
     const resize = () => {
       const now = Date.now();
       if (now - lastResizeTime < RESIZE_THROTTLE) return;
       lastResizeTime = now;
 
-      canvas.width = canvas.offsetWidth;
-      canvas.height = canvas.offsetHeight;
+      const rect = canvas.getBoundingClientRect();
+      const dpr = window.devicePixelRatio || 1;
+      canvas.width = rect.width * dpr;
+      canvas.height = rect.height * dpr;
+      ctx.scale(dpr, dpr);
     };
 
     resize();
 
-    // Throttle resize listener
+    // রিসাইজ ইভেন্ট লিসেনার
     let resizeTimeout: NodeJS.Timeout;
     const handleResize = () => {
       clearTimeout(resizeTimeout);
@@ -71,7 +92,11 @@ const Hero = ({ t, lang }: HeroProps) => {
 
     window.addEventListener("resize", handleResize, { passive: true });
 
-    // Viewport detection - only animate when visible
+    // মাউস ইভেন্ট
+    canvas.addEventListener("mousemove", handleMouseMove);
+    canvas.addEventListener("mouseleave", handleMouseLeave);
+
+    // ভিউপোর্ট ডিটেকশন
     const observer = new IntersectionObserver(
       ([entry]) => {
         isVisibleRef.current = entry.isIntersecting;
@@ -80,25 +105,98 @@ const Hero = ({ t, lang }: HeroProps) => {
     );
     observer.observe(canvas);
 
-    // Optimized draw function - reduce distance checks
-    const connectionDistance = 110;
-    const maxConnectionDistance = 160;
-    const draw = () => {
+    // অপ্টিমাইজড ড্রইং ফাংশন
+    let lastFrameTime = 0;
+    const FRAME_INTERVAL = 1000 / 60; // 60 FPS
+
+    const draw = (timestamp: number) => {
       if (!isVisibleRef.current) {
         animIdRef.current = requestAnimationFrame(draw);
         return;
       }
 
-      const W = canvas.width;
-      const H = canvas.height;
+      // ফ্রেম রেট লিমিট
+      if (timestamp - lastFrameTime < FRAME_INTERVAL) {
+        animIdRef.current = requestAnimationFrame(draw);
+        return;
+      }
+      lastFrameTime = timestamp;
 
-      // Use fillRect instead of clearRect for better performance
-      ctx.fillStyle = "rgba(10, 11, 20, 0)";
+      const W = canvas.width / (window.devicePixelRatio || 1);
+      const H = canvas.height / (window.devicePixelRatio || 1);
+
+      // ক্লিয়ার ক্যানভাস (অপ্টিমাইজড)
+      ctx.clearRect(0, 0, W, H);
+
+      // ব্যাকগ্রাউন্ড (স্বচ্ছ)
+      ctx.fillStyle = "rgba(11, 12, 24, 0)";
       ctx.fillRect(0, 0, W, H);
 
-      // Batch connection drawing - only check nearby particles
+      // কানেকশন ডিসট্যান্স
+      const connectionDistance = 100;
+      const maxConnectionDistance = 150;
       const connectionDistSq = connectionDistance * connectionDistance;
 
+      // মাউসের সাথে ইন্টারঅ্যাকশন
+      const mouse = mouseRef.current;
+
+      // পার্টিকেল আপডেট এবং ড্রইং
+      nodes.forEach((n, i) => {
+        // মাউসের সাথে ইন্টারঅ্যাকশন
+        const dx = mouse.x - n.x;
+        const dy = mouse.y - n.y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        
+        if (dist < mouse.radius && dist > 0) {
+          const force = (mouse.radius - dist) / mouse.radius;
+          const directionX = dx / dist;
+          const directionY = dy / dist;
+          n.vx += directionX * force * 0.2;
+          n.vy += directionY * force * 0.2;
+          
+          // মাউসের কাছে গেলে সাইজ বাড়ানো
+          n.r = n.baseR + force * 1.5;
+        } else {
+          n.r = n.baseR;
+        }
+
+        // পজিশন আপডেট
+        n.x += n.vx;
+        n.y += n.vy;
+
+        // ড্যাম্পিং (স্লো ডাউন)
+        n.vx *= 0.98;
+        n.vy *= 0.98;
+
+        // বাউন্স
+        if (n.x < 0 || n.x > W) {
+          n.vx *= -1;
+          n.x = Math.max(0, Math.min(W, n.x));
+        }
+        if (n.y < 0 || n.y > H) {
+          n.vy *= -1;
+          n.y = Math.max(0, Math.min(H, n.y));
+        }
+
+        // পার্টিকেল ড্রইং
+        ctx.beginPath();
+        ctx.arc(n.x, n.y, n.r, 0, Math.PI * 2);
+        
+        // মাউসের কাছে গেলে রঙ পরিবর্তন
+        const glowIntensity = dist < mouse.radius ? 0.8 : 0.5;
+        ctx.fillStyle = `rgba(140, 100, 240, ${glowIntensity})`;
+        ctx.fill();
+        
+        // গ্লো ইফেক্ট
+        if (dist < mouse.radius) {
+          ctx.shadowColor = "rgba(140, 100, 240, 0.6)";
+          ctx.shadowBlur = 15;
+          ctx.fill();
+          ctx.shadowBlur = 0;
+        }
+      });
+
+      // কানেকশন লাইন ড্রইং (অপ্টিমাইজড)
       for (let i = 0; i < nodes.length; i++) {
         for (let j = i + 1; j < nodes.length; j++) {
           const dx = nodes[i].x - nodes[j].x;
@@ -107,43 +205,59 @@ const Hero = ({ t, lang }: HeroProps) => {
 
           if (distSq < connectionDistSq) {
             const d = Math.sqrt(distSq);
+            const alpha = 0.2 * (1 - d / maxConnectionDistance);
+            
+            // মাউসের কাছে থাকলে লাইন মোটা এবং উজ্জ্বল
+            const mx = mouse.x;
+            const my = mouse.y;
+            const midX = (nodes[i].x + nodes[j].x) / 2;
+            const midY = (nodes[i].y + nodes[j].y) / 2;
+            const mouseDist = Math.sqrt((midX - mx) ** 2 + (midY - my) ** 2);
+            
+            let lineAlpha = alpha;
+            let lineWidth = 0.7;
+            
+            if (mouseDist < mouse.radius) {
+              const boost = 1 - mouseDist / mouse.radius;
+              lineAlpha = alpha + boost * 0.4;
+              lineWidth = 0.7 + boost * 1.5;
+            }
+
             ctx.beginPath();
             ctx.moveTo(nodes[i].x, nodes[i].y);
             ctx.lineTo(nodes[j].x, nodes[j].y);
-            ctx.strokeStyle = `rgba(120,80,220,${0.22 * (1 - d / maxConnectionDistance)})`;
-            ctx.lineWidth = 0.7;
+            ctx.strokeStyle = `rgba(140, 100, 240, ${lineAlpha})`;
+            ctx.lineWidth = lineWidth;
+            
+            // লাইনে গ্লো ইফেক্ট
+            if (mouseDist < mouse.radius) {
+              ctx.shadowColor = "rgba(140, 100, 240, 0.3)";
+              ctx.shadowBlur = 8;
+            }
+            
             ctx.stroke();
+            ctx.shadowBlur = 0;
           }
         }
       }
 
-      // Draw and update particles
-      ctx.fillStyle = "rgba(140,100,240,0.75)";
-      nodes.forEach((n) => {
-        ctx.beginPath();
-        ctx.arc(n.x, n.y, n.r, 0, Math.PI * 2);
-        ctx.fill();
-
-        n.x += n.vx;
-        n.y += n.vy;
-
-        // Bounce off walls
-        if (n.x < 0 || n.x > W) n.vx *= -1;
-        if (n.y < 0 || n.y > H) n.vy *= -1;
-      });
-
+      // পরবর্তী ফ্রেম
       animIdRef.current = requestAnimationFrame(draw);
     };
 
-    draw();
+    // অ্যানিমেশন শুরু
+    draw(0);
 
+    // ক্লিনআপ
     return () => {
       if (animIdRef.current) cancelAnimationFrame(animIdRef.current);
       clearTimeout(resizeTimeout);
       window.removeEventListener("resize", handleResize);
+      canvas.removeEventListener("mousemove", handleMouseMove);
+      canvas.removeEventListener("mouseleave", handleMouseLeave);
       observer.disconnect();
     };
-  }, [nodes]);
+  }, [nodes, handleMouseMove, handleMouseLeave]);
 
   return (
     <>
@@ -153,7 +267,7 @@ const Hero = ({ t, lang }: HeroProps) => {
         <div className="glow-left" aria-hidden />
         <div className="glow-bottom" aria-hidden />
 
-        {/* Subtle background gradient for depth */}
+        {/* ব্যাকগ্রাউন্ড গ্রেডিয়েন্ট */}
         <div
           className="bg-gradient"
           aria-hidden
@@ -163,7 +277,7 @@ const Hero = ({ t, lang }: HeroProps) => {
           }}
         />
 
-        {/* Bottom wave lines */}
+        {/* তরঙ্গ রেখা */}
         <svg
           className="waves"
           viewBox="0 0 1440 220"
@@ -190,18 +304,18 @@ const Hero = ({ t, lang }: HeroProps) => {
           />
         </svg>
 
-        {/* Globe */}
+        {/* গ্লোব */}
         <div className="globe-wrap" aria-hidden>
           <GlobeSVG />
         </div>
 
-        {/* 99.99% stat card */}
+        {/* স্ট্যাট কার্ড */}
         <div className="stat-card">
           <span className="stat-value">{t.statValue}</span>
           <span className="stat-label">{t.statLabel}</span>
         </div>
 
-        {/* Mini chart widget */}
+        {/* চার্ট উইজেট */}
         <div className="chart-widget" aria-hidden>
           <svg viewBox="0 0 80 40" width="80" height="40">
             <polyline
@@ -214,20 +328,22 @@ const Hero = ({ t, lang }: HeroProps) => {
           </svg>
         </div>
 
-        {/* Left content */}
+        {/* প্রধান কন্টেন্ট */}
         <div className="content">
           <div className="badge">
             <span className="badge-dot" />
             {t.heroBadge}
           </div>
 
-          <h1 className="heading">
+          <h1 className={`heading ${lang === 'bn' ? 'bangla' : ''}`}>
             {t.heroHeading1}
             <br />
             {t.heroHeading2}
           </h1>
 
-          <p className="desc">{t.heroDesc}</p>
+          <p className={`desc ${lang === 'bn' ? 'bangla' : ''}`}>
+            {t.heroDesc}
+          </p>
 
           <div className="btns">
             <button className="btn btn-primary" onClick={handleContactClick}>
@@ -243,97 +359,30 @@ const Hero = ({ t, lang }: HeroProps) => {
   );
 };
 
-/* ── Globe Component ── */
+/* ── গ্লোব কম্পোনেন্ট ── */
 function GlobeSVG() {
   const continentDots: [number, number][] = [
-    // Europe
-    [258, 148],
-    [265, 143],
-    [272, 140],
-    [280, 138],
-    [288, 137],
-    [295, 139],
-    [302, 142],
-    [268, 152],
-    [275, 150],
-    [282, 149],
-    [290, 148],
-    [297, 150],
-    [303, 153],
-    [270, 158],
-    [277, 156],
-    [284, 155],
-    [291, 154],
-    [298, 156],
-    [272, 164],
-    [279, 162],
-    [286, 161],
-    [292, 162],
-    // Africa
-    [265, 175],
-    [272, 173],
-    [279, 172],
-    [286, 171],
-    [292, 172],
-    [298, 174],
-    [263, 182],
-    [270, 181],
-    [277, 180],
-    [284, 180],
-    [290, 181],
-    [296, 182],
-    [261, 190],
-    [268, 189],
-    [275, 189],
-    [282, 189],
-    [288, 190],
-    [294, 192],
-    [260, 198],
-    [267, 198],
-    [274, 198],
-    [280, 199],
-    [286, 200],
-    [262, 207],
-    [268, 207],
-    [274, 208],
-    [280, 209],
-    [264, 216],
-    [270, 217],
-    [275, 218],
-    [267, 225],
-    [272, 226],
-    // Asia
-    [306, 140],
-    [313, 138],
-    [320, 137],
-    [327, 138],
-    [334, 140],
-    [340, 143],
-    [308, 147],
-    [315, 146],
-    [322, 145],
-    [329, 146],
-    [336, 148],
-    [310, 154],
-    [317, 153],
-    [324, 153],
-    [330, 154],
-    [336, 156],
-    [312, 161],
-    [318, 161],
-    [324, 162],
-    [330, 163],
-    [308, 168],
-    [314, 169],
-    [320, 170],
-    [325, 172],
-    [305, 176],
-    [310, 177],
-    [315, 178],
-    [320, 180],
-    [300, 162],
-    [300, 168],
-    [300, 175],
+    // ইউরোপ
+    [258, 148], [265, 143], [272, 140], [280, 138], [288, 137], [295, 139], [302, 142],
+    [268, 152], [275, 150], [282, 149], [290, 148], [297, 150], [303, 153],
+    [270, 158], [277, 156], [284, 155], [291, 154], [298, 156],
+    [272, 164], [279, 162], [286, 161], [292, 162],
+    // আফ্রিকা
+    [265, 175], [272, 173], [279, 172], [286, 171], [292, 172], [298, 174],
+    [263, 182], [270, 181], [277, 180], [284, 180], [290, 181], [296, 182],
+    [261, 190], [268, 189], [275, 189], [282, 189], [288, 190], [294, 192],
+    [260, 198], [267, 198], [274, 198], [280, 199], [286, 200],
+    [262, 207], [268, 207], [274, 208], [280, 209],
+    [264, 216], [270, 217], [275, 218],
+    [267, 225], [272, 226],
+    // এশিয়া
+    [306, 140], [313, 138], [320, 137], [327, 138], [334, 140], [340, 143],
+    [308, 147], [315, 146], [322, 145], [329, 146], [336, 148],
+    [310, 154], [317, 153], [324, 153], [330, 154], [336, 156],
+    [312, 161], [318, 161], [324, 162], [330, 163],
+    [308, 168], [314, 169], [320, 170], [325, 172],
+    [305, 176], [310, 177], [315, 178], [320, 180],
+    [300, 162], [300, 168], [300, 175],
   ];
 
   const hexTiles: [number, number][] = [];
@@ -385,34 +434,12 @@ function GlobeSVG() {
         </filter>
       </defs>
 
-      {/* Glow halos */}
-      <circle
-        cx="290"
-        cy="230"
-        r="245"
-        fill="url(#outerGlow)"
-        filter="url(#gf)"
-      />
-      <ellipse
-        cx="430"
-        cy="230"
-        rx="190"
-        ry="165"
-        fill="url(#tealGlow)"
-        filter="url(#gf)"
-      />
+      {/* গ্লো হ্যালো */}
+      <circle cx="290" cy="230" r="245" fill="url(#outerGlow)" filter="url(#gf)" />
+      <ellipse cx="430" cy="230" rx="190" ry="165" fill="url(#tealGlow)" filter="url(#gf)" />
 
-      {/* Outer orbit ring */}
-      <ellipse
-        cx="290"
-        cy="230"
-        rx="272"
-        ry="62"
-        fill="none"
-        stroke="rgba(140,100,240,0.3)"
-        strokeWidth="1"
-        transform="rotate(-14 290 230)"
-      />
+      {/* বাইরের অরবিট রিং */}
+      <ellipse cx="290" cy="230" rx="272" ry="62" fill="none" stroke="rgba(140,100,240,0.3)" strokeWidth="1" transform="rotate(-14 290 230)" />
       {([[-14], [76], [166], [256]] as [number][]).map(([a], i) => {
         const r = (a * Math.PI) / 180;
         return (
@@ -428,19 +455,10 @@ function GlobeSVG() {
         );
       })}
 
-      {/* Second orbit */}
-      <ellipse
-        cx="290"
-        cy="230"
-        rx="242"
-        ry="50"
-        fill="none"
-        stroke="rgba(120,80,210,0.22)"
-        strokeWidth="0.8"
-        transform="rotate(10 290 230)"
-      />
+      {/* দ্বিতীয় অরবিট */}
+      <ellipse cx="290" cy="230" rx="242" ry="50" fill="none" stroke="rgba(120,80,210,0.22)" strokeWidth="0.8" transform="rotate(10 290 230)" />
 
-      {/* Left wireframe cage */}
+      {/* তারের খাঁচা - বাম */}
       {[-35, -18, 0, 18, 35].map((off, i) => (
         <ellipse
           key={i}
@@ -455,7 +473,7 @@ function GlobeSVG() {
         />
       ))}
 
-      {/* Right wireframe cage */}
+      {/* তারের খাঁচা - ডান */}
       {[-28, 0, 28].map((off, i) => (
         <ellipse
           key={i}
@@ -470,10 +488,10 @@ function GlobeSVG() {
         />
       ))}
 
-      {/* Globe body */}
+      {/* গ্লোব বডি */}
       <circle cx="290" cy="230" r="185" fill="url(#globeFill)" />
 
-      {/* Latitude lines */}
+      {/* অক্ষাংশ রেখা */}
       {[-60, -30, 0, 30, 60].map((lat) => {
         const y2 = 230 + (lat / 90) * 185;
         const rx2 = Math.cos((lat * Math.PI) / 180) * 185;
@@ -491,7 +509,8 @@ function GlobeSVG() {
           />
         );
       })}
-      {/* Longitude lines */}
+      
+      {/* দ্রাঘিমাংশ রেখা */}
       {[0, 30, 60, 90, 120, 150].map((lng) => (
         <ellipse
           key={lng}
@@ -507,14 +526,14 @@ function GlobeSVG() {
         />
       ))}
 
-      {/* Dot-matrix continents */}
+      {/* ডট-ম্যাট্রিক্স মহাদেশ */}
       <g clipPath="url(#gc)">
         {continentDots.map(([x, y], i) => (
           <circle key={i} cx={x} cy={y} r="2.3" fill="rgba(200,180,255,0.78)" />
         ))}
       </g>
 
-      {/* Hex tile region */}
+      {/* হেক্স টাইল অঞ্চল */}
       <g clipPath="url(#gc)">
         {hexTiles.map(([x, y], i) => (
           <polygon
@@ -527,7 +546,7 @@ function GlobeSVG() {
         ))}
       </g>
 
-      {/* Specular highlight */}
+      {/* স্পেকুলার হাইলাইট */}
       <ellipse
         cx="242"
         cy="178"
@@ -538,16 +557,11 @@ function GlobeSVG() {
         clipPath="url(#gc)"
       />
 
-      {/* Network nodes on globe */}
+      {/* নেটওয়ার্ক নোড */}
       {(
         [
-          [258, 148],
-          [310, 155],
-          [340, 175],
-          [295, 200],
-          [270, 222],
-          [325, 140],
-          [360, 195],
+          [258, 148], [310, 155], [340, 175], [295, 200], [270, 222],
+          [325, 140], [360, 195],
         ] as [number, number][]
       ).map(([x, y], i) => (
         <circle
@@ -561,7 +575,7 @@ function GlobeSVG() {
         />
       ))}
 
-      {/* Lines between globe nodes */}
+      {/* নোডের মধ্যে সংযোগ লাইন */}
       {(
         [
           [258, 148, 310, 155],
@@ -584,78 +598,22 @@ function GlobeSVG() {
         />
       ))}
 
-      {/* External network nodes + lines */}
-      <circle
-        cx="105"
-        cy="88"
-        r="4.5"
-        fill="#7c3aed"
-        opacity="0.75"
-        filter="url(#sf)"
-      />
+      {/* বাহ্যিক নেটওয়ার্ক নোড */}
+      <circle cx="105" cy="88" r="4.5" fill="#7c3aed" opacity="0.75" filter="url(#sf)" />
       <circle cx="58" cy="138" r="3" fill="#7c3aed" opacity="0.6" />
-      <line
-        x1="105"
-        y1="88"
-        x2="178"
-        y2="155"
-        stroke="rgba(120,80,220,0.3)"
-        strokeWidth="0.8"
-      />
-      <line
-        x1="105"
-        y1="88"
-        x2="58"
-        y2="138"
-        stroke="rgba(120,80,220,0.25)"
-        strokeWidth="0.8"
-      />
+      <line x1="105" y1="88" x2="178" y2="155" stroke="rgba(120,80,220,0.3)" strokeWidth="0.8" />
+      <line x1="105" y1="88" x2="58" y2="138" stroke="rgba(120,80,220,0.25)" strokeWidth="0.8" />
 
-      <circle
-        cx="512"
-        cy="88"
-        r="4.5"
-        fill="#7c3aed"
-        opacity="0.75"
-        filter="url(#sf)"
-      />
+      <circle cx="512" cy="88" r="4.5" fill="#7c3aed" opacity="0.75" filter="url(#sf)" />
       <circle cx="562" cy="143" r="3" fill="#7c3aed" opacity="0.55" />
-      <line
-        x1="512"
-        y1="88"
-        x2="442"
-        y2="155"
-        stroke="rgba(120,80,220,0.3)"
-        strokeWidth="0.8"
-      />
-      <line
-        x1="512"
-        y1="88"
-        x2="562"
-        y2="143"
-        stroke="rgba(120,80,220,0.25)"
-        strokeWidth="0.8"
-      />
+      <line x1="512" y1="88" x2="442" y2="155" stroke="rgba(120,80,220,0.3)" strokeWidth="0.8" />
+      <line x1="512" y1="88" x2="562" y2="143" stroke="rgba(120,80,220,0.25)" strokeWidth="0.8" />
 
       <circle cx="78" cy="322" r="3.5" fill="#7c3aed" opacity="0.65" />
-      <line
-        x1="78"
-        y1="322"
-        x2="140"
-        y2="282"
-        stroke="rgba(120,80,220,0.28)"
-        strokeWidth="0.8"
-      />
+      <line x1="78" y1="322" x2="140" y2="282" stroke="rgba(120,80,220,0.28)" strokeWidth="0.8" />
 
       <circle cx="522" cy="352" r="3.5" fill="#7c3aed" opacity="0.65" />
-      <line
-        x1="522"
-        y1="352"
-        x2="456"
-        y2="312"
-        stroke="rgba(120,80,220,0.28)"
-        strokeWidth="0.8"
-      />
+      <line x1="522" y1="352" x2="456" y2="312" stroke="rgba(120,80,220,0.28)" strokeWidth="0.8" />
     </svg>
   );
 }
@@ -670,7 +628,6 @@ function hexPts(cx: number, cy: number, s: number): string {
 }
 
 const css = `
-
   .hero {
     position: relative;
     width: 100%;
@@ -685,12 +642,10 @@ const css = `
     font-family: 'Inter', 'Hind Siliguri', sans-serif;
   }
   
-  /* বাংলা টেক্সটের জন্য স্পেসিফিক ক্লাস */
-  .bangla-text {
+  .bangla-text, .bangla {
     font-family: 'Hind Siliguri', 'Inter', sans-serif;
   }
   
-  /* Subtle background gradient for depth */
   .bg-gradient {
     position: absolute;
     inset: 0;
@@ -704,9 +659,11 @@ const css = `
     inset: 0;
     width: 100%;
     height: 100%;
-    pointer-events: none;
+    pointer-events: auto;
     z-index: 0;
+    cursor: default;
   }
+  
   .glow-left {
     position: absolute;
     left: -130px;
@@ -719,6 +676,7 @@ const css = `
     pointer-events: none;
     z-index: 0;
   }
+  
   .glow-bottom {
     position: absolute;
     left: -60px;
@@ -730,6 +688,7 @@ const css = `
     pointer-events: none;
     z-index: 0;
   }
+  
   .waves {
     position: absolute;
     bottom: 0;
@@ -739,6 +698,7 @@ const css = `
     pointer-events: none;
     z-index: 1;
   }
+  
   .globe-wrap {
     position: absolute;
     right: 5%;
@@ -751,10 +711,12 @@ const css = `
     pointer-events: none;
     animation: floatG 7s ease-in-out infinite;
   }
+  
   @keyframes floatG {
     0%,100% { transform: translateY(-50%) translateY(0); }
     50%      { transform: translateY(-50%) translateY(-16px); }
   }
+  
   .stat-card {
     margin-top: 10px;
     position: absolute;
@@ -770,6 +732,7 @@ const css = `
     animation: fadeUp 1s 0.6s ease both;
     text-align: center;
   }
+  
   .stat-value {
     display: block;
     font-size: 2rem;
@@ -778,6 +741,7 @@ const css = `
     letter-spacing: -0.02em;
     line-height: 1;
   }
+  
   .stat-label {
     display: block;
     font-size: 11px;
@@ -785,6 +749,7 @@ const css = `
     margin-top: 5px;
     letter-spacing: 0.05em;
   }
+  
   .chart-widget {
     margin-top: 50px;
     position: absolute;
@@ -797,6 +762,7 @@ const css = `
     backdrop-filter: blur(8px);
     z-index: 10;
   }
+  
   .content { 
     position: relative;
     z-index: 10;
@@ -807,10 +773,12 @@ const css = `
     margin-top: 60px;
     animation: fadeUp 0.8s ease both;
   }
+  
   @keyframes fadeUp {
     from { opacity: 0; transform: translateY(24px); }
     to   { opacity: 1; transform: translateY(0); }
   }
+  
   .badge {
     display: inline-flex;
     align-items: center;
@@ -826,6 +794,7 @@ const css = `
     margin-bottom: 22px;
     backdrop-filter: blur(6px);
   }
+  
   .badge-dot {
     width: 10px;
     height: 10px;
@@ -835,10 +804,12 @@ const css = `
     flex-shrink: 0;
     animation: dotP 2s ease-in-out infinite;
   }
+  
   @keyframes dotP {
     0%,100% { opacity: 1; transform: scale(1); }
     50%      { opacity: 0.55; transform: scale(1.28); }
   }
+  
   .heading {
     font-size: clamp(2.2rem, 4vw, 3.8rem);
     font-weight: 900;
@@ -848,11 +819,12 @@ const css = `
     letter-spacing: -0.025em;
     animation: fadeUp 0.8s 0.12s ease both;
   }
-  /* বাংলা হেডিংয়ের জন্য */
+  
   .heading.bangla {
     font-family: 'Hind Siliguri', sans-serif;
     font-weight: 700;
   }
+  
   .desc {
     font-size: clamp(0.85rem, 1vw, 1rem);
     line-height: 1.7;
@@ -861,17 +833,19 @@ const css = `
     max-width: 90%;
     animation: fadeUp 0.8s 0.22s ease both;
   }
-  /* বাংলা ডেসক্রিপশনের জন্য */
+  
   .desc.bangla {
     font-family: 'Hind Siliguri', sans-serif;
     font-weight: 400;
   }
+  
   .btns {
     display: flex;
     gap: 14px;
     flex-wrap: wrap;
     animation: fadeUp 0.8s 0.34s ease both;
   }
+  
   .btn {
     padding: 14px 28px;
     border-radius: 999px;
@@ -883,27 +857,32 @@ const css = `
     transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
     letter-spacing: 0.01em;
   }
+  
   .btn:hover { transform: translateY(-2px); }
+  
   .btn-primary {
     background: #6d28d9;
     color: #fff;
     box-shadow: 0 4px 22px rgba(109,40,217,0.55);
   }
+  
   .btn-primary:hover {
     background: #7c3aed;
     box-shadow: 0 8px 32px rgba(109,40,217,0.7);
   }
+  
   .btn-secondary {
     background: rgba(38,34,62,0.88);
     color: rgba(255,255,255,0.9);
     border: 1px solid rgba(140,115,250,0.3);
     backdrop-filter: blur(6px);
   }
+  
   .btn-secondary:hover {
     background: rgba(52,46,80,0.92);
   }
 
-  /* 1536px and above - center content like EngineeringProtocol */
+  /* 1536px এবং তার উপরে */
   @media (min-width: 1536px) {
     .content {
       max-width: 1536px;
@@ -920,7 +899,7 @@ const css = `
     }
   }
 
-  /* 14-inch Laptop (zoom 90% fix) */
+  /* 14-ইঞ্চি ল্যাপটপ */
   @media (min-width: 1280px) and (max-width: 1440px) {
     .hero {
       min-height: 100vh;
@@ -956,7 +935,7 @@ const css = `
     }
   }
 
-  /* Large Desktop (1600px and above) */
+  /* বড় ডেস্কটপ */
   @media (min-width: 1600px) {
     .content {
       max-width: 1400px;
@@ -973,7 +952,7 @@ const css = `
     }
   }
 
-  /* Ultra Wide (2000px and above) */
+  /* আল্ট্রা ওয়াইড */
   @media (min-width: 2000px) {
     .content {
       max-width: 1600px;
@@ -988,7 +967,7 @@ const css = `
     }
   }
 
-  /* Tablet Landscape */
+  /* ট্যাবলেট ল্যান্ডস্কেপ */
   @media (max-width: 1200px) {
     .hero {
       min-height: auto;
@@ -1034,7 +1013,7 @@ const css = `
     }
   }
 
-  /* Tablet Portrait */
+  /* ট্যাবলেট পোর্ট্রেট */
   @media (max-width: 992px) {
     .globe-wrap {
       width: min(300px, 35vw);
@@ -1068,7 +1047,7 @@ const css = `
     }
   }
 
-  /* Mobile & small tablet */
+  /* মোবাইল ও ছোট ট্যাবলেট */
   @media (max-width: 860px) {
     .globe-wrap, 
     .stat-card, 
@@ -1111,7 +1090,7 @@ const css = `
     }
   }
 
-  /* Small mobile */
+  /* ছোট মোবাইল */
   @media (max-width: 480px) {
     .content {
       max-width: 100%;
@@ -1133,11 +1112,11 @@ const css = `
     }
     .badge {
       font-size: 10px;
-      padding: 5px 12px 5px 8;
-         }
+      padding: 5px 12px 5px 8px;
+    }
   }
 
-  /* Extra small height fix for zoom out */
+  /* ছোট উচ্চতা */
   @media (max-height: 700px) {
     .hero {
       min-height: auto;

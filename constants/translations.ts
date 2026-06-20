@@ -18,8 +18,7 @@ export const translations = {
     businessSolutions: "Business Solutions",
 
     //Footer
-    footerDesc:
-      "Building scalable networks and technical excellence for global business expansion.",
+footerDesc: "Building scalable networks and technical excellence for global business expansion.",
     solutions: "Solutions",
     protocol: "Protocol",
     terminal: "Terminal",
@@ -30,6 +29,20 @@ export const translations = {
     corev3: "Core V3",
     uptime: "Uptime",
     nodes: "Nodes",
+    quickLinkTitle: "Quick Link",
+    home: "Home",
+    aboutUs: "About Us",
+    // ফুটারের জন্য services কী আলাদা নাম দিন অথবা নেভবারের সাথে কনফ্লিক্ট এড়ান
+    footerServices: "Services",  // অথবা services কী ব্যবহার করুন কিন্তু নেভবারের সাথে ম্যাচ করবে
+    product: "Product",
+    blogTitle: "Blog",
+    blogPost1: "Anything You Want To Know Is Here",
+    blogPost2: "Anything You Want To Know Is Here",
+    contactTitle: "Contact",
+    address: "House 76/A, Road 11, Banani, Dhaka, Banani Model Town, Bangladesh",
+    footerPhone: "+880 1726 441994",
+    allRights: "All rights reserved.",
+
 
     //Hero
     heroBadge: "Grow Business Solutions BD",
@@ -281,7 +294,7 @@ export const translations = {
     successMessage: "Transmission successful. Node will respond within 24h.",
     quantumLine: "Quantum_Line",
     neuralLink: "Neural_Link",
-    phone: "+880 1234 567 890",
+    phone: "+880 1726 441994",
     email: "contact@growbusiness.solutions",
     sendMessage: "Send a Message",
     connectUs: "Connect With Us",
@@ -423,7 +436,7 @@ export const translations = {
       readyTitleItalic: "DOMINATE?",
       email: "growbusinesssolutionsbd@gmail.com",
       globalDelivery: "Global Delivery Center",
-      phone: "+880 1884 369340",
+      phone: "+880 1726 441994",
       formName: "Full Name",
       formEmail: "Work Email",
       formRequirements: "Project Requirements...",
@@ -746,8 +759,8 @@ export const translations = {
     businessSolutions: "বিজনেস সলিউশনস",
 
     //Footer
-    footerDesc:
-      "বৈশ্বিক ব্যবসায়িক প্রসারের জন্য আমরা তৈরি করি উন্নত নেটওয়ার্ক এবং টেকনিক্যাল শ্রেষ্ঠত্ব।",
+  
+ footerDesc: "বৈশ্বিক ব্যবসায়িক প্রসারের জন্য আমরা তৈরি করি উন্নত নেটওয়ার্ক এবং টেকনিক্যাল শ্রেষ্ঠত্ব।",
     solutions: "সমাধান",
     protocol: "প্রোটোকল",
     terminal: "টার্মিনাল",
@@ -758,6 +771,18 @@ export const translations = {
     corev3: "কোর ভি৩",
     uptime: "আপটাইম",
     nodes: "নোড",
+    quickLinkTitle: "দ্রুত লিংক",
+    home: "হোম",
+    aboutUs: "আমাদের সম্পর্কে",
+    footerServices: "সেবাসমূহ",  // ফুটারের জন্য আলাদা
+    product: "পণ্য",
+    blogTitle: "ব্লগ",
+    blogPost1: "আপনি যা জানতে চান তা এখানে",
+    blogPost2: "আপনি যা জানতে চান তা এখানে",
+    contactTitle: "যোগাযোগ",
+    address: "হাউস ৭৬/এ, রোড ১১, বনানী, ঢাকা, বনানী মডেল টাউন, বাংলাদেশ",
+    footerPhone: "+৮৮০ ১৭২৬৪৪১৯৯৪",
+    allRights: "সর্বস্বত্ব সংরক্ষিত।",
 
     //Hero
     heroBadge: "গ্রো বিজনেস সলিউশনস বিডি",
@@ -1008,7 +1033,7 @@ export const translations = {
       "বার্তা সফলভাবে পাঠানো হয়েছে। ২৪ ঘণ্টার মধ্যে যোগাযোগ করা হবে।",
     quantumLine: "কোয়ান্টাম লাইন",
     neuralLink: "নিউরন লিংক",
-    phone: "+৮৮০ ১২৩৪ ৫৬৭ ৮৯০",
+    phone: "+৮৮০ ১৭২৬৪৪১৯৯৪",
     email: "contact@growbusiness.solutions",
     sendMessage: "বার্তা পাঠান",
     connectUs: "আমাদের সাথে যোগাযোগ করুন",
@@ -1149,7 +1174,7 @@ export const translations = {
       readyTitleItalic: "আধিপত্য বিস্তার করতে?",
       email: "growbusinesssolutionsbd@gmail.com",
       globalDelivery: "গ্লোবাল ডেলিভারি সেন্টার",
-      phone: "+৮৮০ ১৮৮৪ ৩৬৯৩৪০",
+      phone: "+৮৮০ ১৭২৬৪৪১৯৯৪",
       formName: "পূর্ণ নাম",
       formEmail: "কাজের ইমেইল",
       formRequirements: "প্রকল্পের প্রয়োজনীয়তা...",
@@ -1450,7 +1475,7 @@ export const translations = {
         "আপনার অভিজ্ঞতা, দক্ষতা এবং কেন আপনি এই পদের জন্য উপযুক্ত তা আমাদের জানান...",
       placeholderName: "জন ডো",
       placeholderEmail: "john@example.com",
-      placeholderPhone: "+৮৮০ ১২৩৪ ৫৬৭৮৯০",
+      placeholderPhone: "+৮৮০ ১৭২৬৪৪১৯৯৪",
       placeholderCompany: "কোম্পানির নাম",
       placeholderPortfolio: "https://yourwebsite.com",
       placeholderLinkedin: "https://linkedin.com/in/username",

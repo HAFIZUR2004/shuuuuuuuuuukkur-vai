@@ -19,6 +19,8 @@ import {
 import { IconDefinition } from "@fortawesome/fontawesome-svg-core";
 import { useLanguage } from "@/constants/LanguageContext";
 import { translations } from "@/constants/translations";
+
+// ✅ ParticleNetwork ইম্পোর্ট করা হয়েছে
 import ParticleNetwork from "@/components/ParticleNetwork";
 
 // ✅ Icon Map with proper type
@@ -152,17 +154,14 @@ export default function DynamicPortfolioPage({
     <div
       className={`relative bg-[#0b0c18] text-white py-8 px-6 overflow-hidden min-h-screen ${lang === "BN" ? "font-hind" : "font-sans"}`}
     >
-      {/* Particle Network Background */}
+      {/* ✅ Particle Network Background */}
       <ParticleNetwork
-        opacity={0.4}
         particleCount={70}
-        connectionDistance={150}
-        particleSize={{ min: 0.8, max: 2 }}
-        particleColor="rgba(168, 85, 247, 0.4)"
-        lineColor="rgba(168, 85, 247"
-        lineOpacity={0.1}
-        speed={0.3}
+        opacity={0.5}
         glowEffect={true}
+        // mouseInfluence={0.4}
+        connectionDistance={180}
+        className="absolute inset-0 z-0"
       />
 
       {/* Content Area */}
@@ -445,4 +444,3 @@ export default function DynamicPortfolioPage({
     </div>
   );
 }
-// lll

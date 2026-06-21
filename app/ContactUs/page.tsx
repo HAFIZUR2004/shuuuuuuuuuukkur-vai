@@ -56,7 +56,7 @@ export default function ContactSection() {
     {
       icon: Phone,
       label: "DIRECT LINE",
-      value: "+8801726441994",
+      value: "+880 1726 441994",
       color: "#6c5ce7",
       detail: "24/7 Available",
     },
@@ -70,7 +70,7 @@ export default function ContactSection() {
     {
       icon: MapPin,
       label: "GLOBAL NODE",
-      value: "House 76/A, Road 11, Banani, Dhaka, Banani Model Town, Bangladesh, 1213 • Remote First",
+      value: "Room 20, 2nd Floor | Manzuree Bhobon, 8 DIT Extension Ave, Motijheel C/A, Dhaka 1000, Bangladesh",
       color: "#00cec9",
       detail: "Worldwide Service",
     },
@@ -408,3 +408,4 @@ export default function ContactSection() {
     </PublicLayout>
   );
 }
+// mm

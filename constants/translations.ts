@@ -39,7 +39,7 @@ footerDesc: "Building scalable networks and technical excellence for global busi
     blogPost1: "Anything You Want To Know Is Here",
     blogPost2: "Anything You Want To Know Is Here",
     contactTitle: "Contact",
-    address: "House 76/A, Road 11, Banani, Dhaka, Banani Model Town, Bangladesh",
+    address: "Suite 20, 2nd Floor, Manzuree Bhobon, 8 DIT Extension Avenue, Motijheel C/A, Dhaka-1000, Bangladesh",
     footerPhone: "+880 1726 441994",
     allRights: "All rights reserved.",
 
@@ -780,8 +780,8 @@ footerDesc: "Building scalable networks and technical excellence for global busi
     blogPost1: "আপনি যা জানতে চান তা এখানে",
     blogPost2: "আপনি যা জানতে চান তা এখানে",
     contactTitle: "যোগাযোগ",
-    address: "হাউস ৭৬/এ, রোড ১১, বনানী, ঢাকা, বনানী মডেল টাউন, বাংলাদেশ",
-    footerPhone: "+৮৮০ ১৭২৬৪৪১৯৯৪",
+    address: "কক্ষ নং ২০, ২য় তলা, মঞ্জুরী ভবন, ৮ ডিআইটি এক্সটেনশন এভিনিউ, মতিঝিল বা/এ, ঢাকা ১০০০, বাংলাদেশ",
+    footerPhone: "+৮৮০ ১৭২৬ ৪৪১৯৯৪",
     allRights: "সর্বস্বত্ব সংরক্ষিত।",
 
     //Hero
